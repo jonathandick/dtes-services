@@ -290,6 +290,78 @@ a:hover{text-decoration:underline;}
   #handout-overlay{padding:0;}
 }
 
+/* ── Table view ── */
+#table-overlay{
+  display:none;position:fixed;inset:0;background:var(--bg);
+  z-index:600;flex-direction:column;
+}
+#table-overlay.show{display:flex;}
+#table-toolbar{
+  display:flex;gap:8px;padding:12px 16px;align-items:center;
+  background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;
+}
+#table-toolbar h2{font-size:14px;font-weight:600;margin-right:4px;}
+#table-search-wrap{position:relative;flex:1;max-width:260px;}
+#table-search-wrap svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;}
+#table-search{width:100%;height:32px;border:1px solid var(--border);border-radius:20px;padding:0 10px 0 30px;font-size:13px;background:var(--surface2);color:var(--text);outline:none;}
+#table-search:focus{border-color:var(--blue);}
+#table-cat-filter{height:32px;border:1px solid var(--border);border-radius:20px;padding:0 28px 0 12px;font-size:12px;background:var(--surface);color:var(--text2);outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239D9489' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
+#table-count{font-size:11px;color:var(--text3);white-space:nowrap;}
+#table-wrap{flex:1;overflow:auto;}
+#table-wrap::-webkit-scrollbar{width:6px;height:6px;}
+#table-wrap::-webkit-scrollbar-track{background:transparent;}
+#table-wrap::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+#org-table{width:100%;border-collapse:collapse;font-size:12px;}
+#org-table thead{position:sticky;top:0;z-index:10;background:var(--surface);box-shadow:0 1px 0 var(--border);}
+#org-table th{
+  padding:9px 12px;text-align:left;font-size:10.5px;font-weight:600;
+  color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;
+  white-space:nowrap;cursor:pointer;user-select:none;border-bottom:1px solid var(--border);
+}
+#org-table th:hover{color:var(--text);}
+#org-table th .sort-arrow{opacity:0.3;margin-left:3px;font-size:9px;}
+#org-table th.sorted .sort-arrow{opacity:1;color:var(--blue);}
+#org-table td{
+  padding:9px 12px;vertical-align:top;border-bottom:1px solid var(--border);
+  color:var(--text);line-height:1.45;
+}
+#org-table tr:hover td{background:var(--surface2);}
+#org-table tr.table-selected td{background:#e8f0ff;}
+.tcat-pill{
+  display:inline-block;padding:2px 8px;border-radius:4px;
+  font-size:10px;font-weight:600;white-space:nowrap;
+}
+.tbadge-yes{background:#dcf5e8;color:#0e5c30;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:500;white-space:nowrap;}
+.tbadge-no{background:#f0ece8;color:#8a8278;padding:1px 6px;border-radius:3px;font-size:10px;white-space:nowrap;}
+.tbadge-ref{background:#fff3dc;color:#7a5a00;padding:1px 6px;border-radius:3px;font-size:10px;white-space:nowrap;}
+.t-link{color:var(--blue);font-size:11px;}
+.t-note{font-size:10.5px;color:#8a5a00;font-style:italic;}
+.col-name{min-width:180px;max-width:220px;font-weight:600;}
+.col-cat{min-width:140px;}
+.col-inst{min-width:160px;max-width:200px;color:var(--text2);}
+.col-addr{min-width:160px;max-width:200px;}
+.col-phone{min-width:130px;white-space:nowrap;}
+.col-hours{min-width:150px;max-width:180px;}
+.col-oat{min-width:90px;}
+.col-scs{min-width:120px;}
+.col-walkin{min-width:120px;}
+.col-web{min-width:130px;}
+.col-desc{min-width:220px;max-width:320px;color:var(--text2);font-size:11.5px;}
+.col-actions{min-width:80px;}
+.t-action-btn{
+  height:26px;padding:0 10px;border-radius:var(--radius-sm);
+  font-size:11px;font-weight:500;cursor:pointer;
+  border:1px solid var(--border);background:var(--surface2);color:var(--text2);
+  transition:all 0.15s;
+}
+.t-action-btn:hover{border-color:var(--border2);color:var(--text);}
+@media print{
+  #table-toolbar{display:none;}
+  #table-overlay{position:static;}
+  #org-table th{background:#f0f0f0;}
+  #org-table tr:hover td{background:none;}
+}
+
 /* ── Mobile ── */
 @media(max-width:700px){
   #panel{
@@ -342,6 +414,10 @@ a:hover{text-decoration:underline;}
   <button class="tb-btn" id="btn-handout">
     <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10h9M4 7l2.5 3L9 7M6.5 1v9"/></svg>
     <span>Handout</span>
+  </button>
+  <button class="tb-btn" id="btn-table">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="11" height="11" rx="1.5"/><path d="M1 4.5h11M1 8h11M4.5 4.5v7"/></svg>
+    <span>Table</span>
   </button>
   <span id="org-count"></span>
 </div>
@@ -527,6 +603,57 @@ a:hover{text-decoration:underline;}
     <span style="font-size:12px;color:var(--text3);margin-left:8px;">Shows currently filtered organizations</span>
   </div>
   <div id="handout-content"></div>
+</div>
+
+<!-- Table overlay -->
+<div id="table-overlay">
+  <div id="table-toolbar">
+    <button class="modal-btn" onclick="closeTable()">← Back to Map</button>
+    <h2>Organizations</h2>
+    <div id="table-search-wrap">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10.5 10.5l3 3"/></svg>
+      <input type="text" id="table-search" placeholder="Search…" oninput="renderTable()">
+    </div>
+    <select id="table-cat-filter" onchange="renderTable()">
+      <option value="">All categories</option>
+      <option>SCS / OPS</option>
+      <option>Primary Care / OAT</option>
+      <option>Harm Reduction</option>
+      <option>Detox / WDM</option>
+      <option>Peer / Indigenous</option>
+      <option>Women / Sex Workers</option>
+      <option>Supportive Housing</option>
+      <option>Shelter / Recovery</option>
+      <option>Community / Drop-in</option>
+      <option>Emergency Services</option>
+      <option>Transitional / Acute Care</option>
+      <option>System Navigation</option>
+    </select>
+    <button class="modal-btn" onclick="exportTableCSV()">⬇ Export CSV</button>
+    <button class="modal-btn primary" onclick="window.print()">🖨 Print</button>
+    <span id="table-count"></span>
+  </div>
+  <div id="table-wrap">
+    <table id="org-table">
+      <thead>
+        <tr>
+          <th class="col-name" onclick="sortTable('name')">Organization <span class="sort-arrow">▴</span></th>
+          <th class="col-cat" onclick="sortTable('cat')">Category <span class="sort-arrow">▴</span></th>
+          <th class="col-inst" onclick="sortTable('inst')">Institution <span class="sort-arrow">▴</span></th>
+          <th class="col-addr" onclick="sortTable('addr')">Address <span class="sort-arrow">▴</span></th>
+          <th class="col-phone">Phone</th>
+          <th class="col-hours">Hours</th>
+          <th class="col-oat" onclick="sortTable('oat')">OAT <span class="sort-arrow">▴</span></th>
+          <th class="col-scs">SCS / OPS</th>
+          <th class="col-walkin">Walk-in</th>
+          <th class="col-web">Website</th>
+          <th class="col-desc">Key Services / Notes</th>
+          <th class="col-actions"></th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
 </div>
 
 <script>
@@ -1480,6 +1607,109 @@ function openHandout() {
 function closeHandout() { document.getElementById("handout-overlay").classList.remove("show"); }
 
 // ═══════════════════════════════════════════════════════════
+// TABLE VIEW
+// ═══════════════════════════════════════════════════════════
+let tableSortCol = "name";
+let tableSortDir = 1;
+
+function openTable() {
+  document.getElementById("table-search").value = "";
+  document.getElementById("table-cat-filter").value = "";
+  renderTable();
+  document.getElementById("table-overlay").classList.add("show");
+}
+function closeTable() { document.getElementById("table-overlay").classList.remove("show"); }
+
+function sortTable(col) {
+  if (tableSortCol === col) tableSortDir *= -1;
+  else { tableSortCol = col; tableSortDir = 1; }
+  document.querySelectorAll("#org-table th").forEach(th => th.classList.remove("sorted"));
+  const ths = document.querySelectorAll("#org-table th");
+  const colMap = ["name","cat","inst","addr",null,null,"oat",null,null,null,null,null];
+  ths.forEach((th,i) => { if(colMap[i]===col) th.classList.add("sorted"); });
+  renderTable();
+}
+
+function renderTable() {
+  const q = (document.getElementById("table-search").value || "").toLowerCase();
+  const catFilter = document.getElementById("table-cat-filter").value;
+
+  let data = orgs.filter(org => {
+    const catMatch = !catFilter || org.cat === catFilter;
+    const textMatch = !q ||
+      (org.name||"").toLowerCase().includes(q) ||
+      (org.cat||"").toLowerCase().includes(q) ||
+      (org.inst||"").toLowerCase().includes(q) ||
+      (org.addr||"").toLowerCase().includes(q) ||
+      (org.phone||"").toLowerCase().includes(q) ||
+      (org.desc||"").toLowerCase().includes(q) ||
+      (org.oat||"").toLowerCase().includes(q) ||
+      (org.walkin||"").toLowerCase().includes(q);
+    return catMatch && textMatch;
+  });
+
+  data.sort((a,b) => {
+    const av = (a[tableSortCol]||"").toLowerCase();
+    const bv = (b[tableSortCol]||"").toLowerCase();
+    return av < bv ? -tableSortDir : av > bv ? tableSortDir : 0;
+  });
+
+  document.getElementById("table-count").textContent = `${data.length} of ${orgs.length} organizations`;
+
+  const tbody = document.getElementById("table-body");
+  tbody.innerHTML = "";
+  data.forEach(org => {
+    const meta = CAT_META[org.cat] || {color:"#666"};
+    const oatClass = org.oat && org.oat.startsWith("Yes") ? "tbadge-yes" : "tbadge-no";
+    const scsClass = org.scs && (org.scs.startsWith("Yes")||org.scs.includes("OPS")) && !org.scs.startsWith("No") ? "tbadge-yes" : "tbadge-no";
+    const wiClass = org.walkin && (org.walkin.includes("drop-in")||org.walkin.startsWith("Yes")) ? "tbadge-yes" : "tbadge-ref";
+    const noteHtml = org.note ? `<div class="t-note" style="margin-top:4px">⚠️ ${org.note}</div>` : "";
+    const tr = document.createElement("tr");
+    if (org.id === selectedId) tr.classList.add("table-selected");
+    tr.innerHTML = `
+      <td class="col-name">${org.name}</td>
+      <td class="col-cat"><span class="tcat-pill" style="background:${meta.color}22;color:${meta.color}">${org.cat}</span></td>
+      <td class="col-inst">${org.inst||"—"}</td>
+      <td class="col-addr">${org.addr||"—"}</td>
+      <td class="col-phone">${org.phone ? `<a class="t-link" href="tel:${org.phone}">${org.phone}</a>` : "—"}</td>
+      <td class="col-hours">${org.hours||"—"}</td>
+      <td class="col-oat"><span class="${oatClass}">${org.oat||"No"}</span></td>
+      <td class="col-scs"><span class="${scsClass}">${org.scs||"No"}</span></td>
+      <td class="col-walkin"><span class="${wiClass}">${org.walkin||"—"}</span></td>
+      <td class="col-web">${org.web ? `<a class="t-link" href="https://${org.web}" target="_blank">${org.web}</a>` : "—"}</td>
+      <td class="col-desc">${org.desc||"—"}${noteHtml}</td>
+      <td class="col-actions"><button class="t-action-btn" onclick="editOrg('${org.id}');closeTable()">Edit</button></td>
+    `;
+    tr.addEventListener("click", e => {
+      if (e.target.tagName === "A" || e.target.tagName === "BUTTON") return;
+      closeTable();
+      selectOrg(org.id);
+      showDetail(org.id);
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+function exportTableCSV() {
+  const q = (document.getElementById("table-search").value || "").toLowerCase();
+  const catFilter = document.getElementById("table-cat-filter").value;
+  const data = orgs.filter(org => {
+    const catMatch = !catFilter || org.cat === catFilter;
+    const textMatch = !q || (org.name||"").toLowerCase().includes(q) || (org.cat||"").toLowerCase().includes(q) || (org.inst||"").toLowerCase().includes(q) || (org.addr||"").toLowerCase().includes(q) || (org.desc||"").toLowerCase().includes(q);
+    return catMatch && textMatch;
+  });
+  const cols = ["name","cat","inst","addr","phone","hours","oat","scs","walkin","web","desc","note"];
+  const headers = ["Organization","Category","Institution","Address","Phone","Hours","OAT","SCS/OPS","Walk-in","Website","Description","Notes"];
+  const esc = v => `"${(v||"").replace(/"/g,'""')}"`;
+  const csv = [headers.map(esc).join(","), ...data.map(o => cols.map(c => esc(o[c])).join(","))].join("\n");
+  const blob = new Blob([csv], {type:"text/csv"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "DTES_Services.csv"; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════════════════════════════
 // DRUG ALERTS
 // ═══════════════════════════════════════════════════════════
 async function fetchAlerts() {
@@ -1545,6 +1775,7 @@ function initEvents() {
   // Topbar buttons
   document.getElementById("btn-add-org").addEventListener("click", () => openModal(null));
   document.getElementById("btn-handout").addEventListener("click", openHandout);
+  document.getElementById("btn-table").addEventListener("click", openTable);
 
   // Modal close on overlay click
   document.getElementById("modal-overlay").addEventListener("click", e => {
@@ -1553,7 +1784,7 @@ function initEvents() {
 
   // Keyboard
   document.addEventListener("keydown", e => {
-    if (e.key === "Escape") { closeModal(); closeHandout(); }
+    if (e.key === "Escape") { closeModal(); closeHandout(); closeTable(); }
   });
 }
 
