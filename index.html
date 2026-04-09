@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DTES Services Directory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root {
+  --red:#C0392B;--orange:#D95F00;--green:#1A7A4A;--blue:#1655A2;
+  --purple:#6B3FA0;--teal:#0A7A6B;--amber:#9A6F00;--slate:#4A5568;
+  --pink:#A0306B;--navy:#1A2B6B;--fire:#CC3300;--police:#003087;--ems:#006633;
+  --bg:#F5F4F1;--surface:#FFFFFF;--surface2:#EFEDE8;--border:#E0DCD5;
+  --border2:#CBC5BD;--text:#18160F;--text2:#6A6259;--text3:#9D9489;
+  --radius:10px;--radius-sm:6px;--radius-lg:14px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.10),0 2px 6px rgba(0,0,0,0.06);
+  --shadow-lg:0 12px 40px rgba(0,0,0,0.14),0 4px 12px rgba(0,0,0,0.08);
+  --header-h:52px;--filter-h:42px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+input,textarea,select{font-family:inherit;}
+a{color:var(--blue);text-decoration:none;}
+a:hover{text-decoration:underline;}
+
+/* ── Layout ── */
+#app{display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
+
+/* ── Topbar ── */
+#topbar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 14px;display:flex;align-items:center;gap:10px;
+  height:var(--header-h);flex-shrink:0;z-index:200;
+}
+#logo{display:flex;align-items:center;gap:9px;flex-shrink:0;text-decoration:none;}
+#logo-mark{
+  width:28px;height:28px;border-radius:7px;background:var(--red);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:11px;font-weight:700;letter-spacing:-0.5px;flex-shrink:0;
+}
+#logo-text{display:flex;flex-direction:column;line-height:1.15;}
+#logo-text strong{font-size:13px;font-weight:600;color:var(--text);}
+#logo-text small{font-size:10px;color:var(--text3);font-weight:400;}
+#search-wrap{flex:1;position:relative;max-width:280px;}
+#search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;width:14px;height:14px;}
+#search{
+  width:100%;height:32px;border:1px solid var(--border);border-radius:20px;
+  padding:0 10px 0 30px;font-size:13px;background:var(--surface2);color:var(--text);outline:none;
+  transition:border-color 0.15s,background 0.15s;
+}
+#search:focus{border-color:var(--blue);background:var(--surface);}
+.tb-btn{
+  height:32px;padding:0 11px;border:1px solid var(--border);border-radius:20px;
+  background:var(--surface);font-size:12px;font-weight:500;color:var(--text2);
+  cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;
+  transition:all 0.15s;flex-shrink:0;
+}
+.tb-btn:hover{border-color:var(--border2);color:var(--text);}
+.tb-btn.danger{background:var(--red);color:#fff;border-color:var(--red);}
+.tb-btn.danger:hover{background:#a82e22;}
+#org-count{font-size:11px;color:var(--text3);white-space:nowrap;flex-shrink:0;font-variant-numeric:tabular-nums;}
+
+/* ── Alert banner ── */
+#alert-bar{
+  display:none;background:#fff3cd;border-bottom:1px solid #f0c040;
+  padding:7px 14px;font-size:12px;color:#7a5a00;align-items:center;gap:8px;
+  flex-shrink:0;cursor:pointer;
+}
+#alert-bar.show{display:flex;}
+#alert-bar strong{font-weight:600;}
+#alert-bar a{color:#7a5a00;text-decoration:underline;}
+
+/* ── Filterbar ── */
+#filterbar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 14px;display:flex;align-items:center;gap:5px;
+  height:var(--filter-h);flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch;
+}
+#filterbar::-webkit-scrollbar{display:none;}
+.chip{
+  height:26px;padding:0 10px;border:1px solid var(--border);border-radius:20px;
+  background:var(--surface);font-size:11.5px;font-weight:500;color:var(--text2);
+  white-space:nowrap;display:flex;align-items:center;gap:4px;
+  cursor:pointer;transition:all 0.15s;flex-shrink:0;
+}
+.chip:hover{border-color:var(--border2);}
+.chip.active{background:var(--text);color:#fff;border-color:var(--text);}
+.chip .cdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.chip-sep{width:1px;height:18px;background:var(--border);flex-shrink:0;margin:0 2px;}
+#filter-count{margin-left:auto;font-size:11px;color:var(--text3);white-space:nowrap;flex-shrink:0;}
+
+/* ── Body ── */
+#body{display:flex;flex:1;overflow:hidden;}
+
+/* ── Map ── */
+#map-wrap{flex:1;position:relative;min-width:0;}
+#map{width:100%;height:100%;}
+.leaflet-popup-content-wrapper{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);box-shadow:var(--shadow-md);padding:0;
+  font-family:'DM Sans',sans-serif;min-width:240px;
+}
+.leaflet-popup-content{margin:0!important;padding:0!important;}
+.leaflet-popup-tip{background:var(--surface);}
+.popup-inner{padding:13px 14px;}
+.popup-cat-label{font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px;opacity:0.85;}
+.popup-name{font-size:14px;font-weight:600;line-height:1.3;color:var(--text);margin-bottom:4px;}
+.popup-addr{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.4;}
+.popup-badges{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:10px;}
+.pb{font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;line-height:1.5;}
+.pb-yes{background:#dcf5e8;color:#0e5c30;}
+.pb-no{background:#f0ece8;color:#8a8278;}
+.pb-ref{background:#fff3dc;color:#7a5a00;}
+.pb-ems{background:#e8f0ff;color:#1a3a8a;}
+.popup-detail-btn{
+  width:100%;padding:7px;border-radius:var(--radius-sm);
+  background:var(--text);color:#fff;font-size:12px;font-weight:500;
+  cursor:pointer;transition:background 0.15s;border:none;
+}
+.popup-detail-btn:hover{background:#333;}
+
+/* ── Panel ── */
+#panel{
+  width:360px;flex-shrink:0;background:var(--bg);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+  transition:transform 0.25s ease;
+}
+#panel-header{
+  padding:10px 12px 8px;border-bottom:1px solid var(--border);
+  background:var(--surface);flex-shrink:0;
+}
+#panel-tabs{display:flex;gap:2px;background:var(--surface2);border-radius:8px;padding:3px;}
+.ptab{
+  flex:1;height:26px;border:none;border-radius:5px;background:transparent;
+  font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.15s;
+}
+.ptab.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow);}
+#panel-list{flex:1;overflow-y:auto;padding:8px;}
+#panel-list::-webkit-scrollbar{width:3px;}
+#panel-list::-webkit-scrollbar-track{background:transparent;}
+#panel-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ── Cards ── */
+.org-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  margin-bottom:7px;cursor:pointer;transition:all 0.15s;overflow:hidden;
+}
+.org-card:hover{border-color:var(--border2);box-shadow:var(--shadow);}
+.org-card.selected{border-color:var(--blue);box-shadow:0 0 0 2px rgba(22,85,162,0.12);}
+.org-card.expanded .card-body{display:block;}
+.card-top{padding:10px 11px 8px;display:flex;align-items:flex-start;gap:9px;}
+.card-icon{
+  width:32px;height:32px;border-radius:7px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+}
+.card-info{flex:1;min-width:0;}
+.card-cat{font-size:10px;font-weight:600;letter-spacing:0.4px;text-transform:uppercase;margin-bottom:1px;}
+.card-name{font-size:12.5px;font-weight:600;line-height:1.3;color:var(--text);}
+.card-inst{font-size:10.5px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.card-chevron{color:var(--text3);flex-shrink:0;transition:transform 0.2s;font-size:12px;margin-top:2px;}
+.org-card.expanded .card-chevron{transform:rotate(180deg);}
+.card-body{
+  display:none;padding:0 11px 10px;border-top:1px solid var(--border);
+}
+.card-row{
+  display:flex;align-items:flex-start;gap:6px;
+  padding:5px 0;border-bottom:1px solid var(--border);font-size:11.5px;
+}
+.card-row:last-child{border-bottom:none;}
+.card-label{color:var(--text3);width:58px;flex-shrink:0;font-size:10.5px;padding-top:1px;}
+.card-val{color:var(--text);flex:1;line-height:1.45;}
+.card-badges{display:flex;flex-wrap:wrap;gap:3px;padding-top:2px;}
+.cbadge{font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;line-height:1.5;}
+.cbadge-yes{background:#dcf5e8;color:#0e5c30;}
+.cbadge-no{background:#f0ece8;color:#8a8278;}
+.cbadge-ref{background:#fff3dc;color:#7a5a00;}
+.card-actions{display:flex;gap:6px;padding-top:8px;}
+.card-action-btn{
+  flex:1;height:28px;border-radius:var(--radius-sm);font-size:11px;font-weight:500;
+  cursor:pointer;transition:all 0.15s;border:1px solid var(--border);
+  background:var(--surface2);color:var(--text2);
+}
+.card-action-btn:hover{border-color:var(--border2);color:var(--text);}
+.card-action-btn.primary{background:var(--text);color:#fff;border-color:var(--text);}
+.card-action-btn.primary:hover{background:#333;}
+
+/* ── Detail pane ── */
+#detail-pane{
+  display:none;flex-direction:column;flex:1;overflow:hidden;
+  background:var(--surface);
+}
+#detail-pane.show{display:flex;}
+#detail-back{
+  display:flex;align-items:center;gap:6px;padding:10px 12px;
+  border-bottom:1px solid var(--border);background:var(--surface);
+  font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;flex-shrink:0;
+}
+#detail-back:hover{color:var(--text);}
+#detail-scroll{flex:1;overflow-y:auto;padding:14px;}
+#detail-scroll::-webkit-scrollbar{width:3px;}
+#detail-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+.detail-hero{margin-bottom:14px;}
+.detail-icon-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.detail-icon{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.detail-cat{font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px;}
+.detail-name{font-size:16px;font-weight:700;line-height:1.25;color:var(--text);}
+.detail-inst{font-size:12px;color:var(--text3);margin-top:3px;}
+.detail-section{margin-bottom:14px;}
+.detail-section-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border);}
+.detail-row{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.detail-row:last-child{border-bottom:none;}
+.detail-label{color:var(--text3);width:80px;flex-shrink:0;font-size:11px;padding-top:1px;}
+.detail-val{color:var(--text);flex:1;line-height:1.5;}
+.detail-badges{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;}
+.dbadge{font-size:11px;font-weight:500;padding:3px 9px;border-radius:5px;line-height:1.5;}
+.dbadge-yes{background:#dcf5e8;color:#0e5c30;}
+.dbadge-no{background:#f0ece8;color:#8a8278;}
+.dbadge-ref{background:#fff3dc;color:#7a5a00;}
+.detail-desc{font-size:12px;color:var(--text2);line-height:1.6;padding:10px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);}
+.detail-note{font-size:11.5px;color:#8a5a00;line-height:1.5;padding:8px 10px;background:#fff9e8;border-radius:var(--radius-sm);border:1px solid #f0c040;margin-top:8px;}
+.detail-cta{display:flex;gap:8px;margin-top:12px;}
+.detail-cta-btn{
+  flex:1;height:34px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;
+  cursor:pointer;transition:all 0.15s;border:1px solid var(--border);
+  background:var(--surface2);color:var(--text2);
+}
+.detail-cta-btn:hover{border-color:var(--border2);color:var(--text);}
+.detail-cta-btn.primary{background:var(--text);color:#fff;border-color:var(--text);}
+.detail-cta-btn.primary:hover{background:#333;}
+
+/* ── Edit modal ── */
+#modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);
+  z-index:500;align-items:center;justify-content:center;padding:16px;
+}
+#modal-overlay.show{display:flex;}
+#modal{
+  background:var(--surface);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);width:100%;max-width:520px;max-height:90dvh;
+  overflow-y:auto;padding:20px;
+}
+#modal h2{font-size:15px;font-weight:600;margin-bottom:14px;color:var(--text);}
+.form-row{margin-bottom:12px;}
+.form-row label{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.4px;}
+.form-row input,.form-row select,.form-row textarea{
+  width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:8px 10px;font-size:13px;color:var(--text);background:var(--surface);
+  outline:none;transition:border-color 0.15s;
+}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--blue);}
+.form-row textarea{resize:vertical;min-height:80px;line-height:1.5;}
+.form-row select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239D9489' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.modal-actions{display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);}
+.modal-btn{
+  height:36px;padding:0 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;
+  cursor:pointer;transition:all 0.15s;border:1px solid var(--border);
+  background:var(--surface2);color:var(--text2);
+}
+.modal-btn:hover{border-color:var(--border2);color:var(--text);}
+.modal-btn.primary{background:var(--text);color:#fff;border-color:var(--text);margin-left:auto;}
+.modal-btn.primary:hover{background:#333;}
+.modal-btn.danger{background:var(--red);color:#fff;border-color:var(--red);}
+.modal-btn.danger:hover{background:#a82e22;}
+
+/* ── Handout print ── */
+#handout-overlay{
+  display:none;position:fixed;inset:0;background:#fff;
+  z-index:600;overflow:auto;padding:20px;
+}
+#handout-overlay.show{display:block;}
+#handout-toolbar{display:flex;gap:8px;margin-bottom:16px;align-items:center;}
+#handout-content{max-width:700px;margin:0 auto;}
+.handout-title{font-size:18px;font-weight:700;margin-bottom:4px;}
+.handout-sub{font-size:12px;color:#666;margin-bottom:16px;}
+.handout-section{margin-bottom:14px;}
+.handout-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#444;border-bottom:1px solid #ddd;padding-bottom:4px;margin-bottom:8px;}
+.handout-item{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid #f0f0f0;font-size:12px;}
+.handout-item:last-child{border:none;}
+.handout-item-name{font-weight:600;color:#111;width:180px;flex-shrink:0;}
+.handout-item-addr{color:#555;flex:1;}
+.handout-item-phone{color:#1655A2;width:120px;flex-shrink:0;text-align:right;}
+@media print{
+  #handout-toolbar{display:none;}
+  #handout-overlay{padding:0;}
+}
+
+/* ── Mobile ── */
+@media(max-width:700px){
+  #panel{
+    position:fixed;bottom:0;left:0;right:0;width:100%;height:60dvh;
+    border-left:none;border-top:1px solid var(--border);
+    border-radius:14px 14px 0 0;z-index:150;
+    transform:translateY(calc(100% - 50px));
+  }
+  #panel.open{transform:translateY(0);}
+  #panel-handle{
+    width:36px;height:4px;background:var(--border2);border-radius:4px;
+    margin:8px auto 4px;cursor:pointer;
+  }
+  #map-wrap{height:calc(100dvh - var(--header-h) - var(--filter-h) - 50px);}
+  #body{flex-direction:column;}
+  .tb-btn span{display:none;}
+}
+@media(min-width:701px){#panel-handle{display:none;}}
+
+/* ── Empty state ── */
+#empty-state{
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 20px;text-align:center;color:var(--text3);
+}
+#empty-state.show{display:flex;}
+#empty-state svg{margin-bottom:12px;opacity:0.4;}
+#empty-state p{font-size:13px;}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- Topbar -->
+<div id="topbar">
+  <a href="#" id="logo">
+    <div id="logo-mark">HR</div>
+    <div id="logo-text">
+      <strong>DTES Services</strong>
+      <small>Harm Reduction &amp; Addiction Directory</small>
+    </div>
+  </a>
+  <div id="search-wrap">
+    <svg id="search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10.5 10.5l3 3"/></svg>
+    <input type="text" id="search" placeholder="Search organizations…" autocomplete="off">
+  </div>
+  <button class="tb-btn" id="btn-add-org">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6.5 2v9M2 6.5h9"/></svg>
+    <span>Add</span>
+  </button>
+  <button class="tb-btn" id="btn-handout">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10h9M4 7l2.5 3L9 7M6.5 1v9"/></svg>
+    <span>Handout</span>
+  </button>
+  <span id="org-count"></span>
+</div>
+
+<!-- Alert bar -->
+<div id="alert-bar">
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 2l5.5 9.5H1.5L7 2z"/><path d="M7 6v3M7 10.5v.5"/></svg>
+  <span id="alert-text"><strong>VCH Drug Alert:</strong> Loading…</span>
+  <a href="https://towardtheheart.com/alerts" target="_blank" style="margin-left:auto;font-size:11px;">View all alerts →</a>
+</div>
+
+<!-- Filter bar -->
+<div id="filterbar">
+  <button class="chip active" data-filter="all">All</button>
+  <button class="chip" data-filter="SCS / OPS" style="--cat-color:#C0392B"><span class="cdot" style="background:#C0392B"></span>Consumption Sites</button>
+  <button class="chip" data-filter="Primary Care / OAT" style="--cat-color:#1A7A4A"><span class="cdot" style="background:#1A7A4A"></span>Primary Care / OAT</button>
+  <button class="chip" data-filter="Harm Reduction" style="--cat-color:#D4AC0D"><span class="cdot" style="background:#D4AC0D"></span>Harm Reduction</button>
+  <button class="chip" data-filter="Detox / WDM" style="--cat-color:#D95F00"><span class="cdot" style="background:#D95F00"></span>Detox</button>
+  <button class="chip" data-filter="Peer / Indigenous" style="--cat-color:#1655A2"><span class="cdot" style="background:#1655A2"></span>Peer / Indigenous</button>
+  <button class="chip" data-filter="Women / Sex Workers" style="--cat-color:#A0306B"><span class="cdot" style="background:#A0306B"></span>Women</button>
+  <button class="chip" data-filter="Supportive Housing" style="--cat-color:#4A5568"><span class="cdot" style="background:#4A5568"></span>Housing</button>
+  <button class="chip" data-filter="Shelter / Recovery" style="--cat-color:#6B3FA0"><span class="cdot" style="background:#6B3FA0"></span>Shelter</button>
+  <button class="chip" data-filter="Community / Drop-in" style="--cat-color:#0A7A6B"><span class="cdot" style="background:#0A7A6B"></span>Community</button>
+  <button class="chip" data-filter="Emergency Services" style="--cat-color:#CC3300"><span class="cdot" style="background:#CC3300"></span>Emergency</button>
+  <div class="chip-sep"></div>
+  <button class="chip" data-flag="oat">OAT ✓</button>
+  <button class="chip" data-flag="scs">SCS/OPS ✓</button>
+  <button class="chip" data-flag="walkin">Walk-in ✓</button>
+  <button class="chip" data-flag="24hr">24hr ✓</button>
+  <button class="chip" data-flag="women">Women-only ✓</button>
+  <button class="chip" data-flag="indigenous">Indigenous ✓</button>
+  <span class="chip-sep"></span>
+  <span id="filter-count"></span>
+</div>
+
+<!-- Body -->
+<div id="body">
+  <div id="map-wrap">
+    <div id="map"></div>
+  </div>
+
+  <div id="panel">
+    <div id="panel-handle" onclick="togglePanel()"></div>
+    <div id="panel-header">
+      <div id="panel-tabs">
+        <button class="ptab active" data-tab="list">List</button>
+        <button class="ptab" data-tab="detail">Detail</button>
+      </div>
+    </div>
+    <div id="panel-list">
+      <div id="empty-state">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="14" cy="14" r="10"/><path d="M22 22l6 6"/><path d="M10 14h8M14 10v8"/></svg>
+        <p>No organizations match your filters.</p>
+      </div>
+    </div>
+    <div id="detail-pane">
+      <div id="detail-back" onclick="showList()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2L4 7l5 5"/></svg>
+        Back to list
+      </div>
+      <div id="detail-scroll"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit/Add Modal -->
+<div id="modal-overlay">
+  <div id="modal">
+    <h2 id="modal-title">Add Organization</h2>
+    <div class="form-row">
+      <label>Organization Name *</label>
+      <input type="text" id="f-name" placeholder="Full name">
+    </div>
+    <div class="form-row-2">
+      <div class="form-row" style="margin:0">
+        <label>Category *</label>
+        <select id="f-cat">
+          <option>SCS / OPS</option>
+          <option>Primary Care / OAT</option>
+          <option>Harm Reduction</option>
+          <option>Detox / WDM</option>
+          <option>Peer / Indigenous</option>
+          <option>Women / Sex Workers</option>
+          <option>Supportive Housing</option>
+          <option>Shelter / Recovery</option>
+          <option>Community / Drop-in</option>
+          <option>Emergency Services</option>
+          <option>Transitional / Acute Care</option>
+          <option>System Navigation</option>
+        </select>
+      </div>
+      <div class="form-row" style="margin:0">
+        <label>Institution / Operator</label>
+        <input type="text" id="f-inst" placeholder="e.g. VCH, PHS">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Address *</label>
+      <input type="text" id="f-addr" placeholder="Street address">
+    </div>
+    <div class="form-row-2">
+      <div class="form-row" style="margin:0">
+        <label>Phone</label>
+        <input type="text" id="f-phone" placeholder="604-xxx-xxxx">
+      </div>
+      <div class="form-row" style="margin:0">
+        <label>Website</label>
+        <input type="text" id="f-web" placeholder="example.ca">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Hours</label>
+      <input type="text" id="f-hours" placeholder="e.g. Mon–Fri 9am–5pm">
+    </div>
+    <div class="form-row-2">
+      <div class="form-row" style="margin:0">
+        <label>OAT Available</label>
+        <select id="f-oat">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+          <option value="Yes – same-day">Yes – same-day</option>
+          <option value="Via referral">Via referral</option>
+        </select>
+      </div>
+      <div class="form-row" style="margin:0">
+        <label>SCS / OPS On-site</label>
+        <select id="f-scs">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+          <option value="Yes – injection">Yes – injection</option>
+          <option value="Yes – inhalation">Yes – inhalation</option>
+          <option value="Yes – women only">Yes – women only</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-row" style="margin:0">
+        <label>Walk-in Access</label>
+        <select id="f-walkin">
+          <option value="No – referral only">No – referral only</option>
+          <option value="Yes – drop-in">Yes – drop-in</option>
+          <option value="Yes – self-refer">Yes – self-refer</option>
+          <option value="Phone first">Phone first</option>
+        </select>
+      </div>
+      <div class="form-row" style="margin:0">
+        <label>Hours Type</label>
+        <select id="f-hrs-type">
+          <option value="">—</option>
+          <option value="24hr">24 hours</option>
+          <option value="women">Women-only</option>
+          <option value="indigenous">Indigenous-specific</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Description / Notes</label>
+      <textarea id="f-desc" placeholder="Services, clinical notes, referral tips…"></textarea>
+    </div>
+    <div class="form-row-2">
+      <div class="form-row" style="margin:0">
+        <label>Latitude</label>
+        <input type="number" id="f-lat" step="0.0001" placeholder="49.28xx">
+      </div>
+      <div class="form-row" style="margin:0">
+        <label>Longitude</label>
+        <input type="number" id="f-lng" step="0.0001" placeholder="-123.09xx">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn danger" id="btn-delete" style="display:none" onclick="deleteOrg()">Delete</button>
+      <button class="modal-btn primary" onclick="saveOrg()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Handout overlay -->
+<div id="handout-overlay">
+  <div id="handout-toolbar">
+    <button class="modal-btn" onclick="closeHandout()">← Close</button>
+    <button class="modal-btn primary" onclick="window.print()">🖨 Print / Save PDF</button>
+    <span style="font-size:12px;color:var(--text3);margin-left:8px;">Shows currently filtered organizations</span>
+  </div>
+  <div id="handout-content"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════
+const CAT_META = {
+  "SCS / OPS":           {color:"#C0392B", icon:"💉"},
+  "Primary Care / OAT":  {color:"#1A7A4A", icon:"🩺"},
+  "Harm Reduction":      {color:"#D4AC0D", icon:"🧴"},
+  "Detox / WDM":         {color:"#D95F00", icon:"🏥"},
+  "Peer / Indigenous":   {color:"#1655A2", icon:"🤝"},
+  "Women / Sex Workers": {color:"#A0306B", icon:"♀"},
+  "Supportive Housing":  {color:"#4A5568", icon:"🏠"},
+  "Shelter / Recovery":  {color:"#6B3FA0", icon:"🛡"},
+  "Community / Drop-in": {color:"#0A7A6B", icon:"🏢"},
+  "Emergency Services":  {color:"#CC3300", icon:"🚨"},
+  "Transitional / Acute Care":{color:"#2D3A8C", icon:"🏨"},
+  "System Navigation":   {color:"#1A2B6B", icon:"🔬"},
+};
+
+const BASE_ORGS = [
+  // ── SCS / OPS ──────────────────────────────────────────────
+  {id:"insite", name:"Insite – Supervised Consumption Site", cat:"SCS / OPS",
+   inst:"PHS Community Services Society / VCH", addr:"139 E Hastings St", phone:"604-687-7483",
+   web:"phs.ca/program/insite/", hours:"Daily 9am–2am",
+   oat:"Yes", scs:"Yes – 17-booth injection SCS", walkin:"Yes – drop-in",
+   flags:{oat:true,scs:true,walkin:true},
+   lat:49.2808, lng:-123.0985,
+   desc:"North America's first legal SCS (2003). Zero on-site OD deaths since opening. Supervised injection, drug checking (spectrometer + strips), wound/STI care, OAT access, Chillout Lounge (peer post-use), referrals to treatment. Connected to Onsite detox above."},
+
+  {id:"molson", name:"Molson OPS + iOAT/TiOAT Site (MOPS)", cat:"SCS / OPS",
+   inst:"PHS Community Services Society / VCH", addr:"166 E Hastings St (alley entrance)", phone:"604-839-0179",
+   web:"phs.ca/program/molson-overdose-prevention-site-mops/", hours:"Daily 7am–10:30pm (24hrs Tue/Wed/Thu cheque week)",
+   oat:"Yes – iOAT/TiOAT (prescribed hydromorphone)", scs:"Yes – 6-booth OPS", walkin:"Drop-in OPS; IHOT: call",
+   flags:{oat:true,scs:true,walkin:true},
+   lat:49.2810, lng:-123.0989,
+   desc:"6-booth OPS + iOAT/TiOAT (injectable/tablet opioid agonist therapy – prescribed hydromorphone or heroin). Drug checking FTIR Tuesdays; fentanyl strips daily. IHOT episodic care clinic Mon/Thu 10am–4pm. Maple OPS consolidated here."},
+
+  {id:"h2h", name:"Hope to Health (H2H) – Primary Care + SCS", cat:"SCS / OPS",
+   inst:"BC Centre for Excellence in HIV/AIDS (BC-CfE)", addr:"611 Powell St", phone:"604-416-1517",
+   web:"bccfe.ca/hope-health-research-innovation-centre", hours:"Mon–Fri 9:30am–3:30pm",
+   oat:"Yes", scs:"Yes – SCS on-site", walkin:"Yes – drop-in",
+   flags:{oat:true,scs:true,walkin:true},
+   lat:49.2847, lng:-123.0897,
+   desc:"Integrated primary care + SCS. Serves ~2,800 patients (post $25M expansion 2024). HIV care, SUD, SAFER safe supply, OAT, social work, housing support. TasP model. Led by BC-CfE."},
+
+  {id:"vandu-ops", name:"VANDU OPS (peer-run)", cat:"SCS / OPS",
+   inst:"VANDU (peer-run)", addr:"380 E Hastings St", phone:"604-683-6061",
+   web:"vandu.org", hours:"Daily 10am–9:30pm (closed Thu)",
+   oat:"No", scs:"Yes – peer-monitored OPS", walkin:"Yes – drop-in",
+   flags:{scs:true,walkin:true},
+   lat:49.2801, lng:-123.0935,
+   desc:"Peer-monitored OPS at VANDU headquarters. Harm reduction supplies, naloxone, peer support. Board and staff are current/former drug users."},
+
+  {id:"sisterspace", name:"SisterSpace OPS – Atira (Women-Only)", cat:"SCS / OPS",
+   inst:"Atira Women's Resource Society / VCH", addr:"135 Dunlevy Ave", phone:"See Atira",
+   web:"atira.bc.ca", hours:"Daily 6pm–midnight",
+   oat:"No", scs:"Yes – OPS women-only", walkin:"Yes – drop-in",
+   flags:{scs:true,walkin:true,women:true},
+   lat:49.2817, lng:-123.0929,
+   desc:"Women and gender-diverse only OPS. Sister Square 24/7 inhalation tent (Jackson & Powell) is companion site. Atira also operates multiple SRO/supportive housing in DTES."},
+
+  {id:"sistersquare", name:"Sister Square – 24/7 Inhalation Tent (Atira)", cat:"SCS / OPS",
+   inst:"Atira Women's Resource Society / VCH", addr:"Jackson Ave & Powell St (NE corner)", phone:"See Atira",
+   web:"atira.bc.ca", hours:"24/7",
+   oat:"No", scs:"Yes – 24/7 inhalation OPS women-only", walkin:"Yes – drop-in",
+   flags:{scs:true,walkin:true,women:true,"24hr":true},
+   lat:49.2849, lng:-123.0882,
+   desc:"24/7 women-only inhalation tent. Safer smoking supplies, peer support, meals, clothing, connections to health and housing. Companion to SisterSpace OPS (135 Dunlevy)."},
+
+  {id:"ops-dunlevy", name:"Overdose Prevention Society (OPS)", cat:"SCS / OPS",
+   inst:"Overdose Prevention Society / VCH", addr:"225 Dunlevy Ave", phone:"604-629-1497",
+   web:"vch.ca/en/location/overdose-prevention-society-ops", hours:"Check VCH",
+   oat:"No", scs:"Yes – OPS", walkin:"Yes – drop-in",
+   flags:{scs:true,walkin:true},
+   lat:49.2821, lng:-123.0922,
+   desc:"Community-driven grassroots OPS. Brings people in from alley. Safe and welcoming environment. Harm reduction supplies, naloxone, peer support, connections to housing and services."},
+
+  {id:"ops-columbia", name:"390 Columbia OPS", cat:"SCS / OPS",
+   inst:"VCH / community operator", addr:"390 Columbia St", phone:"See VCH",
+   web:"vch.ca", hours:"Mon noon–9pm; Tue–Fri 8am–9pm",
+   oat:"No", scs:"Yes – OPS", walkin:"Yes – drop-in",
+   flags:{scs:true,walkin:true},
+   lat:49.2797, lng:-123.1004,
+   desc:"VCH-listed OPS at 390 Columbia. Supervised consumption, harm reduction supplies, peer support, naloxone. Verify hours with VCH."},
+
+  {id:"ops-pender", name:"Inhalation OPS – 99 W Pender", cat:"SCS / OPS",
+   inst:"VCH / community operator", addr:"99 W Pender St", phone:"See VCH",
+   web:"vch.ca", hours:"Mon noon–9pm; Tue–Fri 8am–9pm",
+   oat:"No", scs:"Yes – inhalation OPS", walkin:"Yes – drop-in",
+   flags:{scs:true,walkin:true},
+   lat:49.2793, lng:-123.1040,
+   desc:"Safer inhalation/smoking OPS. For people who smoke drugs. Harm reduction supplies, naloxone. Verify hours and operator with VCH."},
+
+  {id:"psg-ops", name:"Powell St Getaway OPS (Lookout)", cat:"SCS / OPS",
+   inst:"Lookout Housing & Health / VCH", addr:"450 E Hastings St", phone:"604-255-6685",
+   web:"lookoutsociety.ca", hours:"Daily 9am–8:30pm",
+   oat:"No", scs:"Yes – OPS", walkin:"Yes – drop-in",
+   flags:{scs:true,walkin:true},
+   lat:49.2835, lng:-123.0880,
+   desc:"OPS within Lookout's psychosocial resource centre. Meals/snacks, nursing (wound/foot care), medications admin, peer programs, substance use programming, laundry/showers. Pets on leash welcome."},
+
+  // ── PRIMARY CARE / OAT ────────────────────────────────────
+  {id:"dtes-connections", name:"DTES Connections – Addiction Medicine (VCH)", cat:"Primary Care / OAT",
+   inst:"Vancouver Coastal Health (VCH)", addr:"See VCH website for current address", phone:"See VCH website",
+   web:"vch.ca/en/location/downtown-eastside-connections", hours:"Mon–Sun 8:30am–5:30pm",
+   oat:"Yes – same-day all substances", scs:"No", walkin:"Yes – walk-in + referral",
+   flags:{oat:true,walkin:true},
+   lat:49.2815, lng:-123.0972,
+   desc:"Low-barrier same-day OAT (methadone, Suboxone, bridge Rx). All substances: opioids, benzo, alcohol, stimulants, GHB, cannabis. Accepts OOT, RAAC, hospital, Access Central, WISH referrals. Call ahead – address not fixed."},
+
+  {id:"lilys", name:"Lily's Community Health Centre (VCH) [NEW 2026]", cat:"Primary Care / OAT",
+   inst:"Vancouver Coastal Health (VCH)", addr:"38 W Hastings St (Bob & Michael's Place)", phone:"See VCH",
+   web:"vch.ca", hours:"Opening early 2026 – check VCH",
+   oat:"Yes", scs:"No", walkin:"Walk-in + referral",
+   flags:{oat:true,walkin:true,indigenous:true},
+   lat:49.2810, lng:-123.1079,
+   desc:"NEW 2026. Consolidates Pender + Heatley CHCs into one site. Primary care, MHSU, Intensive Case Management, home health, eye clinic, Elder-in-residence, smudging room. Musqueam/Squamish/Tsleil-Waututh Nation-informed design."},
+
+  {id:"pender-chc", name:"Pender Community Health Centre (VCH)", cat:"Primary Care / OAT",
+   inst:"Vancouver Coastal Health (VCH)", addr:"59 W Pender St", phone:"604-669-9181",
+   web:"vch.ca", hours:"Mon–Wed/Fri 9am–6pm; Thu 9am–8pm",
+   oat:"Yes", scs:"No", walkin:"Drop-in (some) / referral",
+   flags:{oat:true,walkin:true,women:true},
+   lat:49.2799, lng:-123.1067,
+   desc:"Primary care, MHSU, harm reduction, palliative care, rehab, physiotherapy. Thu evenings 4:30–8pm: women/gender-diverse only. Being consolidated into Lily's CHC (38 W Hastings) early 2026 – verify status."},
+
+  {id:"heatley-chc", name:"Heatley Community Health Centre (VCH)", cat:"Primary Care / OAT",
+   inst:"Vancouver Coastal Health (VCH)", addr:"330 Heatley Ave", phone:"604-785-9374",
+   web:"vch.ca", hours:"Mon–Fri approx 9am–9pm",
+   oat:"Yes", scs:"No", walkin:"Drop-in + referral",
+   flags:{oat:true,walkin:true,indigenous:true},
+   lat:49.2836, lng:-123.0914,
+   desc:"Primary care, MHSU, Indigenous health (Elder-in-residence, sacred space with smudging, traditional medicine). OAT, wound care, nutrition, palliative care. Being consolidated into Lily's CHC early 2026 – verify status before referring."},
+
+  {id:"dchc", name:"Downtown Community Health Centre (DCHC)", cat:"Primary Care / OAT",
+   inst:"Vancouver Coastal Health (VCH)", addr:"569 Powell St", phone:"604-255-3151",
+   web:"vch.ca", hours:"Mon–Sun 8:30am–6pm",
+   oat:"Yes – methadone/Suboxone starts", scs:"No", walkin:"Drop-in (OAT) / referral",
+   flags:{oat:true,walkin:true},
+   lat:49.2843, lng:-123.0903,
+   desc:"Major VCH CHC. Primary care, OAT, MHSU, needle exchange, PRISM (LGBTQ+), acupuncture, public health. Weekend hours. Must reside in DTES and have no other GP."},
+
+  {id:"columbia-clinic", name:"Columbia Street Community Clinic (PHS)", cat:"Primary Care / OAT",
+   inst:"PHS Community Services Society", addr:"350 Columbia St", phone:"604-879-7906",
+   web:"phs.ca/medical/columbia-street-community-clinic/", hours:"Tue–Fri 9am–noon, 1:30–4:30pm",
+   oat:"Yes – full range (methadone, Kadian, Suboxone, fentanyl patches/powder)", scs:"No", walkin:"Drop-in + appointment",
+   flags:{oat:true,walkin:true},
+   lat:49.2800, lng:-123.1002,
+   desc:"Formerly Portland Clinic. 13 GPs/addiction specialists. Up to 50 patients/day. Hep C clinic, women's health, internal medicine, neurology. OAT same-day prescriptions."},
+
+  {id:"vahs", name:"Vancouver Aboriginal Health Society (VAHS) Clinic", cat:"Primary Care / OAT",
+   inst:"Vancouver Aboriginal Health Society", addr:"449 E Hastings St", phone:"604-255-9766",
+   web:"vahs.life", hours:"Mon/Tue/Thu/Fri 9am–4:30pm; Wed 9am–8pm; Sat 9am–3pm",
+   oat:"Yes", scs:"No", walkin:"Walk-in + appointment",
+   flags:{oat:true,walkin:true,indigenous:true},
+   lat:49.2794, lng:-123.0928,
+   desc:"Urban Indigenous primary care hub (all DTES welcome). OAT, HIV care, mental health, dietitian, Elder-led traditional healing, dental. Youth clinic Wed evenings. Formerly VNHS (Vancouver Native Health Society)."},
+
+  // ── TRANSITIONAL / ACUTE ──────────────────────────────────
+  {id:"ctct", name:"CTCT – Community Transitional Care Team", cat:"Transitional / Acute Care",
+   inst:"PHS / VCH / Providence Health Care (St. Paul's HAH)", addr:"Pennsylvania Hotel, 2nd Floor, 401 E Hastings St", phone:"Via St. Paul's / VGH referral only",
+   web:"phs.ca/program/community-transitional-care-team/", hours:"24/7 residential",
+   oat:"Yes – OAT continuation + initiation", scs:"No (harm reduction; active use permitted)", walkin:"No – clinician referral only",
+   flags:{oat:true,"24hr":true},
+   lat:49.2800, lng:-123.0956,
+   desc:"Residential acute care for PWUD discharged from St. Paul's or VGH needing IV antibiotics. Private room + kitchen + bathroom in Pennsylvania Hotel. 24/7 nursing and physician coverage, OAT, psychosocial support, 3 meals/day, staff accompaniment to all appointments. Housing secured before every discharge. Nov 2025: formal partnership with St. Paul's Hospital at Home (HAH). Also co-located: Pennsylvania Supported Suites (PSS) – 10 rooms for long-term complex care.",
+   note:"Referral by PHC or VCH clinician only. Active substance use permitted (harm reduction model)."},
+
+  // ── HARM REDUCTION / SUPPLY ───────────────────────────────
+  {id:"needle-depot", name:"PHS Needle Depot (24/7)", cat:"Harm Reduction",
+   inst:"PHS Community Services Society", addr:"Alleyway beside Maple Hotel, ~115 E Hastings", phone:"604-687-7483",
+   web:"phs.ca/program/needle-depot/", hours:"24/7",
+   oat:"No", scs:"No", walkin:"Yes – 24/7 no referral",
+   flags:{walkin:true,"24hr":true},
+   lat:49.2807, lng:-123.0982,
+   desc:"24/7 harm reduction supplies: needles, safer smoking, safer sex, naloxone. ~20,000 visits/month, 1M+ syringes/year. Syringe recovery, alley safety patrols, referrals to health/housing."},
+
+  {id:"drug-check", name:"Get Your Drugs Tested – Drug Checking", cat:"Harm Reduction",
+   inst:"VCH / community operated", addr:"880 E Hastings St", phone:"See VCH",
+   web:"towardtheheart.com", hours:"Daily noon–8pm",
+   oat:"No", scs:"No", walkin:"Yes – drop-in",
+   flags:{walkin:true},
+   lat:49.2793, lng:-123.0851,
+   desc:"Dedicated drug checking site. FTIR spectrometer, immunoassay strips, substance ID. Drug alert info. Also available: Insite (FTIR daily), Molson OPS (FTIR Tuesdays). VCH drug alerts: text JOIN to 253787."},
+
+  // ── DETOX / WDM ──────────────────────────────────────────
+  {id:"onsite", name:"Onsite Detox (above Insite)", cat:"Detox / WDM",
+   inst:"PHS Community Services Society / VCH", addr:"137 E Hastings St, 2nd Floor", phone:"604-687-7483 ext.3",
+   web:"phs.ca", hours:"Intake 10am–4am",
+   oat:"Yes", scs:"No", walkin:"Self-referral / drop-in",
+   flags:{oat:true,walkin:true},
+   lat:49.28085, lng:-123.0984,
+   desc:"12-bed opioid detox. 12-hr nursing support. Peer Chillout Lounge. EXCLUDES: alcohol/benzo WD, pregnant, seizure history. Directly above Insite."},
+
+  {id:"van-detox", name:"Vancouver Detox – VCH Withdrawal Management", cat:"Detox / WDM",
+   inst:"Vancouver Coastal Health (VCH)", addr:"377 E 2nd Ave (south of DTES)", phone:"Access Central: 1-866-658-1221",
+   web:"vch.ca", hours:"24/7 via Access Central",
+   oat:"Yes", scs:"No", walkin:"Via Access Central phone",
+   flags:{oat:true,"24hr":true},
+   lat:49.2672, lng:-123.0975,
+   desc:"24-bed medically supervised detox. Physician daily, 24hr nursing. CORE outpatient program. Road to Recovery hub. Urgent cases: <1 day wait. Primary VCH WDM for DTES referrals."},
+
+  // ── PERINATAL / YOUTH ─────────────────────────────────────
+  {id:"sheway", name:"Sheway Pregnancy Outreach Program", cat:"Women / Sex Workers",
+   inst:"VCH / VAHS", addr:"533 E Hastings St (VAHS building)", phone:"604-216-1699",
+   web:"vch.ca/en/sheway", hours:"Drop-in Mon–Fri 9:15am–4pm",
+   oat:"Yes", scs:"No", walkin:"Yes – drop-in",
+   flags:{oat:true,walkin:true,women:true},
+   lat:49.2795, lng:-123.0932,
+   desc:"Pregnant/parenting women with substance use. Primary care, prenatal/postnatal care, OAT, SUD counselling, psychiatry, parenting support, nutrition, food bags, housing navigation, legal advocacy. 24/7 OB on-call via BC Women's. Woman-centred harm reduction model."},
+
+  {id:"dtes-youth", name:"DTES Youth Outreach Centre + Team (VCH)", cat:"Community / Drop-in",
+   inst:"Vancouver Coastal Health (VCH)", addr:"786 Powell St", phone:"604-675-3550",
+   web:"vch.ca", hours:"Mon–Fri 9am–7pm",
+   oat:"Via referral", scs:"No", walkin:"Walk-in to centre / street outreach",
+   flags:{walkin:true},
+   lat:49.2843, lng:-123.0890,
+   desc:"Youth ages 15–24. Multi-disciplinary outreach team. Street outreach in DTES, case management, primary care access, cultural/spiritual support, harm reduction supplies, MH/SUD bridging. First DTES youth-specific centre (opened 2023)."},
+
+  // ── PEER / INDIGENOUS ─────────────────────────────────────
+  {id:"vandu", name:"VANDU – Vancouver Area Network of Drug Users", cat:"Peer / Indigenous",
+   inst:"Independent (peer-run)", addr:"380 E Hastings St", phone:"604-683-6061",
+   web:"vandu.org", hours:"Daily (OPS 10am–9:30pm, closed Thu)",
+   oat:"No", scs:"Community OPS on-site", walkin:"Drop-in",
+   flags:{scs:true,walkin:true},
+   lat:49.2800, lng:-123.0936,
+   desc:"Peer-run drug-user organization. 3,000+ members. Drug policy advocacy, OPS, harm reduction, naloxone, community meals, safe supply advocacy. Board must be current/former drug users."},
+
+  {id:"wahrs", name:"WAHRS – Western Aboriginal Harm Reduction Society", cat:"Peer / Indigenous",
+   inst:"VANDU umbrella (independent)", addr:"c/o VANDU, 380 E Hastings St", phone:"604-683-6061",
+   web:"vandu.org", hours:"Weekly meetings",
+   oat:"No", scs:"No", walkin:"Engagement-based",
+   flags:{indigenous:true},
+   lat:49.2801, lng:-123.0934,
+   desc:"300+ Indigenous members. Culturally appropriate harm reduction, healing circles, peer research (BC-CfE partner), policy advocacy for Indigenous PWUD."},
+
+  {id:"afd", name:"Aboriginal Front Door Society", cat:"Peer / Indigenous",
+   inst:"Independent non-profit", addr:"384 Main St", phone:"604-254-0288",
+   web:"abfrontdoor.org", hours:"Check website",
+   oat:"No", scs:"No", walkin:"Drop-in",
+   flags:{walkin:true,indigenous:true},
+   lat:49.2805, lng:-123.1000,
+   desc:"Culturally safe drop-in for Indigenous peoples. Crisis support, trauma counselling brokering, court accompaniments, cultural programming, peer support, Elder connections."},
+
+  {id:"ino", name:"VCH Indigenous Outreach (INO)", cat:"Peer / Indigenous",
+   inst:"Vancouver Coastal Health (VCH)", addr:"Field-based outreach (DTES)", phone:"VCH intake",
+   web:"vch.ca", hours:"Mon–Fri",
+   oat:"Via referral", scs:"No", walkin:"Outreach-initiated",
+   flags:{indigenous:true},
+   lat:49.2803, lng:-123.0930,
+   desc:"Outreach to unhoused/precariously housed Indigenous people with complex MH/SUD needs. Cultural supports, connections to health services, housing navigation."},
+
+  // ── WOMEN / SEX WORKERS ───────────────────────────────────
+  {id:"dewc", name:"Downtown Eastside Women's Centre (DEWC)", cat:"Women / Sex Workers",
+   inst:"Independent non-profit", addr:"302 Columbia St", phone:"604-681-8480",
+   web:"dewc.ca", hours:"Mon/Tue/Thu–Sun 9am–5pm; Wed 11am–5pm",
+   oat:"Referrals only", scs:"No", walkin:"Drop-in",
+   flags:{walkin:true,women:true},
+   lat:49.2803, lng:-123.1005,
+   desc:"Founded 1978. Women-only (cis, trans, Two-Spirit). 500+ women/day. Meals, harm reduction, showers, clothing, mental health advocacy, victim services, housing outreach, Indigenous Women's Project, Chinese Seniors Outreach, Sexual Assault Response."},
+
+  {id:"wish", name:"WISH Drop-In Centre Society + MAP Van", cat:"Women / Sex Workers",
+   inst:"Independent non-profit", addr:"33 W Hastings St (Drop-in)", phone:"604-669-9474",
+   web:"wish-vancouver.net", hours:"Drop-in Tue–Sat 6pm–6am; MAP Van daily/nightly",
+   oat:"Referrals only", scs:"No", walkin:"Drop-in / MAP Van: wave or call",
+   flags:{walkin:true,women:true},
+   lat:49.2810, lng:-123.1082,
+   desc:"Canada's largest sex worker org. 300–350 individuals/night. Overnight drop-in, hot meals, showers, nursing, MAP Van (citywide mobile outreach daily/nightly), InReach (shelter visits), naloxone, SUD/health referrals."},
+
+  // ── SHELTER / RECOVERY ────────────────────────────────────
+  {id:"ugm-main", name:"Union Gospel Mission – Main Campus", cat:"Shelter / Recovery",
+   inst:"Union Gospel Mission (faith-based)", addr:"601 E Hastings St", phone:"604-253-3323",
+   web:"ugm.ca", hours:"Meals 1–5:45pm daily; shelter 24/7",
+   oat:"No – abstinence-based", scs:"No", walkin:"Walk-in for meals/shelter",
+   flags:{walkin:true,"24hr":true},
+   lat:49.2796, lng:-123.0924,
+   desc:"80+ yr history. Emergency shelter (92 beds), meals, pre-recovery stabilization, case management, employment, outreach. ⚠️ Does NOT accept methadone/Suboxone in recovery program (Sublocade exception only). Faith-based.",
+   note:"No OAT in recovery program. Sublocade (injectable buprenorphine) only exception."},
+
+  {id:"ugm-women", name:"UGM Women & Families Centre", cat:"Shelter / Recovery",
+   inst:"Union Gospel Mission (faith-based)", addr:"616 E Cordova St", phone:"604-253-4044",
+   web:"ugm.ca", hours:"Meals 2:30–5:45pm daily; shelter 24/7",
+   oat:"No – abstinence-based", scs:"No", walkin:"Walk-in for meals",
+   flags:{walkin:true,women:true,"24hr":true},
+   lat:49.2836, lng:-123.0908,
+   desc:"Women and families. Sanctuary pre-recovery/stabilization (must have confirmed recovery program plan). Faith-based. ⚠️ No methadone/Suboxone in program.",
+   note:"No OAT in recovery program."},
+
+  {id:"new-fountain", name:"New Fountain Shelter (PHS)", cat:"Shelter / Recovery",
+   inst:"PHS Community Services Society", addr:"356 E Hastings St", phone:"604-669-3306",
+   web:"phs.ca", hours:"Daily 7pm–9am",
+   oat:"Referrals", scs:"No", walkin:"Walk-in / low-barrier",
+   flags:{walkin:true},
+   lat:49.2805, lng:-123.0960,
+   desc:"Low-barrier PHS-operated shelter. Open daily 7pm–9am. Meals, harm reduction referrals, housing support. Adjacent to Hazelwood Hotel (also PHS)."},
+
+  {id:"osborn", name:"The Osborn – Shelter (PHS)", cat:"Shelter / Recovery",
+   inst:"PHS Community Services Society", addr:"27 W Hastings St", phone:"604-683-0073",
+   web:"phs.ca/locations/the-osborn/", hours:"24/7",
+   oat:"Referrals", scs:"No", walkin:"Low-barrier",
+   flags:{walkin:true,"24hr":true},
+   lat:49.2806, lng:-123.1075,
+   desc:"Innovative 24/7 low-barrier temporary shelter. Range of supports to enable transition from homelessness to housing. 40 beds – co-ed and women's-only sections. Meals, showers, secure storage."},
+
+  // ── COMMUNITY / DROP-IN ───────────────────────────────────
+  {id:"carnegie", name:"Carnegie Community Centre", cat:"Community / Drop-in",
+   inst:"City of Vancouver", addr:"401 Main St", phone:"604-665-2220",
+   web:"vancouver.ca/carnegie", hours:"Daily 9am–11pm",
+   oat:"No", scs:"No", walkin:"Drop-in ($1 annual membership)",
+   flags:{walkin:true},
+   lat:49.2799, lng:-123.0997,
+   desc:"'Living room of the DTES.' Low-cost cafeteria (meals 365d/yr), drop-in, needle exchange, naloxone, harm reduction, social/educational programs, mail pickup, internet, outreach team (homeless/at-risk)."},
+
+  {id:"saller", name:"Evelyne Saller Centre (City of Vancouver)", cat:"Community / Drop-in",
+   inst:"City of Vancouver", addr:"320 Alexander St", phone:"604-665-3075",
+   web:"vancouver.ca/evelyne-saller-centre", hours:"Daily (see City website)",
+   oat:"No", scs:"No", walkin:"Drop-in",
+   flags:{walkin:true},
+   lat:49.2843, lng:-123.0970,
+   desc:"Low-cost $2 meals, free showers, laundry, delousing, health services, VCH harm reduction supplies, referrals. VCH referral partner for DTES Connections. Also called 'The 44'."},
+
+  {id:"psg", name:"Powell Street Getaway Resource Centre (Lookout)", cat:"Community / Drop-in",
+   inst:"Lookout Housing & Health / VCH", addr:"450 E Hastings St", phone:"604-255-6685",
+   web:"lookoutsociety.ca", hours:"Daily 9am–8:30pm",
+   oat:"No", scs:"OPS on-site", walkin:"Drop-in",
+   flags:{scs:true,walkin:true},
+   lat:49.2835, lng:-123.0881,
+   desc:"Peer-driven resource centre. OPS, meals/snacks (5x daily), nursing (wound/foot care, diabetes), medications admin, peer programming, laundry/showers, MH connections. Pets on leash welcome."},
+
+  // ── SYSTEM NAVIGATION ─────────────────────────────────────
+  {id:"access-central", name:"Access Central – Road to Recovery (Phone)", cat:"System Navigation",
+   inst:"VCH / Providence Health Care / BC-CfE", addr:"Phone-based (VCH region)", phone:"1-866-658-1221",
+   web:"vch.ca", hours:"Mon–Sun 9am–9pm (check VCH)",
+   oat:"Via referral", scs:"No", walkin:"Phone-in self-referral",
+   flags:{},
+   lat:49.2820, lng:-123.1010,
+   desc:"Primary detox/WDM access line. Clinical assessment, same-day detox bed referral. Road to Recovery seamless care coordination (detox → treatment → recovery). 1,500+ referrals Oct 2023–Jun 2024. Urgent cases: <1 day wait."},
+
+  {id:"raac", name:"Providence RAAC – Rapid Access Addiction Clinic", cat:"System Navigation",
+   inst:"Providence Health Care / St. Paul's Hospital", addr:"St. Paul's Hospital, 1081 Burrard St", phone:"604-806-8833",
+   web:"providencehealthcare.org", hours:"Mon–Fri (check PHC)",
+   oat:"Yes – rapid initiation", scs:"No", walkin:"Walk-in + referral",
+   flags:{oat:true,walkin:true},
+   lat:49.2812, lng:-123.1289,
+   desc:"Rapid Access Addiction Clinic at St. Paul's. Fast-track OAT initiation and addiction medicine consultation. Key referral destination for DTES clinicians. Referenced by DTES Connections as partner referral source."},
+
+  {id:"bccfe", name:"BC Centre for Excellence in HIV/AIDS (BC-CfE)", cat:"System Navigation",
+   inst:"Providence Health Care / UBC", addr:"608-1081 Burrard St (admin); H2H at 611 Powell St", phone:"604-806-8477 (admin) / 604-416-1517 (H2H)",
+   web:"bccfe.ca", hours:"Admin Mon–Fri; H2H: Mon–Fri 9:30am–3:30pm",
+   oat:"Yes (via H2H)", scs:"Yes (via H2H SCS)", walkin:"H2H: drop-in",
+   flags:{oat:true,scs:true,walkin:true},
+   lat:49.2812, lng:-123.1290,
+   desc:"Research and clinical hub. HIV treatment, SAFER safe supply, iOAT research, H2H primary care + SCS. TasP (Treatment as Prevention) model. BCCSU clinical guidelines. Frontline services at H2H (611 Powell)."},
+
+  // ── SUPPORTIVE HOUSING – PHS ──────────────────────────────
+  {id:"phs-penn", name:"Pennsylvania Hotel + Supportive Suites (PHS)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"412 Carrall St", phone:"604-683-0073",
+   web:"phs.ca/locations/pennsylvania-hotel-and-supportive-suites/", hours:"24/7 staffed",
+   oat:"No (CTCT on-site)", scs:"No", walkin:"BC Housing referral",
+   flags:{"24hr":true},
+   lat:49.2802, lng:-123.1043,
+   desc:"Heritage building – founding project of PHS (1991). 44 units supportive housing. CTCT (acute care/IV antibiotics) and PSS (long-term complex care, 10 rooms with 24/7 nursing) on 2nd floor. Co-managed with VCH."},
+
+  {id:"phs-molson-hotel", name:"Molson Hotel (PHS Housing)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"166 E Hastings St", phone:"604-683-0073",
+   web:"phs.ca/locations/molson-hotel/", hours:"24/7 staffed",
+   oat:"No", scs:"Molson OPS adjacent", walkin:"BC Housing referral",
+   flags:{},
+   lat:49.2811, lng:-123.0987,
+   desc:"Built 1911 (former Molson's Bank branch). SRO supportive housing. Molson OPS operates in adjacent alley. PHS mental health workers on-site."},
+
+  {id:"phs-maple", name:"Maple Hotel (PHS Housing)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"177 E Hastings St", phone:"604-683-0073",
+   web:"phs.ca/locations/maple-hotel/", hours:"24/7 staffed",
+   oat:"No", scs:"Needle Depot adjacent", walkin:"BC Housing referral",
+   flags:{},
+   lat:49.2808, lng:-123.0980,
+   desc:"Supported social housing for diverse DTES residents. PHS Needle Depot operates in adjacent alley. Mental health workers on-site."},
+
+  {id:"phs-hazelwood", name:"Hazelwood Hotel (PHS Housing)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"344 E Hastings St", phone:"604-683-0073",
+   web:"phs.ca/locations/hazelwood-hotel/", hours:"24/7 staffed",
+   oat:"No", scs:"No", walkin:"BC Housing referral",
+   flags:{},
+   lat:49.2803, lng:-123.0946,
+   desc:"107 units low-barrier supportive housing. 24/7 PHS mental health workers. Food program (2 meals/day). Adjacent to New Fountain Shelter."},
+
+  {id:"phs-portland", name:"Portland Hotel (PHS Housing)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"20 W Hastings St", phone:"604-683-0073",
+   web:"phs.ca/locations/portland-hotel/", hours:"24/7 staffed",
+   oat:"No", scs:"No", walkin:"BC Housing referral",
+   flags:{},
+   lat:49.2807, lng:-123.1072,
+   desc:"Named after the founding hotel. Supportive housing for formerly hard-to-house individuals. PHS wraparound mental health and social supports on-site."},
+
+  {id:"phs-beacon", name:"Beacon Hotel (PHS Housing)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"7 W Hastings St", phone:"604-683-0073",
+   web:"phs.ca/locations/beacon-hotel/", hours:"24/7 staffed",
+   oat:"No", scs:"No", walkin:"BC Housing referral",
+   flags:{},
+   lat:49.2806, lng:-123.1060,
+   desc:"SRO building for individuals living with concurrent disorders. Clinical team, nurses, and social workers on-site. 40 units."},
+
+  {id:"phs-lark", name:"The Lark (PHS Housing)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"103 E Hastings St", phone:"604-683-0073",
+   web:"phs.ca/locations/the-lark/", hours:"24/7 staffed",
+   oat:"No", scs:"No", walkin:"BC Housing referral",
+   flags:{},
+   lat:49.2808, lng:-123.0986,
+   desc:"Double rooms for couples; hostel-style rooms for others. Two meals/day, laundry facilities. Close to Insite and Molson OPS."},
+
+  {id:"phs-irving", name:"Irving Hotel / Hotel Irving (PHS Housing)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"101 E Hastings St", phone:"604-683-0073",
+   web:"phs.ca/locations/irving-hotel/", hours:"24/7 staffed",
+   oat:"No", scs:"No", walkin:"BC Housing referral",
+   flags:{},
+   lat:49.28075, lng:-123.0987,
+   desc:"Formerly Sunrise Hotel. 100 units low-barrier permanent housing. Residents with concurrent physical and mental health issues and substance dependencies. Nurse and social worker on-site."},
+
+  {id:"phs-regal", name:"Regal Place Hotel (PHS Housing)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"144 W Hastings St", phone:"604-683-0073",
+   web:"phs.ca/locations/regal-place-hotel/", hours:"24/7 staffed",
+   oat:"No", scs:"No", walkin:"BC Housing referral",
+   flags:{},
+   lat:49.2805, lng:-123.1100,
+   desc:"PHS mental health workers support residents with day-to-day needs and personal health and inclusion goals. SRO-style supportive housing."},
+
+  {id:"phs-rainier", name:"Rainier Hotel (PHS Housing – Women)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"309 Carrall St", phone:"604-683-0073",
+   web:"phs.ca/locations/rainier-hotel/", hours:"24/7 staffed",
+   oat:"No", scs:"No", walkin:"BC Housing referral",
+   flags:{women:true},
+   lat:49.2803, lng:-123.1041,
+   desc:"Women-focused supportive housing. Mental health services, primary health care, medication management, detox, harm reduction and recovery-focused programming and education for women residents."},
+
+  {id:"phs-woodwards", name:"Woodwards Community Housing (PHS)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"131 W Hastings St", phone:"604-683-0073",
+   web:"phs.ca/locations/woodwards-community-housing/", hours:"24/7 staffed",
+   oat:"No", scs:"No", walkin:"BC Housing referral",
+   flags:{},
+   lat:49.2808, lng:-123.1095,
+   desc:"125 units low-income housing integrated with historic Woodwards development (market condos, retail, subsidized family units). Groundbreaking model of mixed-income inner-city housing."},
+
+  {id:"phs-tellier", name:"Tellier Tower (PHS Housing)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"16 E Hastings St", phone:"604-683-0073",
+   web:"phs.ca/locations/tellier-tower/", hours:"24/7 staffed",
+   oat:"No", scs:"No", walkin:"BC Housing referral",
+   flags:{},
+   lat:49.2807, lng:-123.1067,
+   desc:"Rent-geared-to-income building. Services to support residents with mental health, addiction and chronic disease. PHS wraparound support on-site."},
+
+  {id:"phs-smith-yuen", name:"Smith-Yuen Apartments (PHS Housing)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"475 E Hastings St", phone:"604-683-0073",
+   web:"phs.ca/locations/smith-yuen-apartments/", hours:"24/7 staffed",
+   oat:"No", scs:"No", walkin:"BC Housing referral",
+   flags:{},
+   lat:49.2793, lng:-123.0921,
+   desc:"Purpose-built social housing for senior citizens living with mental health issues. PHS support services on-site."},
+
+  {id:"phs-hugh-bird", name:"Hugh Bird Residence (PHS Housing)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"420 E Cordova St", phone:"604-683-0073",
+   web:"phs.ca/locations/hugh-bird-residence/", hours:"24/7 staffed",
+   oat:"No", scs:"No", walkin:"BC Housing referral",
+   flags:{},
+   lat:49.2832, lng:-123.0921,
+   desc:"Housing for residents who need fewer supports than higher-acuity PHS buildings. PHS managed."},
+
+  {id:"phs-stanley", name:"The Stanley (PHS Housing)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"53 W Cordova St", phone:"604-683-0073",
+   web:"phs.ca/locations/the-stanley/", hours:"24/7 staffed",
+   oat:"No", scs:"No", walkin:"BC Housing referral",
+   flags:{},
+   lat:49.2838, lng:-123.1084,
+   desc:"Old DTES hotel reconfigured and rebuilt to serve the entire community. PHS wraparound supports."},
+
+  {id:"phs-chartrand", name:"Chartrand Place (PHS Modular Housing)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"1131 Franklin St", phone:"604-683-0073",
+   web:"phs.ca/locations/chartrand-place/", hours:"24/7 staffed",
+   oat:"No", scs:"No", walkin:"BC Housing referral",
+   flags:{},
+   lat:49.2857, lng:-123.0853,
+   desc:"Modular housing building. Mental health support 24/7 with home support workers weekdays. BC government modular housing program (600-homes commitment)."},
+
+  {id:"phs-alexander", name:"Alexander Street Community (PHS Housing)", cat:"Supportive Housing",
+   inst:"PHS Community Services Society", addr:"111 Princess Ave", phone:"604-683-0073",
+   web:"phs.ca/locations/alexander-street/", hours:"24/7 staffed",
+   oat:"No", scs:"No", walkin:"BC Housing referral",
+   flags:{},
+   lat:49.2848, lng:-123.0978,
+   desc:"Low-barrier permanent housing plus clinically supported transitional housing. PHS wraparound supports. Mixed model serving range of acuity."},
+
+  // ── LOOKOUT HOUSING ───────────────────────────────────────
+  {id:"lookout-shelter", name:"Lookout Downtown Shelter", cat:"Shelter / Recovery",
+   inst:"Lookout Housing & Health Society", addr:"346 Alexander St", phone:"604-696-0011",
+   web:"lookoutsociety.ca", hours:"24/7",
+   oat:"Referrals", scs:"No", walkin:"Low-barrier",
+   flags:{walkin:true,"24hr":true},
+   lat:49.2844, lng:-123.0944,
+   desc:"24/7 low-barrier emergency shelter. 46 beds for men. Meals, medication management, wound care, home care referral, oxygen tank storage. Case planning and addiction/MH referrals. Pets welcome."},
+
+  {id:"al-mitchell", name:"Al Mitchell Place (Lookout)", cat:"Supportive Housing",
+   inst:"Lookout Housing & Health Society", addr:"70 E Cordova St", phone:"604-696-0011",
+   web:"lookoutsociety.ca", hours:"24/7 staffed",
+   oat:"No", scs:"No", walkin:"BC Housing referral",
+   flags:{},
+   lat:49.2835, lng:-123.1050,
+   desc:"Lookout supportive housing in DTES. Outreach workers based here for downtown Vancouver outreach. Tenant support, case planning, housing navigation."},
+
+  // ── EMERGENCY SERVICES ────────────────────────────────────
+  {id:"fire-hall-2", name:"Fire Hall #2 – Downtown Eastside (VFRS)", cat:"Emergency Services",
+   inst:"Vancouver Fire & Rescue Services", addr:"199 Main St", phone:"604-665-6002 (non-emergency) / 911",
+   web:"vancouver.ca/fire-rescue", hours:"24/7",
+   oat:"N/A", scs:"N/A", walkin:"N/A",
+   flags:{"24hr":true},
+   lat:49.2793, lng:-123.1003,
+   desc:"BC's busiest fire station by call volume. Responds to fires, overdoses, and medical emergencies throughout DTES. Firefighters regularly respond to overdoses alongside BCEHS paramedics. Overdose calls constitute a significant portion of total calls. Engine 2 and Rescue 2 stationed here."},
+
+  {id:"vpd-dtes", name:"VPD – DTES Beat Operations (312 Main)", cat:"Emergency Services",
+   inst:"Vancouver Police Department", addr:"312 Main St", phone:"604-717-3321 (non-emergency) / 911",
+   web:"vpd.ca", hours:"24/7",
+   oat:"N/A", scs:"N/A", walkin:"N/A",
+   flags:{"24hr":true},
+   lat:49.2793, lng:-123.1000,
+   desc:"VPD DTES operations and Beat Enforcement Team (BET) base. BET focuses specifically on DTES, Chinatown, and Gastown. Also location of Vancouver Police Foundation Transitional Care Centre (VPF TCC) at St. Paul's – for patients discharged from hospital needing transitional care space."},
+
+  {id:"vpd-hq", name:"VPD Headquarters", cat:"Emergency Services",
+   inst:"Vancouver Police Department", addr:"2120 Cambie St", phone:"604-717-3321 (non-emergency) / 911",
+   web:"vpd.ca", hours:"24/7 (public counter Mon–Sat 8am–6pm)",
+   oat:"N/A", scs:"N/A", walkin:"N/A",
+   flags:{"24hr":true},
+   lat:49.2663, lng:-123.1143,
+   desc:"VPD main headquarters. Administrative offices, specialized units. Non-emergency line: 604-717-3321. Police record checks by appointment here. For DTES-specific matters, the 312 Main beat station is the primary operational base."},
+
+  {id:"bcehs-dispatch", name:"BCEHS Ambulance / Paramedics (Dispatch)", cat:"Emergency Services",
+   inst:"BC Emergency Health Services (BCEHS / PHSA)", addr:"Lower Mainland Dispatch – field-based", phone:"911 (emergency) / 811 (non-urgent health)",
+   web:"bcehs.ca", hours:"24/7",
+   oat:"N/A", scs:"N/A", walkin:"N/A",
+   flags:{"24hr":true},
+   lat:49.2820, lng:-123.0998,
+   desc:"BC Ambulance Service (BCAS). Primary prehospital emergency care. Advanced Care Paramedics (ACPs) deployed in Vancouver. Responds to overdoses, medical emergencies. BCEHS does not publish individual Vancouver station addresses publicly – all dispatched via 911. Lower Mainland dispatch centre handles all Metro Vancouver calls."},
+
+  {id:"sph", name:"St. Paul's Hospital – Emergency Department", cat:"Emergency Services",
+   inst:"Providence Health Care", addr:"1081 Burrard St", phone:"604-682-2344 / 911",
+   web:"providencehealthcare.org", hours:"24/7",
+   oat:"N/A", scs:"N/A", walkin:"Emergency walk-in",
+   flags:{"24hr":true,walkin:true},
+   lat:49.2811, lng:-123.1290,
+   desc:"Nearest major ED to DTES core. Providence Health Care. St. Paul's Hospital at Home (HAH) program based here – partnership with CTCT. RAAC (Rapid Access Addiction Clinic) located here. Key receiving hospital for DTES patients."},
+
+  {id:"vgh", name:"Vancouver General Hospital – Emergency", cat:"Emergency Services",
+   inst:"Vancouver Coastal Health / PHC", addr:"899 W 12th Ave", phone:"604-875-4111 / 911",
+   web:"vch.ca/vgh", hours:"24/7",
+   oat:"N/A", scs:"N/A", walkin:"Emergency walk-in",
+   flags:{"24hr":true,walkin:true},
+   lat:49.2627, lng:-123.1252,
+   desc:"Level 1 trauma centre. Major receiving hospital for critically ill DTES patients. Further from DTES core than St. Paul's but full trauma capabilities. VCH operated."},
+
+  {id:"lions-gate", name:"Lions Gate Hospital – Emergency (North Shore)", cat:"Emergency Services",
+   inst:"Vancouver Coastal Health", addr:"231 E 15th St, North Vancouver", phone:"604-988-3131 / 911",
+   web:"vch.ca/lgh", hours:"24/7",
+   oat:"N/A", scs:"N/A", walkin:"Emergency walk-in",
+   flags:{"24hr":true,walkin:true},
+   lat:49.3218, lng:-123.0716,
+   desc:"North Vancouver ED. Occasionally relevant for DTES patients transferred or presenting via North Shore. VCH operated."},
+];
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let orgs = [];
+let activeFilter = "all";
+let activeFlags = new Set();
+let searchQuery = "";
+let selectedId = null;
+let editingId = null;
+let panelOpen = false;
+let map, markers = {}, markerLayers = {};
+
+// ═══════════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════════
+function loadOrgs() {
+  try {
+    const saved = localStorage.getItem("dtes_orgs_v2");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      orgs = parsed;
+    } else {
+      orgs = JSON.parse(JSON.stringify(BASE_ORGS));
+    }
+  } catch(e) { orgs = JSON.parse(JSON.stringify(BASE_ORGS)); }
+}
+
+function saveOrgs() {
+  try { localStorage.setItem("dtes_orgs_v2", JSON.stringify(orgs)); } catch(e) {}
+}
+
+function resetToDefaults() {
+  if (confirm("Reset all data to defaults? Your custom additions will be lost.")) {
+    orgs = JSON.parse(JSON.stringify(BASE_ORGS));
+    saveOrgs();
+    renderAll();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// MAP
+// ═══════════════════════════════════════════════════════════
+function initMap() {
+  map = L.map("map", {zoomControl:true}).setView([49.2815, -123.099], 15);
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+    attribution:"© OpenStreetMap contributors © CARTO", maxZoom:19
+  }).addTo(map);
+  map.on("click", () => { if(window.innerWidth <= 700) closePanel(); });
+}
+
+function makeIcon(org) {
+  const meta = CAT_META[org.cat] || {color:"#666", icon:"●"};
+  const isSelected = org.id === selectedId;
+  const ring = isSelected ? `box-shadow:0 0 0 2px white,0 0 0 4px ${meta.color},0 4px 12px rgba(0,0,0,0.3);` : "";
+  return L.divIcon({
+    html:`<div style="background:${meta.color};width:30px;height:30px;border-radius:50%;border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;font-size:13px;${ring}cursor:pointer;transition:transform 0.1s;">${meta.icon}</div>`,
+    className:"", iconSize:[30,30], iconAnchor:[15,15], popupAnchor:[0,-18]
+  });
+}
+
+function renderMarkers() {
+  Object.values(markers).forEach(m => m.remove());
+  markers = {};
+  orgs.forEach(org => {
+    if (!org.lat || !org.lng) return;
+    const marker = L.marker([org.lat, org.lng], {icon: makeIcon(org)});
+    const meta = CAT_META[org.cat] || {color:"#666"};
+    marker.bindPopup(buildPopup(org, meta), {maxWidth:280, className:""});
+    marker.on("click", () => { selectOrg(org.id); });
+    marker.addTo(map);
+    markers[org.id] = marker;
+  });
+}
+
+function buildPopup(org, meta) {
+  const oatBadge = org.oat && org.oat.startsWith("Yes") ? `<span class="pb pb-yes">OAT ✓</span>` : "";
+  const scsBadge = org.scs && (org.scs.startsWith("Yes") || org.scs.includes("OPS")) && !org.scs.startsWith("No") ? `<span class="pb pb-yes">SCS/OPS ✓</span>` : "";
+  const wiBadge = org.walkin && (org.walkin.includes("drop-in") || org.walkin.startsWith("Yes")) ? `<span class="pb pb-yes">Walk-in ✓</span>` : "";
+  const div = document.createElement("div");
+  div.className = "popup-inner";
+  div.innerHTML = `
+    <div class="popup-cat-label" style="color:${meta.color}">${org.cat}</div>
+    <div class="popup-name">${org.name}</div>
+    <div class="popup-addr">📍 ${org.addr}${org.phone ? `<br>📞 ${org.phone}` : ""}</div>
+    <div class="popup-badges">${oatBadge}${scsBadge}${wiBadge}</div>
+    <button class="popup-detail-btn" onclick="selectOrg('${org.id}');showDetail('${org.id}');">View full details →</button>
+  `;
+  return div;
+}
+
+function updateMarkerIcon(id) {
+  if (markers[id]) markers[id].setIcon(makeIcon(orgs.find(o=>o.id===id)));
+}
+
+// ═══════════════════════════════════════════════════════════
+// FILTER & SEARCH
+// ═══════════════════════════════════════════════════════════
+function getVisible() {
+  return orgs.filter(org => {
+    const catMatch = activeFilter === "all" || org.cat === activeFilter;
+    const flagMatch = [...activeFlags].every(f => org.flags && org.flags[f]);
+    const q = searchQuery.toLowerCase();
+    const textMatch = !q || org.name.toLowerCase().includes(q)
+      || (org.addr||"").toLowerCase().includes(q)
+      || (org.inst||"").toLowerCase().includes(q)
+      || (org.desc||"").toLowerCase().includes(q)
+      || org.cat.toLowerCase().includes(q);
+    return catMatch && flagMatch && textMatch;
+  });
+}
+
+function updateMapVisibility() {
+  const visible = new Set(getVisible().map(o=>o.id));
+  orgs.forEach(org => {
+    const m = markers[org.id];
+    if (!m) return;
+    if (visible.has(org.id)) { if (!map.hasLayer(m)) m.addTo(map); }
+    else { if (map.hasLayer(m)) m.remove(); }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+function renderList() {
+  const list = document.getElementById("panel-list");
+  const empty = document.getElementById("empty-state");
+  const visible = getVisible();
+  document.getElementById("filter-count").textContent = `${visible.length} of ${orgs.length}`;
+  document.getElementById("org-count").textContent = `${orgs.length} orgs`;
+
+  const cards = list.querySelectorAll(".org-card");
+  cards.forEach(c => c.remove());
+
+  if (visible.length === 0) { empty.classList.add("show"); return; }
+  empty.classList.remove("show");
+
+  const frag = document.createDocumentFragment();
+  visible.forEach(org => {
+    const meta = CAT_META[org.cat] || {color:"#666", icon:"●"};
+    const card = document.createElement("div");
+    card.className = "org-card" + (org.id === selectedId ? " selected" : "");
+    card.dataset.id = org.id;
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="card-icon" style="background:${meta.color}22">${meta.icon}</div>
+        <div class="card-info">
+          <div class="card-cat" style="color:${meta.color}">${org.cat}</div>
+          <div class="card-name">${org.name}</div>
+          <div class="card-inst">${org.inst || ""}</div>
+        </div>
+        <div class="card-chevron">▾</div>
+      </div>
+      <div class="card-body">
+        <div class="card-row"><span class="card-label">Address</span><span class="card-val">${org.addr || "—"}</span></div>
+        <div class="card-row"><span class="card-label">Phone</span><span class="card-val">${org.phone || "—"}</span></div>
+        <div class="card-row"><span class="card-label">Hours</span><span class="card-val">${org.hours || "—"}</span></div>
+        <div class="card-row"><span class="card-label">Access</span><span class="card-val">
+          <div class="card-badges">
+            <span class="cbadge ${org.oat&&org.oat.startsWith('Yes')?'cbadge-yes':'cbadge-no'}">OAT: ${org.oat||"No"}</span>
+            <span class="cbadge ${org.scs&&(org.scs.startsWith('Yes')||org.scs.includes('OPS'))&&!org.scs.startsWith('No')?'cbadge-yes':'cbadge-no'}">SCS: ${org.scs||"No"}</span>
+            <span class="cbadge ${org.walkin&&(org.walkin.includes('drop-in')||org.walkin.startsWith('Yes'))?'cbadge-yes':'cbadge-ref'}">${org.walkin||"—"}</span>
+          </div>
+        </span></div>
+        <div class="card-actions">
+          <button class="card-action-btn" onclick="event.stopPropagation();editOrg('${org.id}')">Edit</button>
+          <button class="card-action-btn primary" onclick="event.stopPropagation();showDetail('${org.id}')">Details →</button>
+        </div>
+      </div>
+    `;
+    card.addEventListener("click", e => {
+      if(e.target.tagName==="BUTTON") return;
+      const wasExpanded = card.classList.contains("expanded");
+      document.querySelectorAll(".org-card.expanded").forEach(c=>c.classList.remove("expanded"));
+      if (!wasExpanded) { card.classList.add("expanded"); selectOrg(org.id); }
+    });
+    frag.appendChild(card);
+  });
+  list.appendChild(frag);
+}
+
+function renderAll() {
+  renderList();
+  updateMapVisibility();
+}
+
+function selectOrg(id) {
+  const prev = selectedId;
+  selectedId = id;
+  if (prev) updateMarkerIcon(prev);
+  updateMarkerIcon(id);
+  document.querySelectorAll(".org-card").forEach(c => {
+    c.classList.toggle("selected", c.dataset.id === id);
+  });
+  const org = orgs.find(o=>o.id===id);
+  if (org && org.lat && org.lng) {
+    map.setView([org.lat, org.lng], Math.max(map.getZoom(), 16), {animate:true});
+    if (markers[id]) markers[id].openPopup();
+  }
+  if(window.innerWidth <= 700) openPanel();
+}
+
+// ═══════════════════════════════════════════════════════════
+// DETAIL PANE
+// ═══════════════════════════════════════════════════════════
+function showDetail(id) {
+  const org = orgs.find(o=>o.id===id);
+  if (!org) return;
+  const meta = CAT_META[org.cat] || {color:"#666", icon:"●"};
+  selectedId = id;
+
+  const scroll = document.getElementById("detail-scroll");
+  const oatBadge = `<span class="dbadge ${org.oat&&org.oat.startsWith('Yes')?'dbadge-yes':'dbadge-no'}">OAT: ${org.oat||"No"}</span>`;
+  const scsBadge = `<span class="dbadge ${org.scs&&(org.scs.startsWith('Yes')||org.scs.includes('OPS'))&&!org.scs.startsWith('No')?'dbadge-yes':'dbadge-no'}">SCS/OPS: ${org.scs||"No"}</span>`;
+  const wiBadge = `<span class="dbadge ${org.walkin&&(org.walkin.includes('drop-in')||org.walkin.startsWith('Yes'))?'dbadge-yes':'dbadge-ref'}">Access: ${org.walkin||"—"}</span>`;
+  const noteHtml = org.note ? `<div class="detail-note">⚠️ ${org.note}</div>` : "";
+  const websiteHtml = org.web ? `<div class="card-row"><span class="detail-label">Website</span><span class="detail-val"><a href="https://${org.web}" target="_blank">${org.web}</a></span></div>` : "";
+
+  scroll.innerHTML = `
+    <div class="detail-hero">
+      <div class="detail-icon-row">
+        <div class="detail-icon" style="background:${meta.color}22">${meta.icon}</div>
+        <div>
+          <div class="detail-cat" style="color:${meta.color}">${org.cat}</div>
+          <div class="detail-name">${org.name}</div>
+        </div>
+      </div>
+      <div class="detail-inst">${org.inst || ""}</div>
+      <div class="detail-badges">${oatBadge}${scsBadge}${wiBadge}</div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Contact & Access</div>
+      <div class="card-row"><span class="detail-label">Address</span><span class="detail-val">${org.addr || "—"}</span></div>
+      <div class="card-row"><span class="detail-label">Phone</span><span class="detail-val">${org.phone ? `<a href="tel:${org.phone}">${org.phone}</a>` : "—"}</span></div>
+      <div class="card-row"><span class="detail-label">Hours</span><span class="detail-val">${org.hours || "—"}</span></div>
+      ${websiteHtml}
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Services</div>
+      <div class="detail-desc">${org.desc || "No description available."}</div>
+      ${noteHtml}
+    </div>
+    <div class="detail-cta">
+      <button class="detail-cta-btn" onclick="editOrg('${org.id}')">Edit</button>
+      ${org.lat&&org.lng?`<button class="detail-cta-btn" onclick="selectOrg('${org.id}');showList()">Show on map</button>`:""}
+      ${org.phone?`<button class="detail-cta-btn primary" onclick="window.location='tel:${org.phone}'">Call</button>`:""}
+    </div>
+  `;
+
+  document.querySelector('[data-tab="list"]').classList.remove("active");
+  document.querySelector('[data-tab="detail"]').classList.add("active");
+  document.getElementById("panel-list").style.display = "none";
+  document.getElementById("detail-pane").classList.add("show");
+}
+
+function showList() {
+  document.querySelector('[data-tab="list"]').classList.add("active");
+  document.querySelector('[data-tab="detail"]').classList.remove("active");
+  document.getElementById("panel-list").style.display = "";
+  document.getElementById("detail-pane").classList.remove("show");
+}
+
+// ═══════════════════════════════════════════════════════════
+// EDIT / ADD
+// ═══════════════════════════════════════════════════════════
+function openModal(id) {
+  editingId = id || null;
+  const org = id ? orgs.find(o=>o.id===id) : null;
+  document.getElementById("modal-title").textContent = id ? "Edit Organization" : "Add Organization";
+  document.getElementById("btn-delete").style.display = id ? "inline-flex" : "none";
+  document.getElementById("f-name").value = org?.name || "";
+  document.getElementById("f-cat").value = org?.cat || "Primary Care / OAT";
+  document.getElementById("f-inst").value = org?.inst || "";
+  document.getElementById("f-addr").value = org?.addr || "";
+  document.getElementById("f-phone").value = org?.phone || "";
+  document.getElementById("f-web").value = org?.web || "";
+  document.getElementById("f-hours").value = org?.hours || "";
+  document.getElementById("f-oat").value = org?.oat || "No";
+  document.getElementById("f-scs").value = org?.scs || "No";
+  document.getElementById("f-walkin").value = org?.walkin || "No – referral only";
+  document.getElementById("f-hrs-type").value = "";
+  if (org?.flags) {
+    if(org.flags["24hr"]) document.getElementById("f-hrs-type").value = "24hr";
+    else if(org.flags.women) document.getElementById("f-hrs-type").value = "women";
+    else if(org.flags.indigenous) document.getElementById("f-hrs-type").value = "indigenous";
+  }
+  document.getElementById("f-desc").value = org?.desc || "";
+  document.getElementById("f-lat").value = org?.lat || "";
+  document.getElementById("f-lng").value = org?.lng || "";
+  document.getElementById("modal-overlay").classList.add("show");
+}
+
+function editOrg(id) { openModal(id); }
+function closeModal() { document.getElementById("modal-overlay").classList.remove("show"); editingId = null; }
+
+function saveOrg() {
+  const name = document.getElementById("f-name").value.trim();
+  if (!name) { alert("Name is required."); return; }
+  const hrsType = document.getElementById("f-hrs-type").value;
+  const oatVal = document.getElementById("f-oat").value;
+  const scsVal = document.getElementById("f-scs").value;
+  const wiVal = document.getElementById("f-walkin").value;
+  const flags = {
+    oat: oatVal.startsWith("Yes"),
+    scs: scsVal.startsWith("Yes") || scsVal.includes("OPS"),
+    walkin: wiVal.includes("drop-in") || wiVal.startsWith("Yes"),
+    "24hr": hrsType === "24hr",
+    women: hrsType === "women",
+    indigenous: hrsType === "indigenous",
+  };
+  const newOrg = {
+    id: editingId || "custom_" + Date.now(),
+    name, cat: document.getElementById("f-cat").value,
+    inst: document.getElementById("f-inst").value.trim(),
+    addr: document.getElementById("f-addr").value.trim(),
+    phone: document.getElementById("f-phone").value.trim(),
+    web: document.getElementById("f-web").value.trim(),
+    hours: document.getElementById("f-hours").value.trim(),
+    oat: oatVal, scs: scsVal, walkin: wiVal, flags,
+    desc: document.getElementById("f-desc").value.trim(),
+    lat: parseFloat(document.getElementById("f-lat").value) || null,
+    lng: parseFloat(document.getElementById("f-lng").value) || null,
+  };
+  if (editingId) {
+    const idx = orgs.findIndex(o=>o.id===editingId);
+    if(idx >= 0) orgs[idx] = newOrg;
+    if(markers[editingId]) markers[editingId].remove();
+    delete markers[editingId];
+  } else {
+    orgs.push(newOrg);
+  }
+  saveOrgs();
+  if (newOrg.lat && newOrg.lng) {
+    const marker = L.marker([newOrg.lat, newOrg.lng], {icon: makeIcon(newOrg)});
+    marker.bindPopup(buildPopup(newOrg, CAT_META[newOrg.cat]||{color:"#666"}), {maxWidth:280});
+    marker.on("click", () => { selectOrg(newOrg.id); });
+    marker.addTo(map);
+    markers[newOrg.id] = marker;
+  }
+  closeModal();
+  renderAll();
+}
+
+function deleteOrg() {
+  if (!editingId) return;
+  if (!confirm("Delete this organization?")) return;
+  orgs = orgs.filter(o=>o.id!==editingId);
+  if(markers[editingId]) markers[editingId].remove();
+  delete markers[editingId];
+  saveOrgs();
+  closeModal();
+  if(selectedId===editingId) selectedId=null;
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════════════
+// HANDOUT
+// ═══════════════════════════════════════════════════════════
+function openHandout() {
+  const visible = getVisible();
+  const byCat = {};
+  visible.forEach(org => {
+    if (!byCat[org.cat]) byCat[org.cat] = [];
+    byCat[org.cat].push(org);
+  });
+  const now = new Date().toLocaleDateString("en-CA", {year:"numeric",month:"long",day:"numeric"});
+  let html = `<div class="handout-title">DTES Harm Reduction & Addiction Services</div>
+    <div class="handout-sub">Downtown Eastside Vancouver · ${visible.length} organizations · Generated ${now} · Verify all information before use</div>`;
+  Object.entries(byCat).forEach(([cat, orgs]) => {
+    html += `<div class="handout-section"><div class="handout-section-title">${cat}</div>`;
+    orgs.forEach(org => {
+      html += `<div class="handout-item">
+        <div class="handout-item-name">${org.name}</div>
+        <div class="handout-item-addr">${org.addr||""}${org.hours?` · ${org.hours}`:""}</div>
+        <div class="handout-item-phone">${org.phone||""}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  document.getElementById("handout-content").innerHTML = html;
+  document.getElementById("handout-overlay").classList.add("show");
+}
+function closeHandout() { document.getElementById("handout-overlay").classList.remove("show"); }
+
+// ═══════════════════════════════════════════════════════════
+// DRUG ALERTS
+// ═══════════════════════════════════════════════════════════
+async function fetchAlerts() {
+  try {
+    const r = await fetch("https://towardtheheart.com/alerts", {mode:"no-cors"});
+    // Can't read no-cors response – show static helpful message instead
+    throw new Error("no-cors");
+  } catch(e) {
+    document.getElementById("alert-text").innerHTML =
+      `<strong>Drug alerts:</strong> Check <a href="https://towardtheheart.com/alerts" target="_blank">towardtheheart.com/alerts</a> or text JOIN to 253787 for VCH alerts`;
+    document.getElementById("alert-bar").classList.add("show");
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// MOBILE PANEL
+// ═══════════════════════════════════════════════════════════
+function togglePanel() {
+  panelOpen = !panelOpen;
+  document.getElementById("panel").classList.toggle("open", panelOpen);
+}
+function openPanel() { panelOpen = true; document.getElementById("panel").classList.add("open"); }
+function closePanel() { panelOpen = false; document.getElementById("panel").classList.remove("false"); }
+
+// ═══════════════════════════════════════════════════════════
+// EVENT LISTENERS
+// ═══════════════════════════════════════════════════════════
+function initEvents() {
+  // Search
+  document.getElementById("search").addEventListener("input", e => {
+    searchQuery = e.target.value;
+    renderAll();
+  });
+
+  // Category chips
+  document.querySelectorAll(".chip[data-filter]").forEach(chip => {
+    chip.addEventListener("click", () => {
+      document.querySelectorAll(".chip[data-filter]").forEach(c=>c.classList.remove("active"));
+      chip.classList.add("active");
+      activeFilter = chip.dataset.filter;
+      renderAll();
+    });
+  });
+
+  // Flag chips
+  document.querySelectorAll(".chip[data-flag]").forEach(chip => {
+    chip.addEventListener("click", () => {
+      const flag = chip.dataset.flag;
+      if (activeFlags.has(flag)) { activeFlags.delete(flag); chip.classList.remove("active"); }
+      else { activeFlags.add(flag); chip.classList.add("active"); }
+      renderAll();
+    });
+  });
+
+  // Tabs
+  document.querySelectorAll(".ptab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      if (tab.dataset.tab === "list") showList();
+      else if (selectedId) showDetail(selectedId);
+    });
+  });
+
+  // Topbar buttons
+  document.getElementById("btn-add-org").addEventListener("click", () => openModal(null));
+  document.getElementById("btn-handout").addEventListener("click", openHandout);
+
+  // Modal close on overlay click
+  document.getElementById("modal-overlay").addEventListener("click", e => {
+    if(e.target === document.getElementById("modal-overlay")) closeModal();
+  });
+
+  // Keyboard
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") { closeModal(); closeHandout(); }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+document.addEventListener("DOMContentLoaded", () => {
+  loadOrgs();
+  initMap();
+  renderMarkers();
+  renderAll();
+  initEvents();
+  fetchAlerts();
+});
+</script>
+</body>
+</html>
