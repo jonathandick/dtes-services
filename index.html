@@ -19,7 +19,7 @@
   --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
   --shadow-md:0 4px 16px rgba(0,0,0,0.10),0 2px 6px rgba(0,0,0,0.06);
   --shadow-lg:0 12px 40px rgba(0,0,0,0.14),0 4px 12px rgba(0,0,0,0.08);
-  --header-h:52px;--filter-h:42px;
+  --header-h:52px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;}
@@ -75,24 +75,39 @@ a:hover{text-decoration:underline;}
 #alert-bar strong{font-weight:600;}
 #alert-bar a{color:#7a5a00;text-decoration:underline;}
 
-/* ── Filterbar ── */
-#filterbar{
-  background:var(--surface);border-bottom:1px solid var(--border);
-  padding:0 14px;display:flex;align-items:center;gap:5px;
-  height:var(--filter-h);flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch;
+/* ── Filter sidebar (vertical, left of map) ── */
+#filter-sidebar{
+  width:184px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;z-index:10;
 }
-#filterbar::-webkit-scrollbar{display:none;}
-.chip{
-  height:26px;padding:0 10px;border:1px solid var(--border);border-radius:20px;
-  background:var(--surface);font-size:11.5px;font-weight:500;color:var(--text2);
-  white-space:nowrap;display:flex;align-items:center;gap:4px;
-  cursor:pointer;transition:all 0.15s;flex-shrink:0;
+#filter-sidebar::-webkit-scrollbar{width:3px;}
+#filter-sidebar::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+#filter-sidebar-inner{padding:10px 8px 16px;}
+.fs-section-label{
+  font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;
+  color:var(--text3);padding:0 4px;margin:12px 0 5px;
 }
-.chip:hover{border-color:var(--border2);}
-.chip.active{background:var(--text);color:#fff;border-color:var(--text);}
-.chip .cdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.chip-sep{width:1px;height:18px;background:var(--border);flex-shrink:0;margin:0 2px;}
-#filter-count{margin-left:auto;font-size:11px;color:var(--text3);white-space:nowrap;flex-shrink:0;}
+.fs-section-label:first-child{margin-top:0;}
+.fchip{
+  display:flex;align-items:center;gap:7px;width:100%;
+  padding:6px 8px;border-radius:var(--radius-sm);border:1px solid transparent;
+  background:transparent;font-size:12px;font-weight:500;color:var(--text2);
+  cursor:pointer;transition:all 0.15s;text-align:left;margin-bottom:2px;
+}
+.fchip:hover{background:var(--surface2);color:var(--text);}
+.fchip.active{background:var(--text);color:#fff;border-color:var(--text);}
+.fchip .cdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.fs-divider{height:1px;background:var(--border);margin:10px 4px;}
+.fchip.flag-chip{font-size:11px;}
+.fchip.flag-chip.active{background:var(--blue);border-color:var(--blue);}
+#filter-count{font-size:11px;color:var(--text3);padding:8px 12px;border-top:1px solid var(--border);flex-shrink:0;text-align:center;}
+#filter-clear-btn{
+  width:calc(100% - 16px);margin:6px 8px 0;height:28px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--surface2);font-size:11px;
+  color:var(--text2);cursor:pointer;transition:all 0.15s;display:none;
+}
+#filter-clear-btn.show{display:block;}
+#filter-clear-btn:hover{border-color:var(--border2);color:var(--text);}
 
 /* ── Body ── */
 #body{display:flex;flex:1;overflow:hidden;}
@@ -364,6 +379,9 @@ a:hover{text-decoration:underline;}
 
 /* ── Mobile ── */
 @media(max-width:700px){
+  #filter-sidebar{
+    display:none;
+  }
   #panel{
     position:fixed;bottom:0;left:0;right:0;width:100%;height:60dvh;
     border-left:none;border-top:1px solid var(--border);
@@ -375,7 +393,7 @@ a:hover{text-decoration:underline;}
     width:36px;height:4px;background:var(--border2);border-radius:4px;
     margin:8px auto 4px;cursor:pointer;
   }
-  #map-wrap{height:calc(100dvh - var(--header-h) - var(--filter-h) - 50px);}
+  #map-wrap{height:calc(100dvh - var(--header-h) - 50px);}
   #body{flex-direction:column;}
   .tb-btn span{display:none;}
 }
@@ -429,32 +447,39 @@ a:hover{text-decoration:underline;}
   <a href="https://towardtheheart.com/alerts" target="_blank" style="margin-left:auto;font-size:11px;">View all alerts →</a>
 </div>
 
-<!-- Filter bar -->
-<div id="filterbar">
-  <button class="chip active" data-filter="all">All</button>
-  <button class="chip" data-filter="SCS / OPS" style="--cat-color:#C0392B"><span class="cdot" style="background:#C0392B"></span>Consumption Sites</button>
-  <button class="chip" data-filter="Primary Care / OAT" style="--cat-color:#1A7A4A"><span class="cdot" style="background:#1A7A4A"></span>Primary Care / OAT</button>
-  <button class="chip" data-filter="Harm Reduction" style="--cat-color:#D4AC0D"><span class="cdot" style="background:#D4AC0D"></span>Harm Reduction</button>
-  <button class="chip" data-filter="Detox / WDM" style="--cat-color:#D95F00"><span class="cdot" style="background:#D95F00"></span>Detox</button>
-  <button class="chip" data-filter="Peer / Indigenous" style="--cat-color:#1655A2"><span class="cdot" style="background:#1655A2"></span>Peer / Indigenous</button>
-  <button class="chip" data-filter="Women / Sex Workers" style="--cat-color:#A0306B"><span class="cdot" style="background:#A0306B"></span>Women</button>
-  <button class="chip" data-filter="Supportive Housing" style="--cat-color:#4A5568"><span class="cdot" style="background:#4A5568"></span>Housing</button>
-  <button class="chip" data-filter="Shelter / Recovery" style="--cat-color:#6B3FA0"><span class="cdot" style="background:#6B3FA0"></span>Shelter</button>
-  <button class="chip" data-filter="Community / Drop-in" style="--cat-color:#0A7A6B"><span class="cdot" style="background:#0A7A6B"></span>Community</button>
-  <button class="chip" data-filter="Emergency Services" style="--cat-color:#CC3300"><span class="cdot" style="background:#CC3300"></span>Emergency</button>
-  <div class="chip-sep"></div>
-  <button class="chip" data-flag="oat">OAT ✓</button>
-  <button class="chip" data-flag="scs">SCS/OPS ✓</button>
-  <button class="chip" data-flag="walkin">Walk-in ✓</button>
-  <button class="chip" data-flag="24hr">24hr ✓</button>
-  <button class="chip" data-flag="women">Women-only ✓</button>
-  <button class="chip" data-flag="indigenous">Indigenous ✓</button>
-  <span class="chip-sep"></span>
-  <span id="filter-count"></span>
-</div>
-
 <!-- Body -->
 <div id="body">
+  <!-- Filter sidebar -->
+  <div id="filter-sidebar">
+    <div id="filter-sidebar-inner">
+      <div class="fs-section-label">Category</div>
+      <button class="fchip active" data-filter="all">All categories</button>
+      <button class="fchip" data-filter="SCS / OPS"><span class="cdot" style="background:#C0392B"></span>Consumption Sites</button>
+      <button class="fchip" data-filter="Primary Care / OAT"><span class="cdot" style="background:#1A7A4A"></span>Primary Care / OAT</button>
+      <button class="fchip" data-filter="Harm Reduction"><span class="cdot" style="background:#D4AC0D"></span>Harm Reduction</button>
+      <button class="fchip" data-filter="Detox / WDM"><span class="cdot" style="background:#D95F00"></span>Detox / WDM</button>
+      <button class="fchip" data-filter="Peer / Indigenous"><span class="cdot" style="background:#1655A2"></span>Peer / Indigenous</button>
+      <button class="fchip" data-filter="Women / Sex Workers"><span class="cdot" style="background:#A0306B"></span>Women / Sex Workers</button>
+      <button class="fchip" data-filter="Supportive Housing"><span class="cdot" style="background:#4A5568"></span>Supportive Housing</button>
+      <button class="fchip" data-filter="Shelter / Recovery"><span class="cdot" style="background:#6B3FA0"></span>Shelter / Recovery</button>
+      <button class="fchip" data-filter="Community / Drop-in"><span class="cdot" style="background:#0A7A6B"></span>Community / Drop-in</button>
+      <button class="fchip" data-filter="Emergency Services"><span class="cdot" style="background:#CC3300"></span>Emergency Services</button>
+      <button class="fchip" data-filter="Transitional / Acute Care"><span class="cdot" style="background:#2D3A8C"></span>Transitional Care</button>
+      <button class="fchip" data-filter="System Navigation"><span class="cdot" style="background:#1A2B6B"></span>System Navigation</button>
+
+      <div class="fs-divider"></div>
+      <div class="fs-section-label">Quick Filters</div>
+      <button class="fchip flag-chip" data-flag="oat">OAT available</button>
+      <button class="fchip flag-chip" data-flag="scs">SCS / OPS on-site</button>
+      <button class="fchip flag-chip" data-flag="walkin">Walk-in access</button>
+      <button class="fchip flag-chip" data-flag="24hr">Open 24 hours</button>
+      <button class="fchip flag-chip" data-flag="women">Women-only</button>
+      <button class="fchip flag-chip" data-flag="indigenous">Indigenous-specific</button>
+    </div>
+    <button id="filter-clear-btn" onclick="clearFilters()">Clear all filters</button>
+    <div id="filter-count"></div>
+  </div>
+
   <div id="map-wrap">
     <div id="map"></div>
   </div>
@@ -1350,7 +1375,7 @@ function renderList() {
   const list = document.getElementById("panel-list");
   const empty = document.getElementById("empty-state");
   const visible = getVisible();
-  document.getElementById("filter-count").textContent = `${visible.length} of ${orgs.length}`;
+  document.getElementById("filter-count").textContent = `${visible.length} of ${orgs.length} shown`;
   document.getElementById("org-count").textContent = `${orgs.length} orgs`;
 
   const cards = list.querySelectorAll(".org-card");
@@ -1401,6 +1426,21 @@ function renderList() {
     frag.appendChild(card);
   });
   list.appendChild(frag);
+}
+
+function clearFilters() {
+  activeFilter = "all";
+  activeFlags = new Set();
+  document.querySelectorAll(".fchip[data-filter]").forEach(c => c.classList.remove("active"));
+  document.querySelector('.fchip[data-filter="all"]').classList.add("active");
+  document.querySelectorAll(".fchip[data-flag]").forEach(c => c.classList.remove("active"));
+  updateClearBtn();
+  renderAll();
+}
+
+function updateClearBtn() {
+  const hasFilters = activeFilter !== "all" || activeFlags.size > 0;
+  document.getElementById("filter-clear-btn").classList.toggle("show", hasFilters);
 }
 
 function renderAll() {
@@ -1744,22 +1784,24 @@ function initEvents() {
     renderAll();
   });
 
-  // Category chips
-  document.querySelectorAll(".chip[data-filter]").forEach(chip => {
+  // Category filters
+  document.querySelectorAll(".fchip[data-filter]").forEach(chip => {
     chip.addEventListener("click", () => {
-      document.querySelectorAll(".chip[data-filter]").forEach(c=>c.classList.remove("active"));
+      document.querySelectorAll(".fchip[data-filter]").forEach(c=>c.classList.remove("active"));
       chip.classList.add("active");
       activeFilter = chip.dataset.filter;
+      updateClearBtn();
       renderAll();
     });
   });
 
-  // Flag chips
-  document.querySelectorAll(".chip[data-flag]").forEach(chip => {
+  // Flag filters
+  document.querySelectorAll(".fchip[data-flag]").forEach(chip => {
     chip.addEventListener("click", () => {
       const flag = chip.dataset.flag;
       if (activeFlags.has(flag)) { activeFlags.delete(flag); chip.classList.remove("active"); }
       else { activeFlags.add(flag); chip.classList.add("active"); }
+      updateClearBtn();
       renderAll();
     });
   });
