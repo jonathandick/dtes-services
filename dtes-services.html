@@ -31,6 +31,34 @@ a:hover{text-decoration:underline;}
 /* ── Layout ── */
 #app{display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
 
+
+/* ── Site Nav ── */
+#site-nav{
+  background:#071F1B;padding:0 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:44px;flex-shrink:0;z-index:300;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+#site-nav .sn-logo{
+  display:flex;align-items:center;gap:9px;text-decoration:none;
+  font-size:15px;font-weight:500;color:#FFFFFF;
+}
+#site-nav .sn-pulse{
+  width:8px;height:8px;border-radius:50%;background:#E8930A;
+  flex-shrink:0;animation:snpulse 2.2s ease-in-out infinite;display:inline-block;
+}
+@keyframes snpulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(232,147,10,0.6)}
+  50%{box-shadow:0 0 0 5px rgba(232,147,10,0)}
+}
+#site-nav .sn-links{display:flex;gap:2px;}
+#site-nav .sn-links a{
+  font-size:12px;color:#7EC8C0;padding:5px 10px;border-radius:6px;
+  transition:all 0.15s;text-decoration:none;white-space:nowrap;
+}
+#site-nav .sn-links a:hover{background:rgba(255,255,255,0.08);color:#fff;text-decoration:none;}
+#site-nav .sn-links a.sn-active{background:rgba(255,255,255,0.1);color:#fff;font-weight:500;}
+
 /* ── Topbar ── */
 #topbar{
   background:var(--surface);border-bottom:1px solid var(--border);
@@ -413,6 +441,18 @@ a:hover{text-decoration:underline;}
 <div id="app">
 
 <!-- Topbar -->
+<nav id="site-nav">
+  <a href="index.html" class="sn-logo">
+    <span class="sn-pulse"></span>
+    DTES Community Tools
+  </a>
+  <div class="sn-links">
+    <a href="index.html">Home</a>
+    <a href="dtes-services.html" class="sn-active">Services</a>
+    <a href="overdose-watch.html">OD Watch</a>
+  </div>
+</nav>
+
 <div id="topbar">
   <a href="#" id="logo">
     <div id="logo-mark">HR</div>
@@ -1264,7 +1304,7 @@ let map, markers = {}, markerLayers = {};
 // ═══════════════════════════════════════════════════════════
 function loadOrgs() {
   try {
-    const saved = localStorage.getItem("dtes_orgs_v2");
+    const saved = localStorage.getItem("dtes_orgs_v3");
     if (saved) {
       const parsed = JSON.parse(saved);
       orgs = parsed;
@@ -1275,7 +1315,7 @@ function loadOrgs() {
 }
 
 function saveOrgs() {
-  try { localStorage.setItem("dtes_orgs_v2", JSON.stringify(orgs)); } catch(e) {}
+  try { localStorage.setItem("dtes_orgs_v3", JSON.stringify(orgs)); } catch(e) {}
 }
 
 function resetToDefaults() {
