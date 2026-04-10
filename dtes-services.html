@@ -421,7 +421,7 @@ a:hover{text-decoration:underline;}
     width:36px;height:4px;background:var(--border2);border-radius:4px;
     margin:8px auto 4px;cursor:pointer;
   }
-  #map-wrap{height:calc(100dvh - var(--header-h) - 50px);}
+  #map-wrap{height:calc(100dvh - var(--header-h) - var(--sitenav-h) - 50px);}
   #body{flex-direction:column;}
   .tb-btn span{display:none;}
 }
@@ -1880,6 +1880,8 @@ document.addEventListener("DOMContentLoaded", () => {
   renderAll();
   initEvents();
   fetchAlerts();
+  // Force Leaflet to recalculate container offset after full layout renders
+  setTimeout(() => { if (map) map.invalidateSize(); }, 100);
 });
 </script>
 </body>
