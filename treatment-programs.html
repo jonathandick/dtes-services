@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LM Treatment Programs – DTES Community Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --teal:#1A7A6E;--teal-dark:#0D3D35;--teal-deep:#071F1B;--teal-mid:#2AA090;
+  --teal-pale:#E6F5F3;--teal-mist:#C2E8E2;
+  --amber:#E8930A;--amber-pale:#FEF3DC;
+  --red:#C0392B;--orange:#D95F00;--green:#1A7A4A;--blue:#1655A2;
+  --purple:#6B3FA0;--slate:#4A5568;--pink:#A0306B;
+  --bg:#F5F4F1;--surface:#FFFFFF;--surface2:#EFEDE8;
+  --border:#E0DCD5;--border2:#CBC5BD;
+  --text:#18160F;--text2:#6A6259;--text3:#9D9489;
+  --radius:10px;--radius-sm:6px;--radius-lg:14px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.10),0 2px 6px rgba(0,0,0,0.06);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;min-height:100vh;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+input,select{font-family:inherit;}
+a{color:var(--blue);text-decoration:none;}
+a:hover{text-decoration:underline;}
+
+/* ── Site Nav ── */
+#site-nav{
+  background:#071F1B;padding:0 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:44px;position:sticky;top:0;z-index:300;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+#site-nav .sn-logo{
+  display:flex;align-items:center;gap:9px;text-decoration:none;
+  font-size:15px;font-weight:500;color:#FFFFFF;
+}
+#site-nav .sn-pulse{
+  width:8px;height:8px;border-radius:50%;background:#E8930A;
+  flex-shrink:0;animation:snpulse 2.2s ease-in-out infinite;display:inline-block;
+}
+@keyframes snpulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(232,147,10,0.6)}
+  50%{box-shadow:0 0 0 5px rgba(232,147,10,0)}
+}
+#site-nav .sn-links{display:flex;gap:2px;}
+#site-nav .sn-links a{
+  font-size:12px;color:#7EC8C0;padding:5px 10px;border-radius:6px;
+  transition:all 0.15s;text-decoration:none;white-space:nowrap;
+}
+#site-nav .sn-links a:hover{background:rgba(255,255,255,0.08);color:#fff;text-decoration:none;}
+#site-nav .sn-links a.sn-active{background:rgba(255,255,255,0.1);color:#fff;font-weight:500;}
+
+/* ── Page header ── */
+#page-header{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:14px 16px 0;
+}
+#page-header h1{font-size:17px;font-weight:600;color:var(--text);}
+#page-header p{font-size:12px;color:var(--text2);margin-top:2px;}
+
+/* ── Controls bar ── */
+#controls{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  position:sticky;top:44px;z-index:200;
+}
+#search-wrap{position:relative;flex:1;min-width:160px;max-width:300px;}
+#search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;width:14px;height:14px;}
+#search{
+  width:100%;height:32px;border:1px solid var(--border);border-radius:20px;
+  padding:0 10px 0 30px;font-size:13px;background:var(--surface2);color:var(--text);outline:none;
+  transition:border-color 0.15s,background 0.15s;
+}
+#search:focus{border-color:var(--teal);background:var(--surface);}
+.filter-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.chip{
+  height:28px;padding:0 11px;border:1px solid var(--border);border-radius:20px;
+  background:var(--surface);font-size:11.5px;font-weight:500;color:var(--text2);
+  cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;
+  transition:all 0.15s;
+}
+.chip:hover{border-color:var(--border2);color:var(--text);}
+.chip.active{background:var(--teal-deep);border-color:var(--teal-deep);color:#fff;}
+#results-count{font-size:11px;color:var(--text3);margin-left:auto;white-space:nowrap;font-variant-numeric:tabular-nums;}
+
+/* ── Main content ── */
+#main{padding:16px;max-width:1200px;margin:0 auto;}
+
+/* ── Section headings ── */
+.section-banner{
+  display:flex;align-items:center;gap:10px;margin:20px 0 10px;
+  padding:10px 14px;border-radius:var(--radius);
+  border-left:4px solid;
+}
+.section-banner.bed{background:#EEF4FF;border-color:var(--blue);}
+.section-banner.outpatient{background:#EEFAF5;border-color:var(--green);}
+.section-banner h2{font-size:14px;font-weight:600;}
+.section-banner p{font-size:11.5px;color:var(--text2);margin-top:1px;}
+.section-banner .sb-icon{font-size:20px;flex-shrink:0;}
+
+/* ── Cards grid ── */
+.cards-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:10px;
+}
+
+/* ── Program card ── */
+.prog-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow);overflow:hidden;transition:box-shadow 0.15s,border-color 0.15s;
+  display:flex;flex-direction:column;
+}
+.prog-card:hover{box-shadow:var(--shadow-md);border-color:var(--border2);}
+.prog-card.hidden{display:none;}
+
+.card-top{padding:12px 14px 10px;flex:1;}
+.card-name{font-size:13.5px;font-weight:600;line-height:1.3;margin-bottom:4px;}
+.card-inst{font-size:11px;color:var(--text2);margin-bottom:8px;}
+.card-desc{font-size:12px;color:var(--text2);line-height:1.5;}
+
+.card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+.ctag{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:2px 7px;border-radius:20px;font-size:10.5px;font-weight:500;
+  background:var(--surface2);color:var(--text2);border:1px solid var(--border);
+}
+.ctag.oat{background:#EEFAF5;color:#1A7A4A;border-color:#B6E8D4;}
+.ctag.women{background:#FDF0F5;color:#A0306B;border-color:#F0BDD6;}
+.ctag.men{background:#EEF4FF;color:#1655A2;border-color:#BDD0F0;}
+.ctag.youth{background:#FFF8EE;color:#D95F00;border-color:#F5D8A8;}
+.ctag.indigenous{background:#F5F0FF;color:#6B3FA0;border-color:#D4BBFF;}
+.ctag.funded{background:#F0FFF4;color:#1A7A4A;border-color:#B2DFCC;}
+.ctag.faith{background:#FFF9F0;color:#9A6F00;border-color:#EDD9A3;}
+.ctag.virtual{background:#F0F8FF;color:#1655A2;border-color:#BAD4F5;}
+
+.card-footer{
+  padding:8px 14px;background:var(--surface2);
+  border-top:1px solid var(--border);
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+}
+.card-footer-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);}
+.card-footer-item svg{flex-shrink:0;color:var(--text3);}
+.card-footer-item a{color:var(--blue);font-size:11px;}
+
+/* ── HA badge ── */
+.ha-badge{
+  display:inline-flex;align-items:center;gap:4px;padding:2px 8px;
+  border-radius:20px;font-size:10px;font-weight:600;letter-spacing:0.3px;
+  text-transform:uppercase;
+}
+.ha-vch{background:#E6F5F3;color:#0D3D35;}
+.ha-fh{background:#EEF4FF;color:#1A2B6B;}
+.ha-phsa{background:#F5F0FF;color:#4B1EA0;}
+.ha-private{background:#F5F4F1;color:#4A5568;}
+
+/* ── Type badge ── */
+.type-badge{
+  display:inline-flex;align-items:center;gap:4px;padding:2px 8px;
+  border-radius:20px;font-size:10px;font-weight:600;margin-left:6px;
+}
+.type-bed{background:#DDEEFF;color:#1655A2;}
+.type-out{background:#DDFFEE;color:#1A7A4A;}
+
+/* ── Access box ── */
+#access-box{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:16px 18px;margin:16px 0 4px;box-shadow:var(--shadow);
+}
+#access-box h3{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.access-table{width:100%;border-collapse:collapse;}
+.access-table th,.access-table td{padding:7px 10px;font-size:12px;text-align:left;border-bottom:1px solid var(--border);}
+.access-table th{font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--text3);background:var(--surface2);}
+.access-table tr:last-child td{border-bottom:none;}
+.access-table a{color:var(--blue);}
+
+/* ── Empty state ── */
+#empty{display:none;text-align:center;padding:60px 20px;color:var(--text3);}
+#empty.show{display:block;}
+
+/* ── Footer ── */
+footer{
+  margin-top:40px;padding:16px;text-align:center;
+  font-size:11px;color:var(--text3);border-top:1px solid var(--border);
+}
+
+@media(max-width:600px){
+  .cards-grid{grid-template-columns:1fr;}
+  #controls{flex-direction:column;align-items:stretch;}
+  #search-wrap{max-width:100%;}
+  .filter-chips{justify-content:flex-start;}
+  #results-count{margin-left:0;}
+  .access-table th:nth-child(3),.access-table td:nth-child(3){display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── Site Nav ── -->
+<nav id="site-nav">
+  <a href="index.html" class="sn-logo">
+    <span class="sn-pulse"></span>
+    DTES Community Tools
+  </a>
+  <div class="sn-links">
+    <a href="index.html">Home</a>
+    <a href="dtes-services.html">Services Map</a>
+    <a href="overdose-watch.html">OD Watch</a>
+    <a href="treatment-programs.html" class="sn-active">Treatment</a>
+  </div>
+</nav>
+
+<!-- ── Page Header + Controls ── -->
+<div id="page-header">
+  <h1>Lower Mainland Treatment Programs</h1>
+  <p>Bed-based (residential) and non-bed-based (outpatient) substance use treatment — VCH &amp; Fraser Health regions</p>
+  <div id="controls">
+    <div id="search-wrap">
+      <svg id="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="search" placeholder="Search programs…" autocomplete="off">
+    </div>
+    <div class="filter-chips">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="bed">🛏 Bed-Based</button>
+      <button class="chip" data-filter="outpatient">🚶 Outpatient</button>
+      <button class="chip" data-filter="vch">VCH</button>
+      <button class="chip" data-filter="fh">Fraser Health</button>
+      <button class="chip" data-filter="women">Women</button>
+      <button class="chip" data-filter="oat">OAT-Friendly</button>
+      <button class="chip" data-filter="funded">Publicly Funded</button>
+    </div>
+    <span id="results-count"></span>
+  </div>
+</div>
+
+<!-- ── Main ── -->
+<div id="main">
+
+  <div id="access-box">
+    <h3>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+      How to Access — Entry Points
+    </h3>
+    <table class="access-table">
+      <thead><tr><th>Region</th><th>Line / Route</th><th>Hours</th></tr></thead>
+      <tbody>
+        <tr><td><strong>VCH</strong> (Vancouver, Richmond, North Shore)</td><td>Access Central: <a href="tel:18666581221">1-866-658-1221</a></td><td>Daily 9am–7:45pm</td></tr>
+        <tr><td><strong>Fraser Health</strong> (Burnaby, Surrey, Tri-Cities, etc.)</td><td>FH Access Line or RAAC clinics: <a href="tel:16046585610">604-585-5610</a></td><td>Daily 8:30am–8:30pm</td></tr>
+        <tr><td><strong>Province-wide</strong></td><td>Alcohol &amp; Drug Info Line: <a href="tel:18006631441">1-800-663-1441</a> &nbsp;·&nbsp; <a href="https://helpstartshere.gov.bc.ca" target="_blank">helpstartshere.gov.bc.ca</a></td><td>24/7</td></tr>
+        <tr><td><strong>211 BC</strong></td><td>Call or text <a href="tel:211">2-1-1</a></td><td>Daily</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-banner bed" data-section="bed">
+    <span class="sb-icon">🛏</span>
+    <div>
+      <h2>Bed-Based Programs <span class="type-badge type-bed">Residential</span></h2>
+      <p>Live-in treatment — short-term stabilization, intensive residential, and long-term recovery. Clients reside at the facility during treatment.</p>
+    </div>
+  </div>
+  <div class="cards-grid" id="bed-grid"></div>
+
+  <div class="section-banner outpatient" data-section="outpatient">
+    <span class="sb-icon">🚶</span>
+    <div>
+      <h2>Non-Bed-Based Programs <span class="type-badge type-out">Outpatient</span></h2>
+      <p>Day, evening, and weekend programs — clients live at home or in community housing and attend structured sessions.</p>
+    </div>
+  </div>
+  <div class="cards-grid" id="outpatient-grid"></div>
+
+  <div id="empty">No programs match your search. Try different keywords or clear the filters.</div>
+</div>
+
+<footer>
+  Lower Mainland Treatment Programs &nbsp;·&nbsp; Data from VCH, Fraser Health, BCMHSUS, BCCSU &amp; program websites &nbsp;·&nbsp;
+  <a href="dtes-services.html">DTES Services Map</a> &nbsp;·&nbsp; Always verify program availability directly with the provider.
+</footer>
+
+<script>
+const PROGRAMS = [
+  // ── BED-BASED: PHSA/BCMHSUS ───────────────────────────
+  {id:"bcmhsus-burnaby",type:"bed",ha:"phsa",
+   name:"Burnaby Centre for Mental Health & Addiction",
+   inst:"BC Mental Health & Substance Use Services (PHSA)",
+   location:"Burnaby",
+   phone:"Via BCMHSUS referral",web:"bcmhsus.ca",
+   desc:"Intensive residential treatment for people with complex concurrent disorders who are homeless or in unstable housing. Accepts clients on OAT and probation. Referral required.",
+   tags:["oat","funded"],access:"Referral from care provider",note:""},
+  {id:"heartwood",type:"bed",ha:"phsa",
+   name:"Heartwood Centre for Women",
+   inst:"BC Mental Health & Substance Use Services (PHSA)",
+   location:"Vancouver",
+   phone:"Via BCMHSUS referral",web:"bcmhsus.ca/mental-health-substance-use-services",
+   desc:"Provincial intensive residential treatment for women with concurrent mental health and substance use issues. Pre-admission app available. Peer support, recreation therapy, trauma-informed care.",
+   tags:["women","funded"],access:"Health authority referral",note:""},
+  {id:"redfish",type:"bed",ha:"phsa",
+   name:"Red Fish Healing Centre for Mental Health & Addiction",
+   inst:"BC Mental Health & Substance Use Services (PHSA)",
+   location:"Coquitlam (Colony Farm)",
+   phone:"Via BCMHSUS referral",web:"bcmhsus.ca/mental-health-substance-use-services",
+   desc:"105-bed provincial facility for adults with severe and complex concurrent mental health and substance use disorders. Trauma-informed, recovery-oriented voluntary admission.",
+   tags:["oat","funded"],access:"Health authority referral",note:""},
+
+  // ── BED-BASED: VCH ────────────────────────────────────
+  {id:"harbour-light",type:"bed",ha:"vch",
+   name:"Harbour Light Centre – Women's Beds (Salvation Army)",
+   inst:"Salvation Army / CMHA-BC (provincially funded)",
+   location:"Vancouver (DTES)",
+   phone:"604-681-3405",web:"salvationarmy.ca",
+   desc:"12 publicly funded beds for women including transgender and two-spirited individuals. Mental health and addictions services. Part of BC's 2025 expansion of no-cost treatment beds via CMHA-BC.",
+   tags:["women","oat","funded"],access:"Via VCH Access Central or CMHA-BC",
+   note:"New beds added Feb 2025 — verify capacity directly"},
+  {id:"new-dawn",type:"bed",ha:"vch",
+   name:"New Dawn Recovery Home (Chrysalis Society)",
+   inst:"Chrysalis Society",
+   location:"Vancouver",
+   phone:"604-876-9392",web:"chrysalissociety.com",
+   desc:"Women-only long-term residential recovery for self-identified women 19+ with significant substance use impacts on daily life. Structured, home-like environment with faith-informed values.",
+   tags:["women","faith"],access:"Self-referral / agency referral",note:""},
+  {id:"turning-point-richmond",type:"bed",ha:"vch",
+   name:"Turning Point Recovery Society – Richmond (Men's)",
+   inst:"Turning Point Recovery Society",
+   location:"Richmond",
+   phone:"604-279-7098",web:"turningpointsociety.ca",
+   desc:"Residential recovery for adult men 19+ whose substance use has disrupted work, housing, and relationships. Short- and long-term streams. Established non-profit Lower Mainland provider.",
+   tags:["men","funded"],access:"Self-referral / VCH Access Central",note:""},
+  {id:"turning-point-nv",type:"bed",ha:"vch",
+   name:"Turning Point Recovery Society – North Vancouver",
+   inst:"Turning Point Recovery Society",
+   location:"North Vancouver",
+   phone:"604-988-5281",web:"turningpointsociety.ca",
+   desc:"Co-ed and women's residential recovery programs. Short- and long-term options. Evidence-based, holistic, relapse prevention focus.",
+   tags:["women","funded"],access:"Self-referral / VCH Access Central",note:""},
+  {id:"last-door",type:"bed",ha:"vch",
+   name:"Last Door Recovery Society",
+   inst:"Last Door Recovery Society",
+   location:"New Westminster",
+   phone:"604-525-9771",web:"lastdoor.org",
+   desc:"Long-term residential recovery for adult men. Private medical detox option on-site. Integrated community social model. 12-step. Some govt-funded beds available.",
+   tags:["men","funded"],access:"Self-referral: 604-525-9771",
+   note:"Private beds also available; govt-funded beds for those who qualify"},
+  {id:"john-volken",type:"bed",ha:"vch",
+   name:"John Volken Academy",
+   inst:"John Volken Foundation",
+   location:"Surrey",
+   phone:"604-588-1617",web:"johnvolkenacademy.com",
+   desc:"Long-term residential for men and women. Holistic, community-based model. No insurance required; small one-time intake fee only. Vocational training and life reintegration focus.",
+   tags:["funded"],access:"Self-referral / intake screening",
+   note:"Minimal fee only — no insurance needed"},
+  {id:"hope-freedom",type:"bed",ha:"vch",
+   name:"Hope for Freedom Society",
+   inst:"Hope for Freedom Society",
+   location:"Port Coquitlam",
+   phone:"604-942-0370",web:"hopeforfreedom.ca",
+   desc:"Live-in recovery residence for adults. Abstinence-based, faith-informed. Short- and long-term residential options in a structured community setting.",
+   tags:["faith"],access:"Self-referral",note:"Abstinence-based; OAT not supported in program"},
+
+  // ── BED-BASED: FRASER HEALTH ──────────────────────────
+  {id:"mrtc",type:"bed",ha:"fh",
+   name:"Maple Ridge Treatment Centre (MRTC)",
+   inst:"Fraser Health (owned & operated)",
+   location:"Maple Ridge",
+   phone:"Referral fax: 604-519-8538",web:"fraserhealth.ca",
+   desc:"4- or 7-week intensive residential substance use program for men 19+. Group and individual counselling, life skills, recreational activities. Publicly operated by Fraser Health.",
+   tags:["men","funded"],access:"Referral via Fraser Health RCS — fax 604-519-8538",
+   note:"Also accepts B.C. Provincial Correctional Centre referrals (criteria apply)"},
+  {id:"peardonville",type:"bed",ha:"fh",
+   name:"Peardonville House",
+   inst:"Contracted by Fraser Health",
+   location:"Abbotsford",
+   phone:"604-853-1999",web:"peardonvillehouse.ca",
+   desc:"Intensive residential treatment for women 19+. Can accommodate preschool-age children. Evidence-based, trauma-informed. Long-established Fraser Valley program.",
+   tags:["women","funded"],access:"Referral via Fraser Health RCS or direct",
+   note:"Children (preschool age) welcome"},
+  {id:"kinghaven",type:"bed",ha:"fh",
+   name:"Kinghaven Treatment Centre",
+   inst:"Contracted by Fraser Health",
+   location:"Abbotsford",
+   phone:"604-853-6818",web:"kinghaven.ca",
+   desc:"Intensive residential treatment for men 19+. 12-step and evidence-based modalities. Established 1978. Located on a working farm — therapeutic community model.",
+   tags:["men","funded","faith"],access:"Referral via Fraser Health RCS or direct",
+   note:"Farm-based therapeutic community setting"},
+  {id:"ellendale",type:"bed",ha:"fh",
+   name:"Ellendale (Elizabeth Fry Society)",
+   inst:"Elizabeth Fry Society (contracted by FH)",
+   location:"Langley / Surrey area",
+   phone:"604-520-1166",web:"elizabethfry.com/we-can-help/programs-services/",
+   desc:"Residential treatment for women 19+. Trauma-informed, feminist approach. Operated by Elizabeth Fry Society, contracted by Fraser Health.",
+   tags:["women","funded"],access:"Referral via Fraser Health RCS or direct",note:""},
+  {id:"innervisions-men",type:"bed",ha:"fh",
+   name:"InnerVisions Recovery Society – Men's Program",
+   inst:"InnerVisions Recovery Society",
+   location:"Maple Ridge",
+   phone:"604-463-8255",web:"innervisions.ca",
+   desc:"60-day intensive residential treatment for men. 12-step model. Extensions available plus second-stage housing for up to a year. Some govt-funded beds available alongside private ($250/day).",
+   tags:["men","funded"],access:"Self-referral or health authority referral",
+   note:"Govt-funded beds may be available for those who qualify"},
+  {id:"hannah-house",type:"bed",ha:"fh",
+   name:"Hannah House (InnerVisions) – Women's Program",
+   inst:"InnerVisions Recovery Society",
+   location:"Maple Ridge",
+   phone:"604-463-8255",web:"innervisions.ca",
+   desc:"60-day intensive residential treatment for women. Parallel program to InnerVisions Men's. Gender-specific, 12-step, holistic. Long-term support and second-stage housing available.",
+   tags:["women","funded"],access:"Self-referral or health authority referral",note:""},
+  {id:"stlr",type:"bed",ha:"fh",
+   name:"STLRs – Stabilization & Transitional Living Residences",
+   inst:"Multiple operators contracted by Fraser Health",
+   location:"Various sites across Fraser Health region",
+   phone:"Via Fraser Health RCS or RAAC",web:"fraserhealth.ca",
+   desc:"Short-to-medium-term live-in stabilization post-detox. Peer support, group work, structured activities. For people waiting for or completing intensive treatment. Multiple sites across FH region.",
+   tags:["funded"],access:"Via Fraser Health RCS, RAAC, or community substance use counsellor",
+   note:"Fees may apply; income assistance may cover for those who qualify"},
+  {id:"star-beds",type:"bed",ha:"fh",
+   name:"STAR Beds – Short-Term Transitional Access to Recovery",
+   inst:"Fraser Health",
+   location:"Various (Fraser Health region)",
+   phone:"Via Fraser Health RCS",web:"fraserhealth.ca",
+   desc:"Brief stabilization beds for clients who have completed acute detox but lack safe housing. Clinically supported short stay to improve access to and engagement with health and support services.",
+   tags:["funded"],access:"Via Fraser Health RCS or acute care referral",
+   note:"For those completing acute detox without safe housing"},
+
+  // ── OUTPATIENT: VCH ───────────────────────────────────
+  {id:"core",type:"outpatient",ha:"vch",
+   name:"The CORE – Community Outpatient Recovery Experience",
+   inst:"Vancouver Coastal Health (VCH)",
+   location:"Vancouver (Robert & Lily Lee Family CHC) · Richmond eligible",
+   phone:"Walk-in to Robert & Lily Lee CHC",web:"vch.ca/en/location-service/core-community-outpatient-recovery-experience",
+   desc:"Community-based outpatient recovery for adults 19+ in Vancouver or Richmond. CBT, ACT, CPT, relapse prevention, trauma groups, mindfulness, acupuncture. Two streams: Groundwork (early recovery) and Evolution (trauma-focused). Self-referral.",
+   tags:["oat","funded","virtual"],access:"Self-referral — walk-in Mon–Fri 8:30am–4:30pm or call",
+   note:"Evolution stream (trauma-focused) — check availability for new cohorts"},
+  {id:"vamp",type:"outpatient",ha:"vch",
+   name:"Vancouver Addiction Matrix Program (VAMP)",
+   inst:"Vancouver Coastal Health (VCH)",
+   location:"Vancouver (Three Bridges CHC)",
+   phone:"604-714-3480",web:"vch.ca/en/service/vancouver-addiction-matrix-program-vamp",
+   desc:"12-week outpatient group program for adults 18+ in Vancouver. Early recovery skills, relapse prevention, aftercare. Two streams: all-gender and gay/bi/queer men. Virtual or in-person. Individual counselling included.",
+   tags:["funded","virtual"],access:"Self-referral — call 604-714-3480 for intake",
+   note:"Two-Spirit and gender-diverse people welcome in either stream"},
+  {id:"women-outpatient",type:"outpatient",ha:"vch",
+   name:"Women's Outpatient Treatment Program (VCH)",
+   inst:"Vancouver Coastal Health (VCH)",
+   location:"Vancouver",
+   phone:"Via VCH community health centres",web:"vch.ca/en/health-topics/vancouver-mental-health-and-substance-use-services",
+   desc:"Free outpatient treatment for women with drug or alcohol problems. Individual and group counselling, psychosocial support. Client-centred, trauma-informed, harm reduction philosophy.",
+   tags:["women","oat","funded"],access:"Referral or self-referral via VCH CHCs",note:""},
+  {id:"youth-day-tx",type:"outpatient",ha:"vch",
+   name:"Youth Day Treatment Program (VCH)",
+   inst:"Vancouver Coastal Health (VCH)",
+   location:"Vancouver",
+   phone:"604-675-3713",web:"vch.ca/en/service/youth-day-treatment-program",
+   desc:"Outpatient substance use treatment for youth 16–24 in VCH region. Group therapy 4 days/week plus individual sessions. 15-week program with 5 modules. Harm reduction and abstinence goals both supported. Structured so youth can continue school or work.",
+   tags:["youth","funded"],access:"Self-referral or provider referral: 604-675-3713",
+   note:"Youth can continue school/employment while in program"},
+  {id:"su-counselling-vch",type:"outpatient",ha:"vch",
+   name:"Substance Use Counselling – VCH Community Health Centres",
+   inst:"Vancouver Coastal Health (VCH)",
+   location:"Vancouver, Richmond, North Shore (multiple CHCs)",
+   phone:"Via individual CHC",web:"vch.ca/en/service/substance-use-counselling",
+   desc:"Individual and group outpatient counselling at VCH CHCs across Vancouver (Raven Song, Three Bridges, Evergreen, Strathcona, etc.), Richmond, and North Shore. Client-centred, trauma-informed, harm reduction philosophy.",
+   tags:["oat","funded"],access:"Self-referral or provider referral to nearest CHC",
+   note:"Check vch.ca for nearest CHC location"},
+  {id:"the-junction",type:"outpatient",ha:"vch",
+   name:"The Junction – Recovery Community Centre",
+   inst:"VCH / Three Bridges Community Health Centre",
+   location:"Vancouver (West End)",
+   phone:"604-714-3480",web:"vch.ca",
+   desc:"Recovery Community Centre with peer-led support, SMART Recovery groups, VAMP aftercare, tobacco cessation groups, and connections to counsellors. Drop-in model. Great for ongoing recovery support.",
+   tags:["funded"],access:"Drop-in at Three Bridges CHC (1292 Hornby St)",note:""},
+
+  // ── OUTPATIENT: FRASER HEALTH ─────────────────────────
+  {id:"dew",type:"outpatient",ha:"fh",
+   name:"Adult DEW – Day, Evening & Weekend Treatment Program",
+   inst:"Fraser Health",
+   location:"Surrey · New Westminster · Chilliwack · Virtual (any FH community)",
+   phone:"604-585-5610",web:"fraserhealth.ca/Service-Directory/Services/mental-health-and-substance-use/substance-use/adult-day-evening-weekend-dew-treatment-program",
+   desc:"Intensive outpatient group program for adults 19+ across Fraser Health region. Tailored to individual goals — day, evening, or weekend scheduling. In-person at 3 sites or fully virtual. Self-referral or provider referral.",
+   tags:["funded","virtual"],
+   access:"Call 604-585-5610 or drop-in: Mon 10am–1pm Surrey · Fri 9am–12pm Surrey · Tue/Thu 1–3:30pm New West",
+   note:"Sites: Creekside WM Centre (Surrey), Royal Columbian Hospital (New West), Chilliwack General Hospital"},
+  {id:"creekside-daytox",type:"outpatient",ha:"fh",
+   name:"Creekside Daytox Program",
+   inst:"Fraser Health",
+   location:"Surrey (13740 94A Ave)",
+   phone:"604-585-5610",web:"fraserhealth.ca",
+   desc:"Medically monitored day program at Creekside Withdrawal Management Centre for people completing outpatient withdrawal management. Structured daily programming with medical support.",
+   tags:["oat","funded"],access:"Via Fraser Health RCS or RAAC referral",note:""},
+  {id:"riverstone",type:"outpatient",ha:"fh",
+   name:"Riverstone Home & Mobile Detox / Daytox",
+   inst:"Fraser Health (contracted)",
+   location:"Abbotsford, Chilliwack, Mission, Hope, Maple Ridge / Pitt Meadows",
+   phone:"Via local FH MHSU clinic",web:"fraserhealth.ca",
+   desc:"Medically supported home/mobile detox and daytox across the Fraser Valley and eastern Fraser Health region. Allows people to withdraw from substances at home with clinical support.",
+   tags:["oat","funded"],access:"Via local Fraser Health MHSU clinic or community SU counsellor",
+   note:"Serves: Abbotsford, Chilliwack, Mission, Agassiz, Hope, Maple Ridge/Pitt Meadows"},
+  {id:"raac-fh",type:"outpatient",ha:"fh",
+   name:"Rapid Access to Addiction Care (RAAC) Clinics – Fraser Health",
+   inst:"Fraser Health",
+   location:"Surrey, Burnaby, New Westminster, Abbotsford, Tri-Cities (multiple sites)",
+   phone:"604-585-5610 or local MHSU centre",web:"fraserhealth.ca/Service-Directory/Services/mental-health-and-substance-use/rapid-access-to-addiction-care-clinic",
+   desc:"Low-barrier walk-in/referral clinics across Fraser Health for assessment, OAT initiation, stabilization, and bridging to ongoing treatment. Accepts self-referrals. Key entry point into the treatment pathway.",
+   tags:["oat","funded"],access:"Self-referral — walk-in or call local MHSU centre",
+   note:"Multiple sites — check fraserhealth.ca for nearest RAAC location"},
+  {id:"fh-su-counselling",type:"outpatient",ha:"fh",
+   name:"Community Substance Use Services – FH MHSU Clinics",
+   inst:"Fraser Health",
+   location:"Burnaby, Surrey, Langley, Coquitlam, New Westminster, Abbotsford, Chilliwack, more",
+   phone:"Local MHSU centre or FH Access Line",web:"fraserhealth.ca/Service-Directory/Services/mental-health-and-substance-use/mental-health-centres/community-substance-use-services-clinics",
+   desc:"Individual and group outpatient counselling, assessment, concurrent disorder support, and OAT coordination at MHSU clinics across the Fraser Health region.",
+   tags:["oat","funded"],access:"Self-referral, provider referral, or via RAAC",
+   note:"Available in most Fraser Health communities — check local MHSU clinic"},
+  {id:"abbotsford-addictions",type:"outpatient",ha:"fh",
+   name:"Abbotsford Addictions (Archway Community Services)",
+   inst:"Archway Community Services (contracted by Fraser Health)",
+   location:"Abbotsford (202–31943 South Fraser Way)",
+   phone:"604-850-5106",web:"archway.ca",
+   desc:"Outpatient alcohol and drug counselling for adults and youth including multicultural and seniors components. Serves people affected by another's substance use. Youth Outreach Workers and school/community prevention programs.",
+   tags:["youth","funded"],access:"Self-referral: 604-850-5106 or aac@archway.ca",note:""},
+];
+
+// ── Render ──────────────────────────────────
+const HA_LABELS = {vch:"VCH",fh:"Fraser Health",phsa:"PHSA",private:"Private"};
+const HA_CLASS  = {vch:"ha-vch",fh:"ha-fh",phsa:"ha-phsa",private:"ha-private"};
+const TAG_META  = {
+  oat:      ["oat","OAT-Friendly"],
+  women:    ["women","Women"],
+  men:      ["men","Men"],
+  youth:    ["youth","Youth"],
+  indigenous:["indigenous","Indigenous"],
+  funded:   ["funded","Publicly Funded"],
+  faith:    ["faith","Faith-Based"],
+  virtual:  ["virtual","Virtual Option"],
+};
+
+function makeCard(p) {
+  const tagHtml = p.tags
+    .filter(t => TAG_META[t])
+    .map(t => `<span class="ctag ${t}">${TAG_META[t][1]}</span>`)
+    .join("");
+
+  const webHost = p.web ? p.web.replace(/^https?:\/\//,"").replace(/\/.*/,"") : "";
+  const webLink = p.web ? `<a href="https://${p.web.replace(/^https?:\/\//,"")}" target="_blank" rel="noopener">${webHost}</a>` : "";
+
+  return `
+<div class="prog-card"
+     data-type="${p.type}" data-ha="${p.ha}"
+     data-tags="${p.tags.join(" ")}"
+     data-search="${[p.name,p.inst,p.location,p.desc,p.tags.join(" ")].join(" ").toLowerCase()}">
+  <div class="card-top">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:5px;">
+      <div class="card-name">${p.name}</div>
+      <span class="ha-badge ${HA_CLASS[p.ha]||"ha-private"}" style="flex-shrink:0;margin-top:2px;">${HA_LABELS[p.ha]||p.ha}</span>
+    </div>
+    <div class="card-inst">${p.inst} &mdash; <em>${p.location}</em></div>
+    <div class="card-desc">${p.desc}</div>
+    ${tagHtml ? `<div class="card-tags">${tagHtml}</div>` : ""}
+    ${p.note ? `<div style="margin-top:8px;padding:6px 9px;background:#FFF8EE;border:1px solid #F5D8A8;border-radius:6px;font-size:11px;color:#9A6F00;">⚠️ ${p.note}</div>` : ""}
+  </div>
+  <div class="card-footer">
+    ${p.phone ? `<div class="card-footer-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>${p.phone}</div>` : ""}
+    ${webLink ? `<div class="card-footer-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>${webLink}</div>` : ""}
+    <div class="card-footer-item" style="width:100%;margin-top:2px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      <strong style="margin-right:3px;color:var(--text);">Access:</strong>${p.access}
+    </div>
+  </div>
+</div>`;
+}
+
+function renderAll() {
+  document.getElementById("bed-grid").innerHTML =
+    PROGRAMS.filter(p=>p.type==="bed").map(makeCard).join("");
+  document.getElementById("outpatient-grid").innerHTML =
+    PROGRAMS.filter(p=>p.type==="outpatient").map(makeCard).join("");
+  updateCount();
+}
+
+// ── Filter + Search ─────────────────────────
+let activeFilter = "all";
+let searchVal = "";
+
+function applyFilters() {
+  let visible = 0;
+  document.querySelectorAll(".prog-card").forEach(card => {
+    const ha = card.dataset.ha;
+    const type = card.dataset.type;
+    const tags = card.dataset.tags;
+    const matchFilter = (() => {
+      if (activeFilter === "all") return true;
+      if (activeFilter === "bed") return type === "bed";
+      if (activeFilter === "outpatient") return type === "outpatient";
+      if (activeFilter === "vch") return ha === "vch" || ha === "phsa";
+      if (activeFilter === "fh") return ha === "fh";
+      if (activeFilter === "women") return tags.includes("women");
+      if (activeFilter === "oat") return tags.includes("oat");
+      if (activeFilter === "funded") return tags.includes("funded");
+      return true;
+    })();
+    const matchSearch = !searchVal || card.dataset.search.includes(searchVal);
+    const show = matchFilter && matchSearch;
+    card.classList.toggle("hidden", !show);
+    if (show) visible++;
+  });
+
+  // hide empty sections
+  ["bed","outpatient"].forEach(type => {
+    const banner = document.querySelector(`.section-banner[data-section="${type}"]`);
+    const grid   = document.getElementById(`${type}-grid`);
+    const any    = grid && grid.querySelectorAll(".prog-card:not(.hidden)").length > 0;
+    if (banner) banner.style.display = any ? "" : "none";
+    if (grid)   grid.style.display   = any ? "" : "none";
+  });
+
+  document.getElementById("empty").classList.toggle("show", visible === 0);
+  updateCount(visible);
+}
+
+function updateCount(n) {
+  const total = PROGRAMS.length;
+  const showing = (n !== undefined) ? n : total;
+  document.getElementById("results-count").textContent =
+    showing === total ? `${total} programs` : `${showing} of ${total}`;
+}
+
+document.querySelectorAll(".chip").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".chip").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeFilter = btn.dataset.filter;
+    applyFilters();
+  });
+});
+
+document.getElementById("search").addEventListener("input", e => {
+  searchVal = e.target.value.toLowerCase().trim();
+  applyFilters();
+});
+
+document.addEventListener("DOMContentLoaded", renderAll);
+</script>
+</body>
+</html>

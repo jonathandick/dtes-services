@@ -32,33 +32,6 @@ a:hover{text-decoration:underline;}
 #app{display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
 
 
-/* ── Site Nav ── */
-#site-nav{
-  background:#071F1B;padding:0 14px;
-  display:flex;align-items:center;justify-content:space-between;
-  height:44px;flex-shrink:0;z-index:300;
-  border-bottom:1px solid rgba(255,255,255,0.06);
-}
-#site-nav .sn-logo{
-  display:flex;align-items:center;gap:9px;text-decoration:none;
-  font-size:15px;font-weight:500;color:#FFFFFF;
-}
-#site-nav .sn-pulse{
-  width:8px;height:8px;border-radius:50%;background:#E8930A;
-  flex-shrink:0;animation:snpulse 2.2s ease-in-out infinite;display:inline-block;
-}
-@keyframes snpulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(232,147,10,0.6)}
-  50%{box-shadow:0 0 0 5px rgba(232,147,10,0)}
-}
-#site-nav .sn-links{display:flex;gap:2px;}
-#site-nav .sn-links a{
-  font-size:12px;color:#7EC8C0;padding:5px 10px;border-radius:6px;
-  transition:all 0.15s;text-decoration:none;white-space:nowrap;
-}
-#site-nav .sn-links a:hover{background:rgba(255,255,255,0.08);color:#fff;text-decoration:none;}
-#site-nav .sn-links a.sn-active{background:rgba(255,255,255,0.1);color:#fff;font-weight:500;}
-
 /* ── Topbar ── */
 #topbar{
   background:var(--surface);border-bottom:1px solid var(--border);
@@ -441,17 +414,7 @@ a:hover{text-decoration:underline;}
 <div id="app">
 
 <!-- Topbar -->
-<nav id="site-nav">
-  <a href="index.html" class="sn-logo">
-    <span class="sn-pulse"></span>
-    DTES Community Tools
-  </a>
-  <div class="sn-links">
-    <a href="index.html">Home</a>
-    <a href="dtes-services.html" class="sn-active">Services</a>
-    <a href="overdose-watch.html">OD Watch</a>
-  </div>
-</nav>
+<script src="nav.js"></script>
 
 <div id="topbar">
   <a href="#" id="logo">
@@ -506,7 +469,6 @@ a:hover{text-decoration:underline;}
       <button class="fchip" data-filter="Emergency Services"><span class="cdot" style="background:#CC3300"></span>Emergency Services</button>
       <button class="fchip" data-filter="Transitional / Acute Care"><span class="cdot" style="background:#2D3A8C"></span>Transitional Care</button>
       <button class="fchip" data-filter="System Navigation"><span class="cdot" style="background:#1A2B6B"></span>System Navigation</button>
-      <button class="fchip" data-filter="Mobile Outreach"><span class="cdot" style="background:#0A6B6B"></span>Mobile Outreach</button>
 
       <div class="fs-divider"></div>
       <div class="fs-section-label">Quick Filters</div>
@@ -573,7 +535,6 @@ a:hover{text-decoration:underline;}
           <option>Emergency Services</option>
           <option>Transitional / Acute Care</option>
           <option>System Navigation</option>
-          <option>Mobile Outreach</option>
         </select>
       </div>
       <div class="form-row" style="margin:0">
@@ -695,7 +656,6 @@ a:hover{text-decoration:underline;}
       <option>Emergency Services</option>
       <option>Transitional / Acute Care</option>
       <option>System Navigation</option>
-      <option>Mobile Outreach</option>
     </select>
     <button class="modal-btn" onclick="exportTableCSV()">⬇ Export CSV</button>
     <button class="modal-btn primary" onclick="window.print()">🖨 Print</button>
@@ -741,7 +701,6 @@ const CAT_META = {
   "Emergency Services":  {color:"#CC3300", icon:"🚨"},
   "Transitional / Acute Care":{color:"#2D3A8C", icon:"🏨"},
   "System Navigation":   {color:"#1A2B6B", icon:"🔬"},
-  "Mobile Outreach":     {color:"#0A6B6B", icon:"🚶"},
 };
 
 const BASE_ORGS = [
@@ -944,55 +903,6 @@ const BASE_ORGS = [
    lat:49.2843, lng:-123.0890,
    desc:"Youth ages 15–24. Multi-disciplinary outreach team. Street outreach in DTES, case management, primary care access, cultural/spiritual support, harm reduction supplies, MH/SUD bridging. First DTES youth-specific centre (opened 2023)."},
 
-  // ── MOBILE OUTREACH TEAMS ─────────────────────────────────
-  {id:"oot", name:"OOT – Overdose Outreach Team (VCH)", cat:"Mobile Outreach",
-   inst:"Vancouver Coastal Health (VCH)", addr:"312 Main St (base)", phone:"604-360-2874",
-   web:"vch.ca/en/location-service/overdose-outreach-team", hours:"Mon–Fri 8am–6pm in-person; phone to 8pm. Weekends/stats: phone 8am–8pm",
-   oat:"Yes – OAT navigation/initiation support", scs:"No", walkin:"No referral needed – self-referral accepted",
-   flags:{walkin:true},
-   lat:49.2793, lng:-123.1000,
-   desc:"Mobile outreach for people who have recently experienced an opioid overdose or are at high risk. Navigates to appropriate services, supports OAT access, harm reduction supplies including naloxone and overdose prevention education, complex care coordination. Serves DTES and broader VCH Vancouver region. No referral required."},
-
-  {id:"ihot", name:"IHOT – Intensive Health Outreach Team (VCH)", cat:"Mobile Outreach",
-   inst:"Vancouver Coastal Health (VCH)", addr:"Episodic clinic: Molson OPS, 166 E Hastings St (alley entrance)", phone:"604-839-0179",
-   web:"vch.ca/en/service/vancouver-intensive-health-outreach-team-ihot", hours:"Episodic clinic Mon & Thu 10am–4pm. Phone line Mon–Fri 8am–6:30pm",
-   oat:"Via referral", scs:"No", walkin:"Walk-in to episodic clinic Mon/Thu; phone self-referral",
-   flags:{walkin:true},
-   lat:49.2811, lng:-123.0987,
-   desc:"Low-barrier interim health care, psychosocial support, and help accessing longer-term health services for unhoused or newly housed people aged 17+. Field-based team that travels to person's location. Episodic nursing/physician care, housing referrals, ID replacement, system navigation. Bridges clients to primary care, MHSU, and other longitudinal teams. Self-referrals and community referrals accepted."},
-
-  {id:"icm", name:"ICM Teams – Intensive Case Management (VCH)", cat:"Mobile Outreach",
-   inst:"Vancouver Coastal Health (VCH)", addr:"Field-based (DTES)", phone:"Via DCHC or CHC referral",
-   web:"vch.ca/en/service/intensive-case-management-teams-icmt", hours:"Mon–Fri (hours vary by team)",
-   oat:"Via referral", scs:"No", walkin:"Referral via CHC or Access & Assessment Centre",
-   flags:{},
-   lat:49.2820, lng:-123.0960,
-   desc:"Multidisciplinary outreach teams for people in the DTES with severe SUD, chronic unmet medical needs, and complex barriers to care. Meet clients where they are – in shelters, SROs, on the street. Staff include social workers, nurses, NPs, and health care workers. Goal is stabilization and connection to longer-term services. Frequently serve high ED/hospital utilizers. Referral via community health centres."},
-
-  {id:"act", name:"ACT Teams – Assertive Community Treatment (VCH)", cat:"Mobile Outreach",
-   inst:"Vancouver Coastal Health (VCH)", addr:"Field-based; referral via CAD Team", phone:"Via Central Access & Discharge (CAD) Team",
-   web:"vch.ca/en/location-service/vancouver-assertive-community-treatment-act-teams", hours:"Mon–Fri (extended hours vary by team)",
-   oat:"Yes – via team", scs:"No", walkin:"No – referral required via CAD or community MH team",
-   flags:{},
-   lat:49.2820, lng:-123.0950,
-   desc:"7 VCH ACT teams; 2 dedicated to DTES clients with complex MH/SUD. Team-based, person-centered outreach combining treatment, rehabilitation and support as an alternative to psychiatric hospitalization. Multidisciplinary: RN, social worker, OT, substance use specialist, peer support, psychiatrist, NP. Housing First model. Referral required – must be currently receiving VCH community MH services. Also: RainCity ACT Team (ACT3) operated in partnership with RainCity Housing."},
-
-  {id:"iho", name:"IHO – Indigenous Health Outreach (VCH)", cat:"Mobile Outreach",
-   inst:"Vancouver Coastal Health (VCH)", addr:"Field-based outreach (DTES)", phone:"Indigenousoutreach@vch.ca / fax 604-675-2552",
-   web:"vch.ca/en/service/indigenous-health-outreach-iho", hours:"Mon–Fri 8am–4:30pm",
-   oat:"Via referral", scs:"No", walkin:"Outreach-initiated; referral via email/fax",
-   flags:{indigenous:true},
-   lat:49.2810, lng:-123.0940,
-   desc:"Indigenous-led field team supporting unhoused or precariously housed Indigenous people in the DTES with complex MH/SUD challenges. Cultural and relational strengths-based approach. Services: cultural/spiritual connections, case consults, system navigation, care planning with cultural practices embedded. Includes Outreach Doula (perinatal) and Indigenous Youth outreach streams. Travels to person's location. Not an emergency service. Each worker carries 20-30 active clients; currently has waitlist."},
-
-  {id:"icrt", name:"ICRT – Indigenous Crisis Response Team (VCH)", cat:"Mobile Outreach",
-   inst:"Vancouver Coastal Health (VCH)", addr:"Field-based (DTES)", phone:"Via VCH / 211 BC",
-   web:"vch.ca/en/service/indigenous-crisis-response-team-icrt", hours:"Mon–Fri 8am–6pm",
-   oat:"No", scs:"No", walkin:"Outreach-initiated / crisis-activated; no referral needed",
-   flags:{indigenous:true},
-   lat:49.2815, lng:-123.0945,
-   desc:"NEW Aug 2024. Wholistic non-police mobile mental health and wellness crisis response for Indigenous people (17+) in or near the DTES experiencing or nearing a mental health crisis, with or without active substance use. 9 FTE: Team Lead, 2 MH Outreach Nurses, 4 Indigenous Cultural Practitioners, 2 Indigenous Care Coordinators. Same-day response, travels to person location. Services: crisis assessment/stabilization, stress debriefing, wellness checks, short-term follow-up (up to 30 days), cultural supports, system navigation. Not for active safety risk – call 911."},
-
   // ── PEER / INDIGENOUS ─────────────────────────────────────
   {id:"vandu", name:"VANDU – Vancouver Area Network of Drug Users", cat:"Peer / Indigenous",
    inst:"Independent (peer-run)", addr:"380 E Hastings St", phone:"604-683-6061",
@@ -1019,12 +929,12 @@ const BASE_ORGS = [
    desc:"Culturally safe drop-in for Indigenous peoples. Crisis support, trauma counselling brokering, court accompaniments, cultural programming, peer support, Elder connections."},
 
   {id:"ino", name:"VCH Indigenous Outreach (INO)", cat:"Peer / Indigenous",
-   inst:"Vancouver Coastal Health (VCH)", addr:"Field-based outreach (DTES)", phone:"Indigenousoutreach@vch.ca / fax 604-675-2552",
-   web:"vch.ca/en/service/indigenous-outreach", hours:"Mon–Fri 8am–4:30pm",
+   inst:"Vancouver Coastal Health (VCH)", addr:"Field-based outreach (DTES)", phone:"VCH intake",
+   web:"vch.ca", hours:"Mon–Fri",
    oat:"Via referral", scs:"No", walkin:"Outreach-initiated",
    flags:{indigenous:true},
    lat:49.2803, lng:-123.0930,
-   desc:"(See IHO – Indigenous Health Outreach in Mobile Outreach section for the current VCH Indigenous outreach team entry. This entry retained for legacy reference.)"},
+   desc:"Outreach to unhoused/precariously housed Indigenous people with complex MH/SUD needs. Cultural supports, connections to health services, housing navigation."},
 
   // ── WOMEN / SEX WORKERS ───────────────────────────────────
   {id:"dewc", name:"Downtown Eastside Women's Centre (DEWC)", cat:"Women / Sex Workers",
