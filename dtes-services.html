@@ -29,7 +29,7 @@ a{color:var(--blue);text-decoration:none;}
 a:hover{text-decoration:underline;}
 
 /* ── Layout ── */
-#app{display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
+#app{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
 
 /* ── Topbar ── */
 #topbar{
@@ -393,7 +393,7 @@ a:hover{text-decoration:underline;}
     width:36px;height:4px;background:var(--border2);border-radius:4px;
     margin:8px auto 4px;cursor:pointer;
   }
-  #map-wrap{height:calc(100dvh - var(--header-h) - 50px);}
+  #map-wrap{height:calc(100vh - var(--header-h) - 50px);}
   #body{flex-direction:column;}
   .tb-btn span{display:none;}
 }
@@ -414,12 +414,7 @@ a:hover{text-decoration:underline;}
 
 <!-- Topbar -->
 <div id="topbar">
-  <a href="index.html" id="home-link" title="Back to DTES Community Tools" style="
-    display:flex;align-items:center;gap:5px;text-decoration:none;
-    color:#6A6259;font-size:12px;font-weight:500;flex-shrink:0;
-    padding:0 10px 0 2px;border-right:1px solid #E0DCD5;margin-right:4px;
-    height:32px;white-space:nowrap;
-  ">
+  <a href="index.html" id="home-link" title="Back to DTES Community Tools" style="display:flex;align-items:center;gap:5px;text-decoration:none;color:#6A6259;font-size:12px;font-weight:500;flex-shrink:0;padding:0 10px 0 2px;border-right:1px solid #E0DCD5;margin-right:4px;height:32px;white-space:nowrap;">
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 11L4 7l4-4"/></svg>
     Home
   </a>
@@ -1304,6 +1299,10 @@ function initMap() {
     attribution:"© OpenStreetMap contributors © CARTO", maxZoom:19
   }).addTo(map);
   map.on("click", () => { if(window.innerWidth <= 700) closePanel(); });
+  // Force tile/marker realignment after layout settles
+  requestAnimationFrame(() => { map.invalidateSize(); });
+  setTimeout(() => { map.invalidateSize(); }, 200);
+  window.addEventListener("load", () => { map.invalidateSize(); });
 }
 
 function makeIcon(org) {
