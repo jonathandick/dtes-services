@@ -20,6 +20,7 @@
   --shadow-md:0 4px 16px rgba(0,0,0,0.10),0 2px 6px rgba(0,0,0,0.06);
   --shadow-lg:0 12px 40px rgba(0,0,0,0.14),0 4px 12px rgba(0,0,0,0.08);
   --header-h:52px;
+  --sitenav-h:44px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;}
@@ -30,6 +31,36 @@ a:hover{text-decoration:underline;}
 
 /* ── Layout ── */
 #app{display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
+
+/* ── Site Nav ── */
+#site-nav{
+  background:#071F1B;
+  padding:0 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:44px;flex-shrink:0;z-index:300;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  font-family:'DM Sans',sans-serif;
+}
+#site-nav .sn-logo{
+  display:flex;align-items:center;gap:9px;text-decoration:none;
+  font-size:15px;font-weight:500;color:#FFFFFF;
+  font-family:'DM Sans',sans-serif;
+}
+#site-nav .sn-pulse{
+  width:8px;height:8px;border-radius:50%;background:#E8930A;
+  flex-shrink:0;animation:snpulse 2.2s ease-in-out infinite;
+}
+@keyframes snpulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(232,147,10,0.6)}
+  50%{box-shadow:0 0 0 5px rgba(232,147,10,0)}
+}
+#site-nav .sn-links{display:flex;gap:2px;}
+#site-nav .sn-links a{
+  font-size:12px;color:#7EC8C0;padding:5px 10px;border-radius:6px;
+  transition:all 0.15s;text-decoration:none;white-space:nowrap;
+}
+#site-nav .sn-links a:hover{background:rgba(255,255,255,0.08);color:#fff;text-decoration:none;}
+#site-nav .sn-links a.sn-active{background:rgba(255,255,255,0.1);color:#fff;font-weight:500;}
 
 /* ── Topbar ── */
 #topbar{
@@ -411,6 +442,19 @@ a:hover{text-decoration:underline;}
 </head>
 <body>
 <div id="app">
+
+<!-- Site Nav -->
+<nav id="site-nav">
+  <a href="index.html" class="sn-logo">
+    <span class="sn-pulse"></span>
+    DTES Community Tools
+  </a>
+  <div class="sn-links">
+    <a href="index.html">Home</a>
+    <a href="dtes-services.html" class="sn-active">Services</a>
+    <a href="overdose-watch.html">OD Watch</a>
+  </div>
+</nav>
 
 <!-- Topbar -->
 <div id="topbar">
