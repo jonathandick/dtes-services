@@ -20,7 +20,6 @@
   --shadow-md:0 4px 16px rgba(0,0,0,0.10),0 2px 6px rgba(0,0,0,0.06);
   --shadow-lg:0 12px 40px rgba(0,0,0,0.14),0 4px 12px rgba(0,0,0,0.08);
   --header-h:52px;
-  --sitenav-h:44px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;}
@@ -31,36 +30,6 @@ a:hover{text-decoration:underline;}
 
 /* ── Layout ── */
 #app{display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
-
-/* ── Site Nav ── */
-#site-nav{
-  background:#071F1B;
-  padding:0 14px;
-  display:flex;align-items:center;justify-content:space-between;
-  height:44px;flex-shrink:0;z-index:300;
-  border-bottom:1px solid rgba(255,255,255,0.06);
-  font-family:'DM Sans',sans-serif;
-}
-#site-nav .sn-logo{
-  display:flex;align-items:center;gap:9px;text-decoration:none;
-  font-size:15px;font-weight:500;color:#FFFFFF;
-  font-family:'DM Sans',sans-serif;
-}
-#site-nav .sn-pulse{
-  width:8px;height:8px;border-radius:50%;background:#E8930A;
-  flex-shrink:0;animation:snpulse 2.2s ease-in-out infinite;
-}
-@keyframes snpulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(232,147,10,0.6)}
-  50%{box-shadow:0 0 0 5px rgba(232,147,10,0)}
-}
-#site-nav .sn-links{display:flex;gap:2px;}
-#site-nav .sn-links a{
-  font-size:12px;color:#7EC8C0;padding:5px 10px;border-radius:6px;
-  transition:all 0.15s;text-decoration:none;white-space:nowrap;
-}
-#site-nav .sn-links a:hover{background:rgba(255,255,255,0.08);color:#fff;text-decoration:none;}
-#site-nav .sn-links a.sn-active{background:rgba(255,255,255,0.1);color:#fff;font-weight:500;}
 
 /* ── Topbar ── */
 #topbar{
@@ -443,19 +412,6 @@ a:hover{text-decoration:underline;}
 <body>
 <div id="app">
 
-<!-- Site Nav -->
-<nav id="site-nav">
-  <a href="index.html" class="sn-logo">
-    <span class="sn-pulse"></span>
-    DTES Community Tools
-  </a>
-  <div class="sn-links">
-    <a href="index.html">Home</a>
-    <a href="dtes-services.html" class="sn-active">Services</a>
-    <a href="overdose-watch.html">OD Watch</a>
-  </div>
-</nav>
-
 <!-- Topbar -->
 <div id="topbar">
   <a href="#" id="logo">
@@ -775,7 +731,7 @@ const BASE_ORGS = [
    web:"vandu.org", hours:"Daily 10am–9:30pm (closed Thu)",
    oat:"No", scs:"Yes – peer-monitored OPS", walkin:"Yes – drop-in",
    flags:{scs:true,walkin:true},
-   lat:49.2801, lng:-123.0935,
+   lat:49.2806, lng:-123.0935,
    desc:"Peer-monitored OPS at VANDU headquarters. Harm reduction supplies, naloxone, peer support. Board and staff are current/former drug users."},
 
   {id:"sisterspace", name:"SisterSpace OPS – Atira (Women-Only)", cat:"SCS / OPS",
@@ -807,7 +763,7 @@ const BASE_ORGS = [
    web:"vch.ca", hours:"Mon noon–9pm; Tue–Fri 8am–9pm",
    oat:"No", scs:"Yes – OPS", walkin:"Yes – drop-in",
    flags:{scs:true,walkin:true},
-   lat:49.2797, lng:-123.1004,
+   lat:49.2803, lng:-123.1006,
    desc:"VCH-listed OPS at 390 Columbia. Supervised consumption, harm reduction supplies, peer support, naloxone. Verify hours with VCH."},
 
   {id:"ops-pender", name:"Inhalation OPS – 99 W Pender", cat:"SCS / OPS",
@@ -823,7 +779,7 @@ const BASE_ORGS = [
    web:"lookoutsociety.ca", hours:"Daily 9am–8:30pm",
    oat:"No", scs:"Yes – OPS", walkin:"Yes – drop-in",
    flags:{scs:true,walkin:true},
-   lat:49.2835, lng:-123.0880,
+   lat:49.2807, lng:-123.0878,
    desc:"OPS within Lookout's psychosocial resource centre. Meals/snacks, nursing (wound/foot care), medications admin, peer programs, substance use programming, laundry/showers. Pets on leash welcome."},
 
   // ── PRIMARY CARE / OAT ────────────────────────────────────
@@ -848,7 +804,7 @@ const BASE_ORGS = [
    web:"vch.ca", hours:"Mon–Wed/Fri 9am–6pm; Thu 9am–8pm",
    oat:"Yes", scs:"No", walkin:"Drop-in (some) / referral",
    flags:{oat:true,walkin:true,women:true},
-   lat:49.2799, lng:-123.1067,
+   lat:49.2793, lng:-123.1067,
    desc:"Primary care, MHSU, harm reduction, palliative care, rehab, physiotherapy. Thu evenings 4:30–8pm: women/gender-diverse only. Being consolidated into Lily's CHC (38 W Hastings) early 2026 – verify status."},
 
   {id:"heatley-chc", name:"Heatley Community Health Centre (VCH)", cat:"Primary Care / OAT",
@@ -872,7 +828,7 @@ const BASE_ORGS = [
    web:"phs.ca/medical/columbia-street-community-clinic/", hours:"Tue–Fri 9am–noon, 1:30–4:30pm",
    oat:"Yes – full range (methadone, Kadian, Suboxone, fentanyl patches/powder)", scs:"No", walkin:"Drop-in + appointment",
    flags:{oat:true,walkin:true},
-   lat:49.2800, lng:-123.1002,
+   lat:49.2803, lng:-123.1005,
    desc:"Formerly Portland Clinic. 13 GPs/addiction specialists. Up to 50 patients/day. Hep C clinic, women's health, internal medicine, neurology. OAT same-day prescriptions."},
 
   {id:"vahs", name:"Vancouver Aboriginal Health Society (VAHS) Clinic", cat:"Primary Care / OAT",
@@ -880,7 +836,7 @@ const BASE_ORGS = [
    web:"vahs.life", hours:"Mon/Tue/Thu/Fri 9am–4:30pm; Wed 9am–8pm; Sat 9am–3pm",
    oat:"Yes", scs:"No", walkin:"Walk-in + appointment",
    flags:{oat:true,walkin:true,indigenous:true},
-   lat:49.2794, lng:-123.0928,
+   lat:49.2807, lng:-123.0923,
    desc:"Urban Indigenous primary care hub (all DTES welcome). OAT, HIV care, mental health, dietitian, Elder-led traditional healing, dental. Youth clinic Wed evenings. Formerly VNHS (Vancouver Native Health Society)."},
 
   // ── TRANSITIONAL / ACUTE ──────────────────────────────────
@@ -889,7 +845,7 @@ const BASE_ORGS = [
    web:"phs.ca/program/community-transitional-care-team/", hours:"24/7 residential",
    oat:"Yes – OAT continuation + initiation", scs:"No (harm reduction; active use permitted)", walkin:"No – clinician referral only",
    flags:{oat:true,"24hr":true},
-   lat:49.2800, lng:-123.0956,
+   lat:49.2808, lng:-123.104,
    desc:"Residential acute care for PWUD discharged from St. Paul's or VGH needing IV antibiotics. Private room + kitchen + bathroom in Pennsylvania Hotel. 24/7 nursing and physician coverage, OAT, psychosocial support, 3 meals/day, staff accompaniment to all appointments. Housing secured before every discharge. Nov 2025: formal partnership with St. Paul's Hospital at Home (HAH). Also co-located: Pennsylvania Supported Suites (PSS) – 10 rooms for long-term complex care.",
    note:"Referral by PHC or VCH clinician only. Active substance use permitted (harm reduction model)."},
 
@@ -907,7 +863,7 @@ const BASE_ORGS = [
    web:"towardtheheart.com", hours:"Daily noon–8pm",
    oat:"No", scs:"No", walkin:"Yes – drop-in",
    flags:{walkin:true},
-   lat:49.2793, lng:-123.0851,
+   lat:49.2807, lng:-123.0819,
    desc:"Dedicated drug checking site. FTIR spectrometer, immunoassay strips, substance ID. Drug alert info. Also available: Insite (FTIR daily), Molson OPS (FTIR Tuesdays). VCH drug alerts: text JOIN to 253787."},
 
   // ── DETOX / WDM ──────────────────────────────────────────
@@ -933,7 +889,7 @@ const BASE_ORGS = [
    web:"vch.ca/en/sheway", hours:"Drop-in Mon–Fri 9:15am–4pm",
    oat:"Yes", scs:"No", walkin:"Yes – drop-in",
    flags:{oat:true,walkin:true,women:true},
-   lat:49.2795, lng:-123.0932,
+   lat:49.2807, lng:-123.0928,
    desc:"Pregnant/parenting women with substance use. Primary care, prenatal/postnatal care, OAT, SUD counselling, psychiatry, parenting support, nutrition, food bags, housing navigation, legal advocacy. 24/7 OB on-call via BC Women's. Woman-centred harm reduction model."},
 
   {id:"dtes-youth", name:"DTES Youth Outreach Centre + Team (VCH)", cat:"Community / Drop-in",
@@ -950,7 +906,7 @@ const BASE_ORGS = [
    web:"vandu.org", hours:"Daily (OPS 10am–9:30pm, closed Thu)",
    oat:"No", scs:"Community OPS on-site", walkin:"Drop-in",
    flags:{scs:true,walkin:true},
-   lat:49.2800, lng:-123.0936,
+   lat:49.2806, lng:-123.0936,
    desc:"Peer-run drug-user organization. 3,000+ members. Drug policy advocacy, OPS, harm reduction, naloxone, community meals, safe supply advocacy. Board must be current/former drug users."},
 
   {id:"wahrs", name:"WAHRS – Western Aboriginal Harm Reduction Society", cat:"Peer / Indigenous",
@@ -958,7 +914,7 @@ const BASE_ORGS = [
    web:"vandu.org", hours:"Weekly meetings",
    oat:"No", scs:"No", walkin:"Engagement-based",
    flags:{indigenous:true},
-   lat:49.2801, lng:-123.0934,
+   lat:49.2806, lng:-123.0934,
    desc:"300+ Indigenous members. Culturally appropriate harm reduction, healing circles, peer research (BC-CfE partner), policy advocacy for Indigenous PWUD."},
 
   {id:"afd", name:"Aboriginal Front Door Society", cat:"Peer / Indigenous",
@@ -1000,7 +956,7 @@ const BASE_ORGS = [
    web:"ugm.ca", hours:"Meals 1–5:45pm daily; shelter 24/7",
    oat:"No – abstinence-based", scs:"No", walkin:"Walk-in for meals/shelter",
    flags:{walkin:true,"24hr":true},
-   lat:49.2796, lng:-123.0924,
+   lat:49.2807, lng:-123.0858,
    desc:"80+ yr history. Emergency shelter (92 beds), meals, pre-recovery stabilization, case management, employment, outreach. ⚠️ Does NOT accept methadone/Suboxone in recovery program (Sublocade exception only). Faith-based.",
    note:"No OAT in recovery program. Sublocade (injectable buprenorphine) only exception."},
 
@@ -1018,7 +974,7 @@ const BASE_ORGS = [
    web:"phs.ca", hours:"Daily 7pm–9am",
    oat:"Referrals", scs:"No", walkin:"Walk-in / low-barrier",
    flags:{walkin:true},
-   lat:49.2805, lng:-123.0960,
+   lat:49.2807, lng:-123.0962,
    desc:"Low-barrier PHS-operated shelter. Open daily 7pm–9am. Meals, harm reduction referrals, housing support. Adjacent to Hazelwood Hotel (also PHS)."},
 
   {id:"osborn", name:"The Osborn – Shelter (PHS)", cat:"Shelter / Recovery",
@@ -1035,7 +991,7 @@ const BASE_ORGS = [
    web:"vancouver.ca/carnegie", hours:"Daily 9am–11pm",
    oat:"No", scs:"No", walkin:"Drop-in ($1 annual membership)",
    flags:{walkin:true},
-   lat:49.2799, lng:-123.0997,
+   lat:49.2807, lng:-123.0997,
    desc:"'Living room of the DTES.' Low-cost cafeteria (meals 365d/yr), drop-in, needle exchange, naloxone, harm reduction, social/educational programs, mail pickup, internet, outreach team (homeless/at-risk)."},
 
   {id:"saller", name:"Evelyne Saller Centre (City of Vancouver)", cat:"Community / Drop-in",
@@ -1051,7 +1007,7 @@ const BASE_ORGS = [
    web:"lookoutsociety.ca", hours:"Daily 9am–8:30pm",
    oat:"No", scs:"OPS on-site", walkin:"Drop-in",
    flags:{scs:true,walkin:true},
-   lat:49.2835, lng:-123.0881,
+   lat:49.2807, lng:-123.0879,
    desc:"Peer-driven resource centre. OPS, meals/snacks (5x daily), nursing (wound/foot care, diabetes), medications admin, peer programming, laundry/showers, MH connections. Pets on leash welcome."},
 
   // ── SYSTEM NAVIGATION ─────────────────────────────────────
@@ -1109,7 +1065,7 @@ const BASE_ORGS = [
    web:"phs.ca/locations/hazelwood-hotel/", hours:"24/7 staffed",
    oat:"No", scs:"No", walkin:"BC Housing referral",
    flags:{},
-   lat:49.2803, lng:-123.0946,
+   lat:49.2807, lng:-123.0948,
    desc:"107 units low-barrier supportive housing. 24/7 PHS mental health workers. Food program (2 meals/day). Adjacent to New Fountain Shelter."},
 
   {id:"phs-portland", name:"Portland Hotel (PHS Housing)", cat:"Supportive Housing",
@@ -1181,7 +1137,7 @@ const BASE_ORGS = [
    web:"phs.ca/locations/smith-yuen-apartments/", hours:"24/7 staffed",
    oat:"No", scs:"No", walkin:"BC Housing referral",
    flags:{},
-   lat:49.2793, lng:-123.0921,
+   lat:49.2807, lng:-123.0918,
    desc:"Purpose-built social housing for senior citizens living with mental health issues. PHS support services on-site."},
 
   {id:"phs-hugh-bird", name:"Hugh Bird Residence (PHS Housing)", cat:"Supportive Housing",
