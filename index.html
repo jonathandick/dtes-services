@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTES Community Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal:       #1A7A6E;
+  --teal-dark:  #0D3D35;
+  --teal-deep:  #071F1B;
+  --teal-mid:   #2AA090;
+  --teal-pale:  #E6F5F3;
+  --teal-mist:  #C2E8E2;
+  --amber:      #E8930A;
+  --amber-pale: #FEF3DC;
+  --red:        #D94040;
+  --sky:        #7EC8C0;
+  --ink:        #1C2B2A;
+  --muted:      #5A6E6C;
+  --border:     #D0E4E1;
+  --surface:    #F4FAF9;
+  --white:      #FFFFFF;
+  --font-head:  'DM Serif Display', Georgia, serif;
+  --font-body:  'DM Sans', system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-body); color: var(--ink); background: var(--white); min-height: 100vh; display: flex; flex-direction: column; }
+
+/* NAV */
+.site-nav {
+  background: var(--teal-deep); padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 54px; position: sticky; top: 0; z-index: 100;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.logo { font-family: var(--font-head); font-size: 17px; color: var(--white); display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); animation: pulse 2.2s ease-in-out infinite; flex-shrink: 0; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(232,147,10,0.6)} 50%{box-shadow:0 0 0 5px rgba(232,147,10,0)} }
+.nav-links { display: flex; gap: 4px; }
+.nav-links a { font-size: 13px; color: var(--sky); padding: 5px 12px; border-radius: 6px; transition: all 0.15s; text-decoration: none; }
+.nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.1); color: var(--white); }
+
+/* HERO */
+.hero {
+  background: var(--teal-deep);
+  padding: 80px 32px 72px;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(42,160,144,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  display: inline-block; font-size: 11px; font-weight: 500;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--sky); margin-bottom: 20px;
+  border: 1px solid rgba(126,200,192,0.3); padding: 4px 14px; border-radius: 20px;
+}
+.hero h1 {
+  font-family: var(--font-head); font-size: clamp(36px, 5vw, 58px);
+  color: var(--white); line-height: 1.15; margin-bottom: 20px;
+}
+.hero h1 span { color: var(--sky); }
+.hero p {
+  font-size: 17px; color: rgba(255,255,255,0.65); max-width: 560px;
+  margin: 0 auto 40px; line-height: 1.7;
+}
+.hero-scroll { font-size: 12px; color: rgba(255,255,255,0.3); letter-spacing: 0.5px; margin-top: 16px; }
+
+/* APPS GRID */
+.apps-section { padding: 72px 32px; background: var(--surface); flex: 1; }
+.apps-section h2 {
+  font-family: var(--font-head); font-size: 28px; color: var(--ink);
+  text-align: center; margin-bottom: 8px;
+}
+.apps-section .sub { text-align: center; color: var(--muted); font-size: 15px; margin-bottom: 48px; }
+
+.apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; max-width: 900px; margin: 0 auto; }
+
+.app-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 18px; overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
+  display: flex; flex-direction: column;
+}
+.app-card:hover { box-shadow: 0 8px 32px rgba(26,122,110,0.12); transform: translateY(-2px); }
+
+.app-card-header {
+  padding: 28px 28px 20px;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+}
+.app-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; flex-shrink: 0;
+}
+.app-icon.teal { background: var(--teal-pale); }
+.app-icon.amber { background: var(--amber-pale); }
+
+.app-badge {
+  font-size: 10px; font-weight: 500; padding: 3px 9px;
+  border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.badge-live { background: #E8F7F0; color: #1A6640; border: 1px solid #A8DFC0; }
+.badge-proto { background: var(--amber-pale); color: #8A5200; border: 1px solid #F5C86A; }
+
+.app-card-body { padding: 0 28px 24px; flex: 1; }
+.app-card-body h3 { font-family: var(--font-head); font-size: 22px; color: var(--ink); margin-bottom: 8px; }
+.app-card-body p { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 16px; }
+
+.feature-list { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 24px; }
+.feature-list li { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.feature-list li::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--teal-mid); flex-shrink: 0; }
+
+.app-card-footer { padding: 0 28px 28px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 22px; border-radius: 10px; font-size: 14px;
+  font-weight: 500; font-family: var(--font-body); cursor: pointer;
+  text-decoration: none; transition: all 0.15s; border: none;
+}
+.btn-primary { background: var(--teal); color: var(--white); }
+.btn-primary:hover { background: var(--teal-dark); text-decoration: none; }
+.btn-outline { background: transparent; color: var(--teal); border: 1px solid var(--border); }
+.btn-outline:hover { border-color: var(--teal); background: var(--teal-pale); text-decoration: none; }
+.btn-full { width: 100%; justify-content: center; }
+.btn svg { width: 16px; height: 16px; }
+
+/* ABOUT STRIP */
+.about-strip {
+  background: var(--teal-deep); color: rgba(255,255,255,0.7);
+  padding: 48px 32px; text-align: center;
+}
+.about-strip h3 { font-family: var(--font-head); color: var(--white); font-size: 22px; margin-bottom: 12px; }
+.about-strip p { font-size: 14px; max-width: 600px; margin: 0 auto; line-height: 1.75; }
+.about-strip .tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 20px; }
+.tag { font-size: 11px; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(126,200,192,0.3); color: var(--sky); }
+
+/* FOOTER */
+.site-footer { background: var(--teal-deep); color: var(--sky); text-align: center; padding: 24px 32px; font-size: 12px; line-height: 1.8; }
+.site-footer a { color: var(--sky); }
+
+@media (max-width: 600px) {
+  .hero { padding: 52px 20px 48px; }
+  .apps-section { padding: 48px 20px; }
+  .apps-grid { grid-template-columns: 1fr; }
+  .site-nav { padding: 0 16px; }
+  .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="index.html" class="logo">
+    <span class="pulse"></span>
+    DTES Community Tools
+  </a>
+  <div class="nav-links">
+    <a href="index.html" class="active">Home</a>
+    <a href="dtes-services.html">Services Map</a>
+    <a href="overdose-watch.html">OD Watch</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow">Downtown Eastside · Vancouver</div>
+  <h1>Tools for the<br><span>DTES Community</span></h1>
+  <p>Open-source, community-controlled tools to support harm reduction, service navigation, and crisis response in Vancouver's Downtown Eastside.</p>
+</section>
+
+<section class="apps-section">
+  <h2>Community Applications</h2>
+  <p class="sub">Two tools, one shared purpose — keeping people connected to services and keeping workers connected to each other.</p>
+
+  <div class="apps-grid">
+
+    <!-- SERVICES MAP -->
+    <div class="app-card">
+      <div class="app-card-header">
+        <div class="app-icon teal">🗺️</div>
+        <span class="app-badge badge-live">Live</span>
+      </div>
+      <div class="app-card-body">
+        <h3>DTES Services Map</h3>
+        <p>An interactive directory of harm reduction, housing, health, and social services across the Downtown Eastside — searchable, filterable, and mobile-friendly.</p>
+        <ul class="feature-list">
+          <li>Needle exchanges &amp; supervised consumption</li>
+          <li>Shelter, SRO housing &amp; supports</li>
+          <li>Mental health &amp; primary care clinics</li>
+          <li>Food programs &amp; drop-ins</li>
+        </ul>
+      </div>
+      <div class="app-card-footer">
+        <a href="dtes-services.html" class="btn btn-primary btn-full">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+          Open Services Map
+        </a>
+      </div>
+    </div>
+
+    <!-- OD WATCH -->
+    <div class="app-card">
+      <div class="app-card-header">
+        <div class="app-icon amber">📍</div>
+        <span class="app-badge badge-proto">Prototype</span>
+      </div>
+      <div class="app-card-body">
+        <h3>DTES OD Watch</h3>
+        <p>A real-time overdose tracking tool for frontline workers and peer responders. Log events in seconds, visualise emerging hotspots on a live map, filtered by time window.</p>
+        <ul class="feature-list">
+          <li>Live heatmap on real DTES streets</li>
+          <li>3-tap event logging — no typing needed</li>
+          <li>Substance &amp; outcome tracking</li>
+          <li>Privacy-first — no personal data collected</li>
+        </ul>
+      </div>
+      <div class="app-card-footer" style="display:flex;flex-direction:column;gap:8px;">
+        <a href="overdose-watch.html" class="btn btn-primary btn-full">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          Open OD Watch
+        </a>
+        <div style="display:flex;gap:8px;">
+          <a href="onepager.html" class="btn btn-outline" style="flex:1;justify-content:center;font-size:12px;">One-Pager</a>
+          <a href="qa.html" class="btn btn-outline" style="flex:1;justify-content:center;font-size:12px;">Q&amp;A Doc</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="about-strip">
+  <h3>Built for the community, by the community</h3>
+  <p>These tools are open-source, free to use, and designed with the values of harm reduction at their core. No law enforcement access. No personal data. Community-controlled.</p>
+  <div class="tags">
+    <span class="tag">Harm Reduction</span>
+    <span class="tag">Open Source</span>
+    <span class="tag">Privacy-First</span>
+    <span class="tag">Community-Controlled</span>
+    <span class="tag">DTES</span>
+  </div>
+</div>
+
+<footer class="site-footer">
+  Built in partnership with PHS Community Services Society &amp; the DTES community · Vancouver, BC ·
+  Data sources: <a href="https://www.bcehs.ca/about/accountability/data/overdose-drug-poisoning-data">BCEHS</a>,
+  <a href="https://public.tableau.com/app/profile/bccdc/viz/UnregulatedDrugPoisoningEmergencyDashboard/Introduction">BCCDC</a>,
+  <a href="https://www.phs.ca">PHS</a>
+</footer>
+
+</body>
+</html>
