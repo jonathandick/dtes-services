@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DTES OD Watch — Anticipated Questions (PHS)</title>
+<title>DTES OD Watch — Anticipated Questions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
 <style>
@@ -145,7 +145,7 @@ main { flex: 1; }
 <div class="doc-bar">
   <div class="doc-title">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
-    <strong>Anticipated Questions</strong> — PHS Community Services Society management &amp; ID team
+    <strong>Anticipated Questions</strong> — For discussion with harm reduction partners &amp; management teams
   </div>
   <div class="doc-acts">
     <a href="onepager.html" class="btn btn-outline">
@@ -162,7 +162,7 @@ main { flex: 1; }
 <div class="doc-hero">
   <div class="eyebrow">DTES Overdose Watch · Q&amp;A Document</div>
   <h1>Anticipated Questions</h1>
-  <p class="subtitle">Questions and concerns that PHS management, the ID team, and frontline staff are likely to raise — with proposed approaches and workarounds for each.</p>
+  <p class="subtitle">Questions and concerns that management, ID, and frontline teams are likely to raise — with proposed approaches and workarounds for each.</p>
 </div>
 
 <div class="legend">
@@ -190,10 +190,10 @@ main { flex: 1; }
       <p>This is the most critical question for any harm reduction tool in the DTES. The platform is architected from the ground up to be inaccessible to law enforcement. No API access, no data-sharing agreements, and no subpoena-friendly data structures.</p>
       <div class="approaches-label">Approaches &amp; workarounds</div>
       <ul class="approach-list">
-        <li>Data is held by PHS, not by a government health authority or a vendor with police data-sharing agreements</li>
+        <li>Data would be held by the operating organisation, not by a government health authority or a vendor with police data-sharing agreements</li>
         <li>No personally identifiable information is collected at all — no names, health card numbers, or photos</li>
         <li>Legal counsel should review and sign off on a data governance policy before launch, explicitly prohibiting disclosure to enforcement agencies</li>
-        <li>PHS can point to precedent: Insite successfully defended client confidentiality all the way to the Supreme Court of Canada (<em>PHS Community Services Society v Canada</em>, 2011)</li>
+        <li>This approach has legal precedent: the Supreme Court of Canada ruled in <em>PHS Community Services Society v Canada</em> (2011) that client confidentiality at supervised consumption sites is protected</li>
         <li>Consider adding a published, community-facing data policy modelled on VANDU's peer data principles</li>
       </ul>
     </div>
@@ -213,7 +213,7 @@ main { flex: 1; }
       <div class="approaches-label">Approaches &amp; workarounds</div>
       <ul class="approach-list">
         <li>The public-facing map shows only heat map density — never individual points with precise coordinates</li>
-        <li>Raw event coordinates should be accessible only to named, role-authenticated PHS staff — not accessible by URL or API key alone</li>
+        <li>Raw event coordinates should be accessible only to named, role-authenticated staff — not accessible by URL or API key alone</li>
         <li>Consider spatial blurring: store coordinates rounded to the nearest 50–100 metres rather than GPS precision</li>
         <li>Set an automatic data retention limit (e.g., raw coordinates deleted after 90 days; aggregate counts retained for research)</li>
         <li>Engage community members — including people with lived experience — in co-designing the privacy model before launch</li>
@@ -226,12 +226,12 @@ main { flex: 1; }
       <div class="qa-stripe"></div>
       <div class="qa-q-body">
         <div class="q-label">Risk / Liability</div>
-        <h3>Does collecting this data create any liability for PHS if a death occurs and the data was available but action wasn't taken?</h3>
+        <h3>Does collecting this data create any liability for the operating organisation if a death occurs and the data was available but action wasn't taken?</h3>
       </div>
       <span class="qa-badge">Risk / Liability</span>
     </div>
     <div class="qa-a">
-      <p>A plausible concern. If PHS has a real-time data system that showed a spike in events near a specific SRO and did not act, could that create a duty-of-care argument? Unlikely in Canadian law, but worth addressing proactively.</p>
+      <p>A plausible concern. If the operating organisation has a real-time data system that showed a spike in events near a specific SRO and did not act, could that create a duty-of-care argument? Unlikely in Canadian law, but worth addressing proactively.</p>
       <div class="approaches-label">Approaches &amp; workarounds</div>
       <ul class="approach-list">
         <li>Frame the tool explicitly as a situational awareness aid, not an emergency dispatch system — this distinction matters legally</li>
@@ -283,7 +283,7 @@ main { flex: 1; }
         <li>Use structured, forced-choice inputs only — no free-text fields in the core logging flow</li>
         <li>Default all substance fields to 'Unknown' unless staff actively change them — this reduces pressure to guess</li>
         <li>Include a brief (15-minute) orientation for all staff covering what to log and how</li>
-        <li>Generate a monthly data quality report so PHS leadership can spot inconsistencies early</li>
+        <li>Generate a monthly data quality report so leadership can spot inconsistencies early</li>
         <li>Consider a peer data steward role — a community member with lived experience who reviews and flags anomalies</li>
       </ul>
     </div>
@@ -294,7 +294,7 @@ main { flex: 1; }
       <div class="qa-stripe"></div>
       <div class="qa-q-body">
         <div class="q-label">Operational</div>
-        <h3>What happens to the app if PHS loses funding or the vendor disappears?</h3>
+        <h3>What happens to the app if the operating organisation loses funding or the vendor disappears?</h3>
       </div>
       <span class="qa-badge">Operational</span>
     </div>
@@ -302,10 +302,10 @@ main { flex: 1; }
       <p>Sustainability and vendor lock-in are legitimate concerns for any tech tool adopted by a non-profit.</p>
       <div class="approaches-label">Approaches &amp; workarounds</div>
       <ul class="approach-list">
-        <li>Build or commission the platform as open-source software, owned by PHS, so it can be maintained or handed to another operator</li>
-        <li>Host data on infrastructure PHS controls or a Canadian health-sector cloud provider — not a US vendor subject to Patriot Act disclosure</li>
+        <li>Build or commission the platform as open-source software, owned by the operating organisation, so it can be maintained or handed to another operator</li>
+        <li>Host data on infrastructure the organisation controls or a Canadian health-sector cloud provider — not a US vendor subject to Patriot Act disclosure</li>
         <li>Design for low ongoing cost: the core tool needs no AI or expensive APIs — it is essentially a form, a database, and a map</li>
-        <li>Establish a data export right from day one: PHS can extract all data in open formats (CSV, GeoJSON) at any time</li>
+        <li>Establish a data export right from day one: The organisation can extract all data in open formats (CSV, GeoJSON) at any time</li>
       </ul>
     </div>
   </div>
@@ -325,7 +325,7 @@ main { flex: 1; }
       <ul class="approach-list">
         <li>Build offline-first functionality: events logged without connectivity are queued and synced when connection is restored</li>
         <li>Allow manual location pinning on a pre-loaded map tile — so the app functions without real-time data</li>
-        <li>Test specifically in the buildings and areas where PHS staff most commonly respond before broad rollout</li>
+        <li>Test specifically in the buildings and areas where staff most commonly respond before broad rollout</li>
         <li>GPS accuracy of 10–30 metres is sufficient for neighbourhood-level heat mapping — sub-metre precision is not required</li>
       </ul>
     </div>
@@ -386,11 +386,11 @@ main { flex: 1; }
       <span class="qa-badge">Strategic</span>
     </div>
     <div class="qa-a">
-      <p>PHS already tracks naloxone distribution and kit returns through Insite. This tool should complement, not create parallel bureaucracy around, that workflow.</p>
+      <p>The operating organisation likely already tracks naloxone distribution and kit returns. This tool should complement, not create parallel bureaucracy around, that workflow.</p>
       <div class="approaches-label">Approaches &amp; workarounds</div>
       <ul class="approach-list">
         <li>The 'naloxone administered' outcome field can serve as a lightweight proxy for community naloxone use in locations outside Insite/Onsite — data currently invisible to VCH</li>
-        <li>Correlating map hotspots with naloxone kit distribution locations can help PHS argue for additional distribution points in underserved blocks</li>
+        <li>Correlating map hotspots with naloxone kit distribution locations can help the organisation argue for additional distribution points in underserved blocks</li>
         <li>Avoid duplicating Insite's internal data systems — the tool is for events in the community, not inside the supervised consumption facility itself</li>
       </ul>
     </div>
@@ -413,10 +413,10 @@ main { flex: 1; }
       <div class="approaches-label">Approaches &amp; workarounds</div>
       <ul class="approach-list">
         <li>Co-design the tool with people with lived experience before launch — VANDU and other peer organisations should be involved from the beginning, not consulted after the fact</li>
-        <li>Be radically transparent about what is and is not recorded: a one-page plain-language summary should be available at all Insite/PHS locations</li>
+        <li>Be radically transparent about what is and is not recorded: a one-page plain-language summary should be available at all partner organisation locations</li>
         <li>The tool records events, not individuals — this distinction must be communicated clearly and repeatedly</li>
         <li>If community members object to specific aspects of the design, those concerns should be able to pause or modify the tool — community veto is real, not performative</li>
-        <li>PHS's history — including its Supreme Court victory defending Insite users — provides a credibility baseline that no tech company or government agency could have</li>
+        <li>An organisation with a long track record of harm reduction advocacy provides a credibility baseline that no tech company or government agency could have</li>
       </ul>
     </div>
   </div>
@@ -434,7 +434,7 @@ main { flex: 1; }
       <p>A sophisticated concern: data showing most events concentrated in certain blocks could be used by funders or the city to argue for geographically concentrated services, leaving other areas without coverage.</p>
       <div class="approaches-label">Approaches &amp; workarounds</div>
       <ul class="approach-list">
-        <li>PHS should retain sole interpretive authority over the data — no raw data access for funders without explicit governance agreement</li>
+        <li>The operating organisation should retain sole interpretive authority over the data — no raw data access for funders without explicit governance agreement</li>
         <li>Frame the tool's outputs around coverage gaps, not just hotspots: 'here are blocks with high event density and no nearby services' is a different story than 'here is where to concentrate resources'</li>
         <li>Use the data offensively in advocacy: evidence of underserved areas is a funding argument, not a service-reduction rationale</li>
         <li>Include a community advisory group in any formal data reporting — so the narrative is shaped by the community, not administrators</li>
@@ -443,14 +443,14 @@ main { flex: 1; }
   </div>
 
   <div class="closing">
-    <p><strong>The concerns raised here are real — and they are the same concerns PHS has navigated successfully for 30 years.</strong> The goal is not to dismiss them but to design a tool that takes them seriously from day one. We welcome the opportunity to work through these questions together with PHS staff, the ID team, and the community. View the <a href="onepager.html" style="color:var(--sky)">one-pager</a> or <a href="overdose-watch.html" style="color:var(--sky)">open the prototype app</a>.</p>
+    <p><strong>The concerns raised here are real — and they are the same concerns that the DTES harm reduction community has navigated for decades.</strong> The goal is not to dismiss them but to design a tool that takes them seriously from day one. We welcome the opportunity to work through these questions together with staff, the ID team, and the community. View the <a href="onepager.html" style="color:var(--sky)">one-pager</a> or <a href="overdose-watch.html" style="color:var(--sky)">open the prototype app</a>.</p>
   </div>
 
 </div>
 </main>
 
 <footer class="site-footer">
-  DTES Community Tools · Built in partnership with PHS Community Services Society · Vancouver, BC
+  DTES Community Tools · Vancouver, BC
 </footer>
 
 </body>
