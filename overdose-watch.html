@@ -50,6 +50,30 @@ body { font-family: var(--font-body); color: var(--ink); background: var(--teal-
 .nav-links a.active { background: rgba(255,255,255,0.1); color: var(--white); font-weight: 500; }
 .nav-badge { font-size: 10px; font-weight: 500; color: var(--amber); border: 1px solid rgba(232,147,10,0.4); border-radius: 4px; padding: 2px 7px; letter-spacing: 0.5px; margin-left: 6px; }
 
+/* MOCK DATA BANNER */
+.mock-banner {
+  background: #7A3D00;
+  border-bottom: 2px solid var(--amber);
+  padding: 9px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-shrink: 0; z-index: 999;
+}
+.mock-banner .mock-inner { display: flex; align-items: center; gap: 10px; }
+.mock-banner .mock-icon {
+  background: var(--amber); color: #3D1E00;
+  font-size: 11px; font-weight: 700; padding: 2px 8px;
+  border-radius: 4px; letter-spacing: 0.8px; flex-shrink: 0;
+  text-transform: uppercase;
+}
+.mock-banner .mock-text { font-size: 13px; color: #FFD49E; line-height: 1.4; }
+.mock-banner .mock-text strong { color: #FFE8C0; font-weight: 500; }
+.mock-banner .mock-dismiss {
+  background: none; border: 1px solid rgba(255,200,120,0.3); color: rgba(255,200,120,0.7);
+  border-radius: 5px; padding: 3px 10px; font-size: 11px; cursor: pointer;
+  flex-shrink: 0; font-family: var(--font-body); transition: all 0.15s;
+}
+.mock-banner .mock-dismiss:hover { background: rgba(255,200,120,0.1); color: #FFD49E; }
+
 /* DOC BAR */
 .doc-bar {
   background: var(--teal-dark); height: var(--doc-bar-h); flex-shrink: 0;
@@ -172,7 +196,18 @@ body { font-family: var(--font-body); color: var(--ink); background: var(--teal-
   border-radius: 10px; padding: 11px 15px; min-width: 155px;
   border: 1px solid rgba(255,255,255,0.08); color: var(--white);
 }
-.mo-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--sky); margin-bottom: 7px; }
+.mo-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--amber); margin-bottom: 7px; font-weight: 600; }
+
+/* Map watermark */
+#map-wrap::after {
+  content: 'MOCK DATA — NOT REAL';
+  position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+  font-family: var(--font-body); font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; color: rgba(232,147,10,0.55);
+  pointer-events: none; z-index: 800; white-space: nowrap;
+  border: 1px solid rgba(232,147,10,0.25); padding: 4px 12px; border-radius: 4px;
+  background: rgba(7,31,27,0.5);
+}
 .mo-row { display: flex; align-items: center; gap: 6px; margin: 3px 0; font-size: 12px; }
 .mo-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 .mo-n { margin-left: auto; font-weight: 500; font-family: var(--font-head); font-size: 14px; }
@@ -200,9 +235,17 @@ body { font-family: var(--font-body); color: var(--ink); background: var(--teal-
     <a href="index.html">Home</a>
     <a href="dtes-services.html">Services</a>
     <a href="overdose-watch.html" class="active">OD Watch</a>
-    <span class="nav-badge">PROTOTYPE</span>
+    <span class="nav-badge">⚠ PROTOTYPE · MOCK DATA</span>
   </div>
 </nav>
+
+<div class="mock-banner" id="mock-banner">
+  <div class="mock-inner">
+    <span class="mock-icon">⚠ Mock Data</span>
+    <span class="mock-text"><strong>All events shown are computer-generated and do not represent real incidents.</strong> This is a prototype demonstration only — no real overdose data is displayed or stored.</span>
+  </div>
+  <button class="mock-dismiss" onclick="document.getElementById('mock-banner').style.display='none'">Dismiss</button>
+</div>
 
 <div class="doc-bar">
   <span class="label">Supporting documents</span>
@@ -260,7 +303,7 @@ body { font-family: var(--font-body); color: var(--ink); background: var(--teal-
         </div>
       </div>
       <hr class="divider">
-      <p class="disclaimer">~2,000 events/month in Vancouver per BCCDC dashboard. Mock data modelled on published hotspot &amp; outcome statistics. <a href="onepager.html" style="color:var(--teal);">Read the one-pager →</a></p>
+      <p class="disclaimer"><strong style="color:var(--amber)">⚠ All data shown is computer-generated and entirely fictional.</strong> No real events are represented. Statistics are modelled on published BCCDC data (~2,000 events/month in Vancouver) to illustrate what a live tool could look like. <a href="onepager.html" style="color:var(--teal);">Read the one-pager →</a></p>
     </div>
 
     <!-- RECORD PANE -->
@@ -287,8 +330,9 @@ body { font-family: var(--font-body); color: var(--ink); background: var(--teal-
           <button class="choice-btn" data-val="Revived - no EMS">Revived, no EMS</button>
         </div>
       </div>
-      <div class="toast" id="toast">✓ &nbsp;Event recorded successfully.</div>
-      <button class="submit-btn" id="submit-btn" disabled onclick="submitEvent()">Record Event</button>
+      <div class="toast" id="toast">✓ &nbsp;Mock event added to the prototype map.</div>
+      <button class="submit-btn" id="submit-btn" disabled onclick="submitEvent()">Add Mock Event to Map</button>
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px;">This records a fictional event for demonstration only.</p>
     </div>
 
     <!-- LOG PANE -->
@@ -298,7 +342,7 @@ body { font-family: var(--font-body); color: var(--ink); background: var(--teal-
   <div id="map-wrap">
     <div id="map"></div>
     <div id="map-overlay">
-      <div class="mo-title">Visible window</div>
+      <div class="mo-title">⚠ MOCK DATA — prototype only</div>
       <div class="mo-row"><span class="mo-dot" style="background:#2EA86B"></span>Naloxone<span class="mo-n" id="mo-nal">—</span></div>
       <div class="mo-row"><span class="mo-dot" style="background:#7EC8C0"></span>Revived<span class="mo-n" id="mo-rev">—</span></div>
       <div class="mo-row"><span class="mo-dot" style="background:#E8930A"></span>EMS<span class="mo-n" id="mo-ems">—</span></div>
