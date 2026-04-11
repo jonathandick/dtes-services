@@ -117,24 +117,12 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
   .hero { padding: 52px 20px 48px; }
   .apps-section { padding: 48px 20px; }
   .apps-grid { grid-template-columns: 1fr; }
-  .site-nav { padding: 0 16px; }
-  .nav-links { display: none; }
 }
 </style>
 </head>
 <body>
 
-<nav class="site-nav">
-  <a href="index.html" class="logo">
-    <span class="pulse"></span>
-    DTES Community Tools
-  </a>
-  <div class="nav-links">
-    <a href="index.html" class="active">Home</a>
-    <a href="dtes-services.html">Services Map</a>
-    <a href="overdose-watch.html">OD Watch</a>
-  </div>
-</nav>
+<script src="nav.js"></script>
 
 <section class="hero">
   <div class="hero-eyebrow">Downtown Eastside · Vancouver</div>
@@ -144,7 +132,7 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
 
 <section class="apps-section">
   <h2>Community Applications</h2>
-  <p class="sub">Two tools, one shared purpose — keeping people connected to services and keeping workers connected to each other.</p>
+  <p class="sub">Community tools to keep people connected to services and workers connected to each other.</p>
 
   <div class="apps-grid">
 
@@ -197,6 +185,78 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
           <a href="onepager.html" class="btn btn-outline" style="flex:1;justify-content:center;font-size:12px;">One-Pager</a>
           <a href="qa.html" class="btn btn-outline" style="flex:1;justify-content:center;font-size:12px;">Q&amp;A Doc</a>
         </div>
+      </div>
+    </div>
+
+    <!-- SHELTERS -->
+    <div class="app-card">
+      <div class="app-card-header">
+        <div class="app-icon teal">🏠</div>
+        <span class="app-badge badge-live">Live</span>
+      </div>
+      <div class="app-card-body">
+        <h3>Vancouver Shelter Directory</h3>
+        <p>A searchable directory of emergency shelters across Vancouver — with capacity type, eligibility, and contact info.</p>
+        <ul class="feature-list">
+          <li>Men's, women's &amp; mixed shelters</li>
+          <li>Youth &amp; family options</li>
+          <li>Pet-friendly &amp; low-barrier listings</li>
+          <li>Filterable by area &amp; population</li>
+        </ul>
+      </div>
+      <div class="app-card-footer">
+        <a href="vancouver-shelters.html" class="btn btn-primary btn-full">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Open Shelter Directory
+        </a>
+      </div>
+    </div>
+
+    <!-- SOCIAL HOUSING -->
+    <div class="app-card">
+      <div class="app-card-header">
+        <div class="app-icon teal">🏢</div>
+        <span class="app-badge badge-live">Live</span>
+      </div>
+      <div class="app-card-body">
+        <h3>Social Housing Directory</h3>
+        <p>A directory of supportive and social housing in the Downtown Eastside — including SROs, supportive housing, and co-ops.</p>
+        <ul class="feature-list">
+          <li>SROs, supportive &amp; co-op housing</li>
+          <li>Operator &amp; contact details</li>
+          <li>Eligibility &amp; referral info</li>
+          <li>Searchable by name &amp; area</li>
+        </ul>
+      </div>
+      <div class="app-card-footer">
+        <a href="social-housing.html" class="btn btn-primary btn-full">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+          Open Housing Directory
+        </a>
+      </div>
+    </div>
+
+    <!-- TREATMENT PROGRAMS -->
+    <div class="app-card">
+      <div class="app-card-header">
+        <div class="app-icon amber">💊</div>
+        <span class="app-badge badge-live">Live</span>
+      </div>
+      <div class="app-card-body">
+        <h3>LM Treatment Programs</h3>
+        <p>A directory of residential and outpatient treatment programs across the Lower Mainland for substance use recovery.</p>
+        <ul class="feature-list">
+          <li>Residential &amp; bed-based programs</li>
+          <li>Outpatient &amp; day programs</li>
+          <li>Detox &amp; withdrawal management</li>
+          <li>Filterable by type &amp; location</li>
+        </ul>
+      </div>
+      <div class="app-card-footer">
+        <a href="treatment-programs.html" class="btn btn-primary btn-full">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          Open Treatment Directory
+        </a>
       </div>
     </div>
 
