@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTES OD Watch — Anticipated Questions</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+/* page-specific extras */
+:root { --amber-dark: #7A4E00; --red-pale: #FDF0F0; --red-dark: #7A1A1A; }
+body { display: flex; flex-direction: column; min-height: 100vh; }
+.btn svg { width: 14px; height: 14px; }
+
+/* DOC BAR */
+.doc-bar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px 32px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.doc-bar .doc-title { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.doc-bar .doc-title strong { color: var(--ink); }
+.doc-acts { display: flex; gap: 8px; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; font-family: var(--font-body); cursor: pointer; text-decoration: none; transition: all 0.15s; border: 1px solid transparent; }
+.btn-teal { background: var(--teal); color: var(--white); }
+.btn-teal:hover { background: var(--teal-dark); text-decoration: none; }
+.btn-outline { background: var(--white); color: var(--teal); border-color: var(--border); }
+.btn-outline:hover { border-color: var(--teal); background: var(--teal-pale); text-decoration: none; }
+.btn svg { width: 14px; height: 14px; }
+
+/* HERO */
+.doc-hero { background: var(--teal-deep); padding: 48px 32px 40px; }
+.doc-hero .eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--sky); margin-bottom: 14px; }
+.doc-hero h1 { font-family: var(--font-head); font-size: clamp(28px, 4vw, 44px); color: var(--white); line-height: 1.15; margin-bottom: 10px; }
+.doc-hero .subtitle { font-size: 15px; color: rgba(255,255,255,0.6); max-width: 640px; line-height: 1.65; }
+
+/* LEGEND */
+.legend { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 32px; display: flex; gap: 24px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.legend-badge { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+/* CONTENT */
+main { flex: 1; }
+.content { max-width: 860px; margin: 0 auto; padding: 48px 32px 64px; display: flex; flex-direction: column; gap: 8px; }
+
+/* SECTION HEADERS */
+.section-head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 28px 0 10px; margin-top: 12px;
+  border-bottom: 2px solid var(--border);
+}
+.section-head h2 { font-family: var(--font-head); font-size: 22px; color: var(--ink); }
+.section-head .count { font-size: 11px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 2px 10px; }
+
+/* Q&A CARDS */
+.qa-card { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+.qa-q {
+  display: flex; align-items: flex-start; gap: 0;
+  border-bottom: 1px solid var(--border);
+}
+.qa-stripe { width: 5px; flex-shrink: 0; align-self: stretch; }
+.qa-q-body { padding: 16px 18px; flex: 1; }
+.qa-q-body .q-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+.qa-q-body h3 { font-size: 15px; font-weight: 500; color: var(--ink); line-height: 1.4; }
+.qa-badge { align-self: flex-start; margin: 14px 14px 0 0; font-size: 10px; font-weight: 500; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; flex-shrink: 0; }
+
+.qa-a { padding: 16px 18px 16px 23px; background: var(--white); }
+.qa-a > p { font-size: 14px; color: var(--ink); line-height: 1.7; margin-bottom: 12px; }
+.qa-a .approaches-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.7px; color: var(--muted); margin-bottom: 8px; }
+.approach-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.approach-list li { display: flex; align-items: flex-start; gap: 9px; font-size: 13px; color: var(--ink); line-height: 1.55; }
+.approach-list li::before { content: '✓'; color: var(--teal); font-size: 12px; flex-shrink: 0; margin-top: 1px; font-weight: 500; }
+
+/* TYPE VARIANTS */
+.type-risk .qa-stripe { background: var(--red); }
+.type-risk .qa-q { background: var(--red-pale); }
+.type-risk .q-label { color: var(--red-dark); }
+.type-risk .qa-badge { background: var(--red-pale); color: var(--red-dark); border: 1px solid #F0AAAA; }
+
+.type-operational .qa-stripe { background: var(--amber); }
+.type-operational .qa-q { background: var(--amber-pale); }
+.type-operational .q-label { color: var(--amber-dark); }
+.type-operational .qa-badge { background: var(--amber-pale); color: var(--amber-dark); border: 1px solid #F5D080; }
+
+.type-strategic .qa-stripe { background: var(--teal); }
+.type-strategic .qa-q { background: var(--teal-pale); }
+.type-strategic .q-label { color: var(--teal-dark); }
+.type-strategic .qa-badge { background: var(--teal-pale); color: var(--teal-dark); border: 1px solid var(--teal-mist); }
+
+/* CLOSING */
+.closing { background: var(--teal-deep); border-radius: 14px; padding: 28px 32px; margin-top: 16px; }
+.closing p { font-size: 14px; line-height: 1.75; color: rgba(255,255,255,0.7); }
+.closing strong { color: var(--white); font-weight: 500; }
+
+/* FOOTER */
+.site-footer { background: var(--teal-deep); color: var(--sky); text-align: center; padding: 24px 32px; font-size: 12px; line-height: 1.8; }
+
+@media(max-width:700px) {
+  .content { padding: 32px 16px 48px; }
+  .legend { padding: 12px 16px; }
+  .doc-bar { padding: 10px 16px; }
+  .site-nav { padding: 0 14px; }
+  .doc-hero { padding: 36px 20px 32px; }
+  .qa-badge { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="index.html" class="logo"><span class="pulse"></span>DTES Community Tools</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="dtes-services.html">Services</a>
+    <a href="overdose-watch.html">OD Watch</a>
+    <a href="qa.html" class="active">Q&amp;A</a>
+  </div>
+</nav>
+
+<div class="doc-bar">
+  <div class="doc-title">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+    <strong>Anticipated Questions</strong> — For discussion with harm reduction partners &amp; management teams
+  </div>
+  <div class="doc-acts">
+    <a href="onepager.html" class="btn btn-outline">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      One-Pager
+    </a>
+    <a href="overdose-watch.html" class="btn btn-teal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      Open App
+    </a>
+  </div>
+</div>
+
+<div class="doc-hero">
+  <div class="eyebrow">DTES Overdose Watch · Q&amp;A Document</div>
+  <h1>Anticipated Questions</h1>
+  <p class="subtitle">Questions and concerns that management, ID, and frontline teams are likely to raise — with proposed approaches and workarounds for each.</p>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-badge" style="background:var(--red)"></span>Risk / Liability</div>
+  <div class="legend-item"><span class="legend-badge" style="background:var(--amber)"></span>Operational</div>
+  <div class="legend-item"><span class="legend-badge" style="background:var(--teal)"></span>Strategic</div>
+</div>
+
+<main>
+<div class="content">
+
+  <!-- SECTION 1: PRIVACY & LEGAL -->
+  <div class="section-head"><h2>Privacy, Legal &amp; Law Enforcement</h2><span class="count">3 questions</span></div>
+
+  <div class="qa-card type-risk">
+    <div class="qa-q">
+      <div class="qa-stripe"></div>
+      <div class="qa-q-body">
+        <div class="q-label">Risk / Liability</div>
+        <h3>Will this data be accessible to police or used for enforcement purposes?</h3>
+      </div>
+      <span class="qa-badge">Risk / Liability</span>
+    </div>
+    <div class="qa-a">
+      <p>This is the most critical question for any harm reduction tool in the DTES. The platform is architected from the ground up to be inaccessible to law enforcement. No API access, no data-sharing agreements, and no subpoena-friendly data structures.</p>
+      <div class="approaches-label">Approaches &amp; workarounds</div>
+      <ul class="approach-list">
+        <li>Data would be held by the operating organisation, not by a government health authority or a vendor with police data-sharing agreements</li>
+        <li>No personally identifiable information is collected at all — no names, health card numbers, or photos</li>
+        <li>Legal counsel should review and sign off on a data governance policy before launch, explicitly prohibiting disclosure to enforcement agencies</li>
+        <li>This approach has legal precedent: the Supreme Court of Canada ruled in <em>PHS Community Services Society v Canada</em> (2011) that client confidentiality at supervised consumption sites is protected</li>
+        <li>Consider adding a published, community-facing data policy modelled on VANDU's peer data principles</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card type-risk">
+    <div class="qa-q">
+      <div class="qa-stripe"></div>
+      <div class="qa-q-body">
+        <div class="q-label">Risk / Liability</div>
+        <h3>Could location data be used to target or surveil people who use drugs — even if that's not the intent?</h3>
+      </div>
+      <span class="qa-badge">Risk / Liability</span>
+    </div>
+    <div class="qa-a">
+      <p>The risk is real and must be designed against, not just promised away. Individual event coordinates are sensitive. The question is what data is stored, who can see it, and in what form.</p>
+      <div class="approaches-label">Approaches &amp; workarounds</div>
+      <ul class="approach-list">
+        <li>The public-facing map shows only heat map density — never individual points with precise coordinates</li>
+        <li>Raw event coordinates should be accessible only to named, role-authenticated staff — not accessible by URL or API key alone</li>
+        <li>Consider spatial blurring: store coordinates rounded to the nearest 50–100 metres rather than GPS precision</li>
+        <li>Set an automatic data retention limit (e.g., raw coordinates deleted after 90 days; aggregate counts retained for research)</li>
+        <li>Engage community members — including people with lived experience — in co-designing the privacy model before launch</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card type-risk">
+    <div class="qa-q">
+      <div class="qa-stripe"></div>
+      <div class="qa-q-body">
+        <div class="q-label">Risk / Liability</div>
+        <h3>Does collecting this data create any liability for the operating organisation if a death occurs and the data was available but action wasn't taken?</h3>
+      </div>
+      <span class="qa-badge">Risk / Liability</span>
+    </div>
+    <div class="qa-a">
+      <p>A plausible concern. If the operating organisation has a real-time data system that showed a spike in events near a specific SRO and did not act, could that create a duty-of-care argument? Unlikely in Canadian law, but worth addressing proactively.</p>
+      <div class="approaches-label">Approaches &amp; workarounds</div>
+      <ul class="approach-list">
+        <li>Frame the tool explicitly as a situational awareness aid, not an emergency dispatch system — this distinction matters legally</li>
+        <li>Include a terms-of-use statement making clear the tool supplements but does not replace 911 or established response protocols</li>
+        <li>Legal review of any documentation before launch should address duty-of-care exposure explicitly</li>
+        <li>Ensure the tool's data is never the sole or primary basis for resource deployment decisions — it informs, it does not direct</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 2: OPERATIONAL -->
+  <div class="section-head"><h2>Operational &amp; Staffing</h2><span class="count">4 questions</span></div>
+
+  <div class="qa-card type-operational">
+    <div class="qa-q">
+      <div class="qa-stripe"></div>
+      <div class="qa-q-body">
+        <div class="q-label">Operational</div>
+        <h3>Our frontline staff are already overwhelmed. Who is actually going to log these events in the middle of a crisis response?</h3>
+      </div>
+      <span class="qa-badge">Operational</span>
+    </div>
+    <div class="qa-a">
+      <p>This is the most legitimate day-to-day concern. If logging takes more than 30 seconds and requires attention during a high-stress moment, adoption will collapse. The tool must be designed around the reality of the job.</p>
+      <div class="approaches-label">Approaches &amp; workarounds</div>
+      <ul class="approach-list">
+        <li>The record flow is a maximum of three taps: confirm location, select substance, select outcome — no typing required</li>
+        <li>Allow deferred logging: staff can record events retroactively within a short window (e.g., up to 2 hours later) so logging happens after stabilisation</li>
+        <li>Consider a dedicated 'logger' role on shift — one person whose job partly includes capturing events logged verbally by others</li>
+        <li>Pilot with volunteers first: identify staff who are excited about the tool and let adoption spread organically</li>
+        <li>Integrate with existing shift handover routines so logging becomes a habit, not an extra task</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card type-operational">
+    <div class="qa-q">
+      <div class="qa-stripe"></div>
+      <div class="qa-q-body">
+        <div class="q-label">Operational</div>
+        <h3>How do we prevent bad or inconsistent data? If staff log events differently, the map will be misleading.</h3>
+      </div>
+      <span class="qa-badge">Operational</span>
+    </div>
+    <div class="qa-a">
+      <p>Data quality is a genuine concern — especially for substance identification, which requires a level of certainty staff may not have in the moment.</p>
+      <div class="approaches-label">Approaches &amp; workarounds</div>
+      <ul class="approach-list">
+        <li>Use structured, forced-choice inputs only — no free-text fields in the core logging flow</li>
+        <li>Default all substance fields to 'Unknown' unless staff actively change them — this reduces pressure to guess</li>
+        <li>Include a brief (15-minute) orientation for all staff covering what to log and how</li>
+        <li>Generate a monthly data quality report so leadership can spot inconsistencies early</li>
+        <li>Consider a peer data steward role — a community member with lived experience who reviews and flags anomalies</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card type-operational">
+    <div class="qa-q">
+      <div class="qa-stripe"></div>
+      <div class="qa-q-body">
+        <div class="q-label">Operational</div>
+        <h3>What happens to the app if the operating organisation loses funding or the vendor disappears?</h3>
+      </div>
+      <span class="qa-badge">Operational</span>
+    </div>
+    <div class="qa-a">
+      <p>Sustainability and vendor lock-in are legitimate concerns for any tech tool adopted by a non-profit.</p>
+      <div class="approaches-label">Approaches &amp; workarounds</div>
+      <ul class="approach-list">
+        <li>Build or commission the platform as open-source software, owned by the operating organisation, so it can be maintained or handed to another operator</li>
+        <li>Host data on infrastructure the organisation controls or a Canadian health-sector cloud provider — not a US vendor subject to Patriot Act disclosure</li>
+        <li>Design for low ongoing cost: the core tool needs no AI or expensive APIs — it is essentially a form, a database, and a map</li>
+        <li>Establish a data export right from day one: The organisation can extract all data in open formats (CSV, GeoJSON) at any time</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card type-operational">
+    <div class="qa-q">
+      <div class="qa-stripe"></div>
+      <div class="qa-q-body">
+        <div class="q-label">Operational</div>
+        <h3>Will this tool work in the SROs and alleys of the DTES where connectivity is poor?</h3>
+      </div>
+      <span class="qa-badge">Operational</span>
+    </div>
+    <div class="qa-a">
+      <p>GPS accuracy and mobile data can be unreliable in dense urban environments, particularly inside buildings.</p>
+      <div class="approaches-label">Approaches &amp; workarounds</div>
+      <ul class="approach-list">
+        <li>Build offline-first functionality: events logged without connectivity are queued and synced when connection is restored</li>
+        <li>Allow manual location pinning on a pre-loaded map tile — so the app functions without real-time data</li>
+        <li>Test specifically in the buildings and areas where staff most commonly respond before broad rollout</li>
+        <li>GPS accuracy of 10–30 metres is sufficient for neighbourhood-level heat mapping — sub-metre precision is not required</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 3: ID / CLINICAL -->
+  <div class="section-head"><h2>Infectious Disease &amp; Clinical Team</h2><span class="count">3 questions</span></div>
+
+  <div class="qa-card type-strategic">
+    <div class="qa-q">
+      <div class="qa-stripe"></div>
+      <div class="qa-q-body">
+        <div class="q-label">Strategic</div>
+        <h3>How does this tool complement — rather than duplicate — what VCH and BCCDC already collect?</h3>
+      </div>
+      <span class="qa-badge">Strategic</span>
+    </div>
+    <div class="qa-a">
+      <p>The ID team will rightly ask whether this creates redundancy with existing surveillance systems. The answer is that existing systems measure different things on different timescales.</p>
+      <div class="approaches-label">Approaches &amp; workarounds</div>
+      <ul class="approach-list">
+        <li>BCEHS and BCCDC data is aggregated, delayed (days to weeks), and not available at street-block granularity — this tool is real-time and hyper-local</li>
+        <li>VCH overdose surveillance covers ED visits and OPS/SCS contacts — this tool captures events that never reach those systems (especially bystander-reversed overdoses in SROs)</li>
+        <li>Position the tool as filling a surveillance gap that published research has explicitly identified: the BCMJ 2025 analysis found thousands of overdoses are miscounted or missed entirely</li>
+        <li>Offer to share anonymised aggregate data with VCH and BCCDC on a regular cadence — this strengthens, rather than duplicates, the public health picture</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card type-strategic">
+    <div class="qa-q">
+      <div class="qa-stripe"></div>
+      <div class="qa-q-body">
+        <div class="q-label">Strategic</div>
+        <h3>The ID team tracks substance type, benzo contamination, and emerging adulterants closely. Can this tool support that work?</h3>
+      </div>
+      <span class="qa-badge">Strategic</span>
+    </div>
+    <div class="qa-a">
+      <p>Yes — and this is an area where the tool can add real clinical value beyond basic mapping.</p>
+      <div class="approaches-label">Approaches &amp; workarounds</div>
+      <ul class="approach-list">
+        <li>Substance fields can be updated to include emerging adulterants as they appear in the supply (e.g., medetomidine, carfentanil analogues) — the field options are configurable</li>
+        <li>The time-filtered map can reveal geographic clustering of specific substance types — a potential early-warning signal for a new batch in circulation</li>
+        <li>Integrate with BCCDC drug-checking data: when a new adulterant is flagged, a push alert can go to all logged-in staff</li>
+        <li>ID clinicians can use aggregate export data for rapid case series analysis without needing access to the raw tool</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card type-strategic">
+    <div class="qa-q">
+      <div class="qa-stripe"></div>
+      <div class="qa-q-body">
+        <div class="q-label">Strategic</div>
+        <h3>How does this interact with naloxone distribution and tracking that already happens through Insite and Onsite?</h3>
+      </div>
+      <span class="qa-badge">Strategic</span>
+    </div>
+    <div class="qa-a">
+      <p>The operating organisation likely already tracks naloxone distribution and kit returns. This tool should complement, not create parallel bureaucracy around, that workflow.</p>
+      <div class="approaches-label">Approaches &amp; workarounds</div>
+      <ul class="approach-list">
+        <li>The 'naloxone administered' outcome field can serve as a lightweight proxy for community naloxone use in locations outside Insite/Onsite — data currently invisible to VCH</li>
+        <li>Correlating map hotspots with naloxone kit distribution locations can help the organisation argue for additional distribution points in underserved blocks</li>
+        <li>Avoid duplicating Insite's internal data systems — the tool is for events in the community, not inside the supervised consumption facility itself</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 4: COMMUNITY & ETHICS -->
+  <div class="section-head"><h2>Community Trust &amp; Ethics</h2><span class="count">2 questions</span></div>
+
+  <div class="qa-card type-risk">
+    <div class="qa-q">
+      <div class="qa-stripe"></div>
+      <div class="qa-q-body">
+        <div class="q-label">Risk / Liability</div>
+        <h3>Will people who use drugs in the DTES feel comfortable knowing their overdose is being recorded on a map?</h3>
+      </div>
+      <span class="qa-badge">Risk / Liability</span>
+    </div>
+    <div class="qa-a">
+      <p>Community trust is everything in harm reduction — and any perception of surveillance could drive people away from help. This concern must be addressed through design and communication, not just policy.</p>
+      <div class="approaches-label">Approaches &amp; workarounds</div>
+      <ul class="approach-list">
+        <li>Co-design the tool with people with lived experience before launch — VANDU and other peer organisations should be involved from the beginning, not consulted after the fact</li>
+        <li>Be radically transparent about what is and is not recorded: a one-page plain-language summary should be available at all partner organisation locations</li>
+        <li>The tool records events, not individuals — this distinction must be communicated clearly and repeatedly</li>
+        <li>If community members object to specific aspects of the design, those concerns should be able to pause or modify the tool — community veto is real, not performative</li>
+        <li>An organisation with a long track record of harm reduction advocacy provides a credibility baseline that no tech company or government agency could have</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa-card type-strategic">
+    <div class="qa-q">
+      <div class="qa-stripe"></div>
+      <div class="qa-q-body">
+        <div class="q-label">Strategic</div>
+        <h3>Could this tool be used to justify reducing services in lower-density areas? (i.e., data used against the community)</h3>
+      </div>
+      <span class="qa-badge">Strategic</span>
+    </div>
+    <div class="qa-a">
+      <p>A sophisticated concern: data showing most events concentrated in certain blocks could be used by funders or the city to argue for geographically concentrated services, leaving other areas without coverage.</p>
+      <div class="approaches-label">Approaches &amp; workarounds</div>
+      <ul class="approach-list">
+        <li>The operating organisation should retain sole interpretive authority over the data — no raw data access for funders without explicit governance agreement</li>
+        <li>Frame the tool's outputs around coverage gaps, not just hotspots: 'here are blocks with high event density and no nearby services' is a different story than 'here is where to concentrate resources'</li>
+        <li>Use the data offensively in advocacy: evidence of underserved areas is a funding argument, not a service-reduction rationale</li>
+        <li>Include a community advisory group in any formal data reporting — so the narrative is shaped by the community, not administrators</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="closing">
+    <p><strong>The concerns raised here are real — and they are the same concerns that the DTES harm reduction community has navigated for decades.</strong> The goal is not to dismiss them but to design a tool that takes them seriously from day one. We welcome the opportunity to work through these questions together with staff, the ID team, and the community. View the <a href="onepager.html" style="color:var(--sky)">one-pager</a> or <a href="overdose-watch.html" style="color:var(--sky)">open the prototype app</a>.</p>
+  </div>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  DTES Community Tools · Vancouver, BC
+</footer>
+
+</body>
+</html>

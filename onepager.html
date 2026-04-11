@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTES OD Watch — One-Pager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+/* page-specific extras */
+:root { --red-pale: #FDEAEA; --green: #2EA86B; }
+body { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* DOC ACTIONS BAR */
+.doc-bar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px 32px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.doc-bar .doc-title { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.doc-bar .doc-title strong { color: var(--ink); }
+.doc-bar .doc-acts { display: flex; gap: 8px; }
+.btn svg { width: 14px; height: 14px; }
+
+/* PAGE */
+main { flex: 1; }
+
+/* HERO STRIP */
+.doc-hero { background: var(--teal-deep); padding: 48px 32px 40px; }
+.doc-hero .eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--sky); margin-bottom: 14px; }
+.doc-hero h1 { font-family: var(--font-head); font-size: clamp(32px, 4vw, 48px); color: var(--white); line-height: 1.15; margin-bottom: 10px; }
+.doc-hero .subtitle { font-size: 16px; color: rgba(255,255,255,0.6); max-width: 560px; line-height: 1.6; }
+
+/* STAT BAND */
+.stat-band { background: var(--teal); padding: 28px 32px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; }
+.stat-item { padding: 0 24px; border-right: 1px solid rgba(255,255,255,0.15); }
+.stat-item:last-child { border-right: none; }
+.stat-item .n { font-family: var(--font-head); font-size: 36px; color: var(--white); line-height: 1; }
+.stat-item .l { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 4px; line-height: 1.4; }
+.stat-item .src { font-size: 10px; color: rgba(255,255,255,0.45); margin-top: 3px; }
+
+/* CONTENT */
+.content { max-width: 860px; margin: 0 auto; padding: 56px 32px; }
+.content h2 { font-family: var(--font-head); font-size: 26px; color: var(--ink); margin-bottom: 12px; margin-top: 48px; }
+.content h2:first-child { margin-top: 0; }
+.content p { font-size: 15px; color: var(--ink); line-height: 1.75; margin-bottom: 14px; }
+.content p a { color: var(--teal); }
+
+/* HOW IT WORKS */
+.how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 24px 0 40px; }
+.how-step { background: var(--surface); border-radius: 12px; padding: 20px; border: 1px solid var(--border); }
+.step-num { font-family: var(--font-head); font-size: 32px; color: var(--teal-mist); line-height: 1; margin-bottom: 6px; }
+.step-title { font-size: 14px; font-weight: 500; color: var(--amber); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.step-body { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+/* WHO BENEFITS */
+.benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0 40px; }
+.benefit { display: flex; gap: 10px; padding: 14px; border-radius: 10px; border: 1px solid var(--border); }
+.benefit-icon { font-size: 20px; flex-shrink: 0; }
+.benefit-label { font-size: 12px; font-weight: 500; color: var(--teal); margin-bottom: 3px; }
+.benefit-text { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* PRIVACY LIST */
+.privacy-list { list-style: none; display: flex; flex-direction: column; gap: 9px; margin: 16px 0 40px; }
+.privacy-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--ink); line-height: 1.5; }
+.privacy-list li::before { content: '▸'; color: var(--teal); font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+
+/* CTA BOX */
+.cta-box { background: var(--teal-deep); border-radius: 14px; padding: 28px 32px; margin: 40px 0; }
+.cta-box h3 { font-family: var(--font-head); font-size: 22px; color: var(--white); margin-bottom: 8px; }
+.cta-box p { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.65; }
+
+/* SOURCES */
+.sources-section { background: var(--surface); border-top: 1px solid var(--border); padding: 40px 32px; }
+.sources-section h2 { font-family: var(--font-head); font-size: 22px; color: var(--ink); margin-bottom: 20px; }
+.source-list { list-style: none; display: flex; flex-direction: column; gap: 10px; max-width: 860px; margin: 0 auto; }
+.source-item { display: flex; gap: 12px; font-size: 13px; line-height: 1.5; }
+.source-num { font-weight: 500; color: var(--teal); min-width: 28px; }
+.source-text { color: var(--muted); }
+.source-text em { color: var(--ink); font-style: normal; font-weight: 500; }
+.source-text a { color: var(--teal); word-break: break-all; }
+
+/* FOOTER */
+.site-footer { background: var(--teal-deep); color: var(--sky); text-align: center; padding: 24px 32px; font-size: 12px; line-height: 1.8; }
+.site-footer a { color: var(--sky); }
+
+@media(max-width:700px) {
+  .stat-band { grid-template-columns: 1fr 1fr; }
+  .stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.15); padding: 14px 0; }
+  .how-grid, .benefits-grid { grid-template-columns: 1fr; }
+  .doc-bar { flex-direction: column; align-items: flex-start; }
+  .content { padding: 36px 20px; }
+  .sources-section { padding: 32px 20px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="index.html" class="logo"><span class="pulse"></span>DTES Community Tools</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="dtes-services.html">Services</a>
+    <a href="overdose-watch.html">OD Watch</a>
+    <a href="onepager.html" class="active">One-Pager</a>
+  </div>
+</nav>
+
+<div class="doc-bar">
+  <div class="doc-title">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <strong>OD Watch One-Pager</strong> — DTES Overdose Watch Proposal
+  </div>
+  <div class="doc-acts">
+    <a href="qa.html" class="btn btn-outline">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+      View Q&amp;A Doc
+    </a>
+    <a href="overdose-watch.html" class="btn btn-teal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      Open App
+    </a>
+  </div>
+</div>
+
+<main>
+  <div class="doc-hero">
+    <div class="eyebrow">DTES Overdose Watch · Proposal Document</div>
+    <h1>DTES Overdose Watch</h1>
+    <p class="subtitle">A real-time overdose tracking &amp; response tool for the Downtown Eastside — a proposal for community harm reduction partners in the DTES.</p>
+  </div>
+
+  <div class="stat-band">
+    <div class="stat-item">
+      <div class="n">1,826</div>
+      <div class="l">Unregulated drug deaths, BC 2025</div>
+      <div class="src">BC Coroners Service [1]</div>
+    </div>
+    <div class="stat-item">
+      <div class="n">11,092</div>
+      <div class="l">Paramedic overdose calls, VCH 2024</div>
+      <div class="src">BCEHS [2]</div>
+    </div>
+    <div class="stat-item">
+      <div class="n">12×</div>
+      <div class="l">DTES death rate vs provincial average</div>
+      <div class="src">BC Gov News [3]</div>
+    </div>
+    <div class="stat-item">
+      <div class="n">~2,000</div>
+      <div class="l">Events/month tracked in Vancouver</div>
+      <div class="src">BCCDC Dashboard [4]</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <h2>The Problem</h2>
+    <p>Vancouver's Downtown Eastside remains the epicentre of BC's toxic drug crisis. Despite years of emergency declarations and significant public investment — over $2.6 billion in mental health and addictions funding since 2017 — response teams still operate largely blind. The BCCDC's Unregulated Drug Poisoning Emergency Dashboard tracks nearly 2,000 overdose events per month in the Vancouver area [4], yet the data informing it arrives through institutional pipelines — coroner reports, hospital admissions, paramedic call logs — that reflect what happened days or weeks ago, not what is happening right now on the street.</p>
+    <p>The result: outreach workers, peer responders, and harm reduction teams cannot dynamically position themselves based on live conditions. Hotspots shift rapidly between SROs, alleys, supervised consumption sites, and parks — and no shared, real-time picture exists to guide them. A 2025 <em>BC Medical Journal</em> analysis found thousands of overdose cases annually go unclassified in emergency departments, meaning official figures likely understate the true burden [5].</p>
+
+    <h2>The Solution</h2>
+    <p>DTES Overdose Watch is a lightweight, mobile-first platform enabling frontline workers, peer responders, and community members to log overdose events in real time and visualise emerging patterns on a live map. An established DTES harm reduction organisation — with existing trusted relationships with residents and supervised consumption infrastructure — would be the natural anchor for this tool.</p>
+
+    <h2>How It Works</h2>
+    <div class="how-grid">
+      <div class="how-step"><div class="step-num">01</div><div class="step-title">Log</div><div class="step-body">A responder opens the app and taps 'Record Event'. They confirm location (auto-detected via GPS), record the substance if known, and select the outcome — all in under 30 seconds, with no typing required.</div></div>
+      <div class="how-step"><div class="step-num">02</div><div class="step-title">Store</div><div class="step-body">Events are timestamped and geolocated, stored in a secure, privacy-first database. No personal identifying information about the person who overdosed is ever collected. Responder accounts use anonymised identifiers only.</div></div>
+      <div class="how-step"><div class="step-num">03</div><div class="step-title">Map</div><div class="step-body">A live map displays event density across the DTES, filterable by time window (last 1 hour through 60 days). Clusters update in near-real-time, revealing emerging hotspots before they become crises.</div></div>
+      <div class="how-step"><div class="step-num">04</div><div class="step-title">Act</div><div class="step-body">Workers on shift can see where events are spiking and adjust positioning dynamically — moving naloxone supplies, dispatching peer outreach, and identifying blocks with no coverage.</div></div>
+    </div>
+
+    <h2>Who Benefits</h2>
+    <div class="benefits-grid">
+      <div class="benefit"><div class="benefit-icon">🏃</div><div><div class="benefit-label">Harm Reduction Staff</div><div class="benefit-text">Dynamic deployment toward emerging clusters across supervised consumption sites and community housing.</div></div></div>
+      <div class="benefit"><div class="benefit-icon">🔬</div><div><div class="benefit-label">ID &amp; Clinical Team</div><div class="benefit-text">Early signal on new substances in circulation — geographic clustering of benzo-adulterated events can flag a new batch.</div></div></div>
+      <div class="benefit"><div class="benefit-icon">📊</div><div><div class="benefit-label">Partner Organisation Leadership</div><div class="benefit-text">Evidence of unmet need to strengthen funding applications, advocacy, and service expansion cases.</div></div></div>
+      <div class="benefit"><div class="benefit-icon">🔬</div><div><div class="benefit-label">Researchers &amp; BCCDC</div><div class="benefit-text">Granular, timestamped data for neighbourhood-level trend analysis — faster than any coroner or BCEHS pipeline.</div></div></div>
+      <div class="benefit"><div class="benefit-icon">🏥</div><div><div class="benefit-label">Vancouver Coastal Health</div><div class="benefit-text">Data to optimise supervised consumption service hours and identify gaps in neighbourhood coverage.</div></div></div>
+      <div class="benefit"><div class="benefit-icon">🤝</div><div><div class="benefit-label">DTES Residents &amp; Peers</div><div class="benefit-text">Community-controlled data that reflects lived reality and drives immediate, ground-level response.</div></div></div>
+    </div>
+
+    <h2>Privacy &amp; Community Principles</h2>
+    <p>This tool is built on the foundational values of harm reduction — radical inclusion, community control, and safety without judgment.</p>
+    <ul class="privacy-list">
+      <li>No personal data about people who overdose is ever collected or stored</li>
+      <li>Responder accounts use anonymised identifiers only</li>
+      <li>Data is owned by the operating organisation — not by government, police, or any third party</li>
+      <li>Raw location data restricted to authorised staff; community map shows aggregate density only</li>
+      <li>Designed for harm reduction, never law enforcement — no data shared with police under any circumstances</li>
+      <li>Consistent with BC's Good Samaritan Drug Overdose Act: calling for help must never create legal risk [7]</li>
+    </ul>
+
+    <div class="cta-box">
+      <h3>Interested in piloting DTES Overdose Watch?</h3>
+      <p>We are seeking to work with DTES harm reduction organisations to co-develop and pilot this platform. View the <a href="qa.html" style="color:var(--sky)">Q&amp;A document</a> for answers to common concerns, or <a href="overdose-watch.html" style="color:var(--sky)">open the prototype</a> to see the tool in action.</p>
+    </div>
+
+  </div>
+
+  <div class="sources-section">
+    <div style="max-width:860px;margin:0 auto">
+      <h2>Sources</h2>
+      <ol class="source-list">
+        <li class="source-item"><span class="source-num">[1]</span><span class="source-text">The Tyee. <em>"Mass Death on This Scale Is Incomprehensible."</em> March 5, 2026. <a href="https://thetyee.ca/News/2026/03/05/Mass-Death-This-Scale-Incomprehensible/" target="_blank">thetyee.ca</a></span></li>
+        <li class="source-item"><span class="source-num">[2]</span><span class="source-text">BC Emergency Health Services. <em>"BCEHS Paramedics Respond to 4% Fewer Overdose/Drug Poisoning Calls in 2024."</em> February 5, 2025. <a href="https://www.bcehs.ca/about/news-stories/stories/bcehs-paramedics-respond-to-4-fewer-overdose-drug-poisoning-calls-in-2024" target="_blank">bcehs.ca</a></span></li>
+        <li class="source-item"><span class="source-num">[3]</span><span class="source-text">Government of British Columbia. <em>"More than 2,500 Lives Lost to Toxic Drugs in 2023."</em> January 2024. <a href="https://news.gov.bc.ca/releases/2024PSSG0001-000069" target="_blank">news.gov.bc.ca</a></span></li>
+        <li class="source-item"><span class="source-num">[4]</span><span class="source-text">BC Centre for Disease Control. <em>"Unregulated Drug Poisoning Emergency Dashboard."</em> Updated bi-monthly. <a href="https://public.tableau.com/app/profile/bccdc/viz/UnregulatedDrugPoisoningEmergencyDashboard/Introduction" target="_blank">bccdc.ca</a></span></li>
+        <li class="source-item"><span class="source-num">[5]</span><span class="source-text">Nyx E., Kalicum J., Kerr T. <em>"Overdose and British Columbia's Hospital System: Have We Miscounted?"</em> BC Medical Journal, vol. 67, No. 10. December 2025. <a href="https://bcmj.org/premise/overdose-and-british-columbia-s-hospital-system-have-we-miscounted" target="_blank">bcmj.org</a></span></li>
+        <li class="source-item"><span class="source-num">[6]</span><span class="source-text">Government of Canada. <em>"Good Samaritan Drug Overdose Act."</em> Justice Laws. 2017. <a href="https://laws-lois.justice.gc.ca/eng/acts/G-11.5/" target="_blank">laws-lois.justice.gc.ca</a></span></li>
+        <li class="source-item"><span class="source-num">[7]</span><span class="source-text">BC Emergency Health Services. <em>"Overdose and Drug Poisoning Data."</em> 2025. <a href="https://www.bcehs.ca/about/accountability/data/overdose-drug-poisoning-data" target="_blank">bcehs.ca</a></span></li>
+      </ol>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  DTES Community Tools · Vancouver, BC
+</footer>
+
+</body>
+</html>

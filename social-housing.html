@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Social Housing Directory – DTES Community Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<link rel="stylesheet" href="shared.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+/* ── Page-specific styles only ── */
+body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+/* Table columns */
+.td-name  { font-weight: 500; color: var(--ink); min-width: 150px; }
+.td-name small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; margin-top: 2px; }
+.td-addr  { color: var(--muted); min-width: 130px; font-size: 12px; }
+.td-rent  { font-weight: 600; color: var(--teal); white-space: nowrap; }
+.td-rent.market { color: var(--amber); }
+.td-rent.dev    { color: #9333EA; font-size: 11px; font-style: italic; }
+.td-units { text-align: center; font-weight: 600; color: var(--ink); }
+.td-type  { min-width: 90px; }
+.td-pop   { min-width: 90px; }
+.td-manager { color: var(--muted); font-size: 12px; min-width: 130px; }
+.td-contact { font-size: 12px; }
+.td-contact a { color: var(--teal); text-decoration: none; }
+.td-contact a:hover { text-decoration: underline; }
+.td-notes { font-size: 12px; color: var(--muted); min-width: 160px; max-width: 220px; }
+.td-apply { font-size: 11px; min-width: 100px; }
+.td-flags { white-space: nowrap; }
+.flag { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 11px; margin: 1px; }
+.flag-pet  { background: #D1FAE5; }
+.flag-elev { background: #DBEAFE; }
+.flag-supp { background: var(--teal-pale); }
+.flag-meals { background: var(--amber-pale); }
+.flag-acc  { background: #FCE7F3; }
+tbody tr.dev-row { background: #FAF5FF; }
+tbody tr.dev-row:hover { background: #F3E8FF; }
+
+#map-container { border-right: 1px solid var(--border); }
+#housing-map { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="index.html" class="logo"><span class="pulse"></span>DTES Community Tools</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="dtes-services.html">Services Map</a>
+    <a href="overdose-watch.html">OD Watch</a>
+    <a href="social-housing.html" class="active">Housing Directory</a>
+    <a href="vancouver-shelters.html">Shelters</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div>
+      <div class="page-eyebrow">🏠 Jan 2025 Update</div>
+      <h1>Downtown Eastside <span>Social Housing</span></h1>
+      <p>Low-income, supportive, and social housing in the DTES and surrounding areas.</p>
+    </div>
+    <div class="header-meta">
+      <div class="meta-pill"><strong id="total-count">—</strong> listings</div>
+      <div class="meta-pill"><strong id="shelter-count">—</strong> at shelter rate</div>
+      <div class="meta-pill"><strong id="dev-count">—</strong> in development</div>
+    </div>
+  </div>
+</div>
+
+<div class="controls-bar">
+  <div class="controls-inner">
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="search" class="search-input" placeholder="Search by name, address, manager…">
+    </div>
+    <div class="filter-group">
+      <button class="filter-btn" data-filter="shelter">Shelter Rate ($500)</button>
+      <button class="filter-btn" data-filter="income">Income-Based</button>
+      <button class="filter-btn" data-filter="women">Women</button>
+      <button class="filter-btn" data-filter="seniors">Seniors</button>
+      <button class="filter-btn" data-filter="indigenous">Indigenous</button>
+      <button class="filter-btn" data-filter="youth">Youth</button>
+      <button class="filter-btn" data-filter="supportive">Supportive</button>
+      <button class="filter-btn" data-filter="dev">In Development</button>
+    </div>
+    <select class="sort-select" id="sort-select">
+      <option value="name">Sort: Name A–Z</option>
+      <option value="rent">Sort: Rent Low–High</option>
+      <option value="units">Sort: Units (most first)</option>
+      <option value="addr">Sort: Street Address</option>
+    </select>
+  </div>
+</div>
+
+<div class="main-wrap">
+  <div class="split-layout">
+    <div id="map-container">
+      <div id="housing-map"></div>
+    </div>
+    <div class="table-side">
+      <div class="results-bar"><strong id="shown-count">—</strong> of <strong id="total-shown">—</strong> listings · Click row to highlight on map</div>
+      <div class="table-scroll">
+        <table id="housing-table">
+          <thead>
+            <tr>
+              <th data-col="name">Name</th>
+              <th data-col="addr">Address</th>
+              <th data-col="rent">Rent</th>
+              <th data-col="units">Units</th>
+              <th data-col="type">Type</th>
+              <th data-col="population">For</th>
+              <th data-col="manager">Manager</th>
+              <th data-col="contact">Contact</th>
+              <th data-col="features">Features</th>
+              <th data-col="apply">Apply via</th>
+              <th data-col="notes">Notes</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="source-note">
+  <strong>Source:</strong> Downtown/Downtown Eastside Low-Income Housing list, updated January 2025.
+  Corrections: <a href="mailto:DTEShousing@gmail.com">DTEShousing@gmail.com</a> ·
+  For applications, always contact the managing agency directly.
+</div>
+
+<script src="data/housing.js"></script>
+<script>
+// ── RENDER ────────────────────────────────────────────────────────────────────
+let sortCol = "name", sortDir = 1;
+let activeFilters = new Set();
+
+function approxCoords(addr) {
+  const a = addr.toLowerCase();
+  if (a.includes("w hastings") || a.includes("west hastings")) return [49.2808 + Math.random()*0.001-0.0005, -123.107 + Math.random()*0.002-0.001];
+  if (a.includes("e hastings") || a.includes("east hastings")) return [49.2808 + Math.random()*0.001-0.0005, -123.098 + Math.random()*0.003-0.0015];
+  if (a.includes("hastings")) return [49.2808 + Math.random()*0.001-0.0005, -123.100 + Math.random()*0.004-0.002];
+  if (a.includes("powell"))   return [49.283  + Math.random()*0.002-0.001,  -123.097 + Math.random()*0.004-0.002];
+  if (a.includes("cordova"))  return [49.283  + Math.random()*0.002-0.001,  -123.101 + Math.random()*0.004-0.002];
+  if (a.includes("alexander"))return [49.285  + Math.random()*0.001-0.0005, -123.097 + Math.random()*0.003-0.0015];
+  if (a.includes("pender"))   return [49.280  + Math.random()*0.001-0.0005, -123.105 + Math.random()*0.003-0.0015];
+  if (a.includes("main"))     return [49.281  + Math.random()*0.002-0.001,  -123.100 + Math.random()*0.001-0.0005];
+  if (a.includes("columbia")) return [49.281  + Math.random()*0.001-0.0005, -123.102 + Math.random()*0.001-0.0005];
+  if (a.includes("carrall"))  return [49.282  + Math.random()*0.001-0.0005, -123.104 + Math.random()*0.001-0.0005];
+  if (a.includes("dunlevy"))  return [49.282  + Math.random()*0.001-0.0005, -123.093 + Math.random()*0.001-0.0005];
+  if (a.includes("princess")) return [49.283  + Math.random()*0.001-0.0005, -123.091 + Math.random()*0.001-0.0005];
+  if (a.includes("jackson"))  return [49.284  + Math.random()*0.001-0.0005, -123.088 + Math.random()*0.001-0.0005];
+  if (a.includes("homer"))    return [49.280  + Math.random()*0.001-0.0005, -123.116 + Math.random()*0.001-0.0005];
+  if (a.includes("granville"))return [49.279  + Math.random()*0.002-0.001,  -123.119 + Math.random()*0.002-0.001];
+  if (a.includes("burrard"))  return [49.280  + Math.random()*0.001-0.0005, -123.127 + Math.random()*0.001-0.0005];
+  if (a.includes("terminal")) return [49.274  + Math.random()*0.001-0.0005, -123.102 + Math.random()*0.001-0.0005];
+  if (a.includes("kingsway")) return [49.266  + Math.random()*0.001-0.0005, -123.080 + Math.random()*0.001-0.0005];
+  if (a.includes("vernon"))   return [49.278  + Math.random()*0.001-0.0005, -123.068 + Math.random()*0.001-0.0005];
+  if (a.includes("howe"))     return [49.280  + Math.random()*0.001-0.0005, -123.118 + Math.random()*0.001-0.0005];
+  if (a.includes("keefer"))   return [49.279  + Math.random()*0.001-0.0005, -123.100 + Math.random()*0.001-0.0005];
+  return [49.281 + Math.random()*0.006-0.003, -123.100 + Math.random()*0.008-0.004];
+}
+
+const map = L.map('housing-map', {zoomControl:true}).setView([49.281, -123.100], 14);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com">CARTO</a>',
+  maxZoom:19
+}).addTo(map);
+setTimeout(() => map.invalidateSize(), 200);
+
+const rentColor = {shelter:"#1A7A6E", income:"#3A56A0", market:"#E8930A", dev:"#9333EA"};
+const housingMarkers = {};
+
+HOUSING.forEach(h => {
+  const [lat, lng] = approxCoords(h.addr);
+  h._lat = lat; h._lng = lng;
+  const color = rentColor[h.rentType] || "#666";
+  const icon = L.divIcon({
+    html:`<div style="background:${color};width:10px;height:10px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>`,
+    className:'', iconSize:[10,10], iconAnchor:[5,5], popupAnchor:[0,-8]
+  });
+  const m = L.marker([lat,lng], {icon}).addTo(map);
+  m.bindPopup(`<div class="popup-name">${h.name}</div><div class="popup-addr">${h.addr}</div>${h.units ? `<div style="font-size:12px;color:#1A7A6E;font-weight:600;margin-top:4px">${h.units} units · ${h.rentLabel}</div>` : `<div style="font-size:12px;color:#9333EA;margin-top:4px">${h.rentLabel}</div>`}`);
+  housingMarkers[h.name] = m;
+});
+
+function rentOrder(r) {
+  if (r.rentType === "dev")    return 9999;
+  if (r.rentType === "income") return 9998;
+  return parseInt(r.rentLabel.replace(/[^0-9]/g,"")) || 9997;
+}
+
+function sortData(arr) {
+  return [...arr].sort((a, b) => {
+    let av, bv;
+    if      (sortCol === "name")  { av = a.name.toLowerCase(); bv = b.name.toLowerCase(); }
+    else if (sortCol === "addr")  { av = a.addr.toLowerCase(); bv = b.addr.toLowerCase(); }
+    else if (sortCol === "rent")  { av = rentOrder(a); bv = rentOrder(b); }
+    else if (sortCol === "units") { av = -(a.units||0); bv = -(b.units||0); }
+    else                          { av = a.name.toLowerCase(); bv = b.name.toLowerCase(); }
+    return av < bv ? -sortDir : av > bv ? sortDir : 0;
+  });
+}
+
+function matchFilters(h) {
+  if (activeFilters.size === 0) return true;
+  for (const f of activeFilters) {
+    let match = false;
+    if      (f === "shelter")    match = h.rentType === "shelter";
+    else if (f === "income")     match = h.rentType === "income";
+    else if (f === "women")      match = h.pop.includes("women");
+    else if (f === "seniors")    match = h.pop.includes("seniors");
+    else if (f === "indigenous") match = h.pop.includes("indigenous");
+    else if (f === "youth")      match = h.pop.includes("youth");
+    else if (f === "supportive") match = !!(h.features.supportive || h.features.transitional);
+    else if (f === "dev")        match = !!h.dev;
+    if (!match) return false;
+  }
+  return true;
+}
+
+function matchSearch(h, q) {
+  if (!q) return true;
+  const s = (h.name+" "+h.addr+" "+h.manager+" "+h.notes+" "+h.type+" "+(h.apply||"")).toLowerCase();
+  return q.toLowerCase().split(" ").every(w => s.includes(w));
+}
+
+function rentBadge(h) {
+  if (h.rentType === "dev")     return `<span class="badge badge-dev">In dev</span>`;
+  if (h.rentType === "income")  return `<span class="badge badge-income">Income-based</span>`;
+  if (h.rentType === "shelter") return `<span class="badge badge-shelter">${h.rentLabel}</span>`;
+  return `<span class="badge badge-market">${h.rentLabel}</span>`;
+}
+
+function popBadges(h) {
+  const map = {women:["badge-women","Women"],seniors:["badge-senior","Seniors"],indigenous:["badge-indig","Indig."],youth:["badge-youth","Youth"],families:["badge-senior","Families"]};
+  return h.pop.map(p => { const [cls,label] = map[p]||[""]; return cls ? `<span class="badge ${cls}">${label}</span>` : ""; }).join(" ");
+}
+
+function featureIcons(f) {
+  let out = "";
+  if (f.pets)        out += `<span title="Pets OK" class="flag flag-pet">🐾</span>`;
+  if (f.elev)        out += `<span title="Elevator" class="flag flag-elev">🛗</span>`;
+  if (f.meals)       out += `<span title="Meals" class="flag flag-meals">🍽</span>`;
+  if (f.accessible)  out += `<span title="Accessible" class="flag flag-acc">♿</span>`;
+  if (f.supportive)  out += `<span title="Supportive" class="flag flag-supp">🤝</span>`;
+  if (f.lowbarrier)  out += `<span title="Low-barrier" class="flag">🟢</span>`;
+  if (f.transitional)out += `<span title="Transitional" class="flag">🔄</span>`;
+  return out;
+}
+
+let selectedHousing = null;
+function selectHousing(name) {
+  selectedHousing = name;
+  document.querySelectorAll("#table-body tr").forEach(r => r.classList.remove("row-selected"));
+  const row = document.getElementById("hrow-"+CSS.escape(name));
+  if (row) row.classList.add("row-selected");
+  const m = housingMarkers[name];
+  if (m) { map.setView(m.getLatLng(), 16, {animate:true}); m.openPopup(); }
+}
+
+function renderTable() {
+  const q = document.getElementById("search").value;
+  const filtered = sortData(HOUSING.filter(h => matchFilters(h) && matchSearch(h, q)));
+  const tbody = document.getElementById("table-body");
+
+  document.getElementById("total-count").textContent  = HOUSING.length;
+  document.getElementById("shelter-count").textContent = HOUSING.filter(h=>h.rentType==="shelter").length;
+  document.getElementById("dev-count").textContent     = HOUSING.filter(h=>h.dev).length;
+  document.getElementById("shown-count").textContent   = filtered.length;
+  document.getElementById("total-shown").textContent   = HOUSING.length;
+
+  HOUSING.forEach(h => {
+    const m = housingMarkers[h.name];
+    if (!m) return;
+    const show = filtered.some(f => f.name === h.name);
+    if (show) { if (!map.hasLayer(m)) m.addTo(map); }
+    else      { if (map.hasLayer(m)) map.removeLayer(m); }
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr class="no-results-row"><td colspan="11">🏘️ No listings match — try removing some filters.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(h => `
+    <tr id="hrow-${h.name.replace(/[^a-zA-Z0-9]/g,'_')}" class="${h.dev ? 'dev-row' : ''}" onclick="selectHousing('${h.name.replace(/'/g,"\\'")}')">
+      <td class="td-name">${h.name}${h.dev ? '<br><small style="color:#9333EA">🔨 In development</small>' : ''}</td>
+      <td class="td-addr">${h.addr}</td>
+      <td class="td-rent">${rentBadge(h)}</td>
+      <td class="td-units">${h.units || "—"}</td>
+      <td class="td-type"><span style="font-size:12px;color:var(--muted)">${h.type}</span></td>
+      <td class="td-pop"><div class="tag-row">${popBadges(h)}</div></td>
+      <td class="td-manager">${h.manager}</td>
+      <td class="td-contact">${h.contact ? `<a href="tel:${h.contact.replace(/[^0-9]/g,'')}">${h.contact}</a>` : "—"}</td>
+      <td class="td-flags">${featureIcons(h.features)}</td>
+      <td class="td-apply" style="font-size:11px;color:var(--muted)">${h.apply || "—"}</td>
+      <td class="td-notes">${h.notes || ""}</td>
+    </tr>
+  `).join("");
+}
+
+document.getElementById("search").addEventListener("input", renderTable);
+
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const f = btn.dataset.filter;
+    if (activeFilters.has(f)) { activeFilters.delete(f); btn.classList.remove("active"); }
+    else                       { activeFilters.add(f);    btn.classList.add("active"); }
+    renderTable();
+  });
+});
+
+document.getElementById("sort-select").addEventListener("change", e => {
+  sortCol = e.target.value;
+  renderTable();
+});
+
+document.querySelectorAll("thead th[data-col]").forEach(th => {
+  th.addEventListener("click", () => {
+    const col = th.dataset.col;
+    if (sortCol === col) sortDir *= -1;
+    else { sortCol = col; sortDir = 1; }
+    document.querySelectorAll("thead th").forEach(t => t.classList.remove("sort-asc","sort-desc"));
+    th.classList.add(sortDir === 1 ? "sort-asc" : "sort-desc");
+    renderTable();
+  });
+});
+
+renderTable();
+</script>
+</body>
+</html>
