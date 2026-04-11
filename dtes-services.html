@@ -12,7 +12,6 @@
 <style>
 body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-/* ── Alert bar ── */
 #alert-bar {
   background: #FFF8E0; border-bottom: 1px solid #F0C040;
   padding: 7px 16px; font-size: 12px; color: #7a5a00;
@@ -20,10 +19,8 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 }
 #alert-bar a { color: #7a5a00; text-decoration: underline; }
 
-/* ── Map ── */
 #services-map { width: 100%; height: 100%; }
 
-/* ── Table columns ── */
 .td-name  { font-weight: 500; color: var(--ink); min-width: 160px; }
 .td-name small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; margin-top: 2px; }
 .td-cat   { min-width: 120px; }
@@ -33,56 +30,11 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 .td-phone a:hover { text-decoration: underline; }
 .td-hours { font-size: 12px; color: var(--muted); min-width: 120px; }
 
-/* ── Category pill (cat-specific colors) ── */
-.tcat-pill {
-  display: inline-block; padding: 2px 8px; border-radius: 4px;
-  font-size: 10px; font-weight: 600; white-space: nowrap;
-}
+.tcat-pill { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; white-space: nowrap; }
 .tbadge-yes { background: #dcf5e8; color: #0e5c30; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 500; white-space: nowrap; }
 .tbadge-no  { background: #f0ece8; color: #8a8278; padding: 2px 7px; border-radius: 4px; font-size: 11px; white-space: nowrap; }
 .tbadge-ref { background: #fff3dc; color: #7a5a00; padding: 2px 7px; border-radius: 4px; font-size: 11px; white-space: nowrap; }
 
-/* ── Detail panel ── */
-#detail-panel { display: none; flex-direction: column; flex: 1; overflow: hidden; }
-#detail-panel.show { display: flex; }
-#detail-back {
-  display: flex; align-items: center; gap: 6px; padding: 10px 14px;
-  border-bottom: 1px solid var(--border); background: var(--surface);
-  font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; flex-shrink: 0;
-}
-#detail-back:hover { color: var(--ink); }
-#detail-scroll { flex: 1; overflow-y: auto; padding: 16px; }
-#detail-scroll::-webkit-scrollbar { width: 3px; }
-#detail-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-.detail-icon-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-.detail-icon { width: 40px; height: 40px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-.detail-cat  { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px; }
-.detail-name { font-size: 16px; font-weight: 700; line-height: 1.25; color: var(--ink); }
-.detail-inst { font-size: 12px; color: var(--muted); margin-top: 3px; margin-bottom: 10px; }
-.detail-section-title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border); margin-top: 14px; }
-.detail-row { display: flex; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
-.detail-row:last-child { border-bottom: none; }
-.detail-label { color: var(--muted); width: 80px; flex-shrink: 0; font-size: 11px; padding-top: 1px; }
-.detail-val { color: var(--ink); flex: 1; line-height: 1.5; }
-.detail-val a { color: var(--teal); }
-.detail-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
-.dbadge { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 5px; line-height: 1.5; }
-.dbadge-yes { background: #dcf5e8; color: #0e5c30; }
-.dbadge-no  { background: #f0ece8; color: #8a8278; }
-.dbadge-ref { background: #fff3dc; color: #7a5a00; }
-.detail-desc { font-size: 12px; color: var(--muted); line-height: 1.6; padding: 10px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border); margin-top: 4px; }
-.detail-note { font-size: 11.5px; color: #8a5a00; line-height: 1.5; padding: 8px 10px; background: #fff9e8; border-radius: 8px; border: 1px solid #f0c040; margin-top: 8px; }
-.detail-cta { display: flex; gap: 8px; margin-top: 14px; }
-.detail-cta-btn {
-  flex: 1; height: 34px; border-radius: 8px; font-size: 12px; font-weight: 500;
-  cursor: pointer; transition: all 0.15s; border: 1px solid var(--border);
-  background: var(--surface); color: var(--muted); font-family: var(--font-body);
-}
-.detail-cta-btn:hover { border-color: var(--teal-mid); color: var(--teal); }
-.detail-cta-btn.primary { background: var(--teal); color: white; border-color: var(--teal); }
-.detail-cta-btn.primary:hover { background: var(--teal-dark); }
-
-/* ── Popup overrides (services-specific) ── */
 .leaflet-popup-content-wrapper { min-width: 240px; }
 .popup-inner { padding: 12px 14px; }
 .popup-cat-label { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 3px; opacity: 0.85; }
@@ -97,56 +49,7 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 }
 .popup-detail-btn:hover { background: var(--teal); }
 
-/* ── Results bar action buttons ── */
-.action-btn {
-  height: 24px; padding: 0 9px; border-radius: 6px; font-size: 11px; font-weight: 500;
-  cursor: pointer; border: 1px solid var(--border); background: var(--white);
-  color: var(--muted); font-family: var(--font-body); transition: all 0.15s;
-  display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
-}
-.action-btn:hover { border-color: var(--teal-mid); color: var(--teal); }
-.action-btn.primary { background: var(--teal); color: white; border-color: var(--teal); }
-.action-btn.primary:hover { background: var(--teal-dark); }
-
-/* ── Modal ── */
-#modal-overlay {
-  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
-  z-index: 500; align-items: center; justify-content: center; padding: 16px;
-}
-#modal-overlay.show { display: flex; }
-#modal {
-  background: var(--white); border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,0.18);
-  width: 100%; max-width: 520px; max-height: 90dvh; overflow-y: auto; padding: 20px;
-}
-#modal h2 { font-size: 15px; font-weight: 600; margin-bottom: 14px; color: var(--ink); }
-.form-row { margin-bottom: 12px; }
-.form-row label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
-.form-row input, .form-row select, .form-row textarea {
-  width: 100%; border: 1px solid var(--border); border-radius: 6px;
-  padding: 8px 10px; font-size: 13px; color: var(--ink); background: var(--white);
-  outline: none; transition: border-color 0.15s;
-}
-.form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--teal-mid); }
-.form-row textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
-.form-row select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239D9489' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
-.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-.modal-actions { display: flex; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
-.modal-btn {
-  height: 36px; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 500;
-  cursor: pointer; transition: all 0.15s; border: 1px solid var(--border);
-  background: var(--surface); color: var(--muted); font-family: var(--font-body);
-}
-.modal-btn:hover { border-color: var(--teal-mid); color: var(--teal); }
-.modal-btn.primary { background: var(--teal); color: #fff; border-color: var(--teal); margin-left: auto; }
-.modal-btn.primary:hover { background: var(--teal-dark); }
-.modal-btn.danger { background: #C0392B; color: #fff; border-color: #C0392B; }
-.modal-btn.danger:hover { background: #a82e22; }
-
-/* ── Handout overlay ── */
-#handout-overlay {
-  display: none; position: fixed; inset: 0; background: #fff;
-  z-index: 600; overflow: auto; padding: 20px;
-}
+#handout-overlay { display: none; position: fixed; inset: 0; background: #fff; z-index: 600; overflow: auto; padding: 20px; }
 #handout-overlay.show { display: block; }
 #handout-toolbar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
 #handout-content { max-width: 700px; margin: 0 auto; }
@@ -159,10 +62,7 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 .handout-item-name { font-weight: 600; color: #111; width: 180px; flex-shrink: 0; }
 .handout-item-addr { color: #555; flex: 1; }
 .handout-item-phone { color: #1655A2; width: 120px; flex-shrink: 0; text-align: right; }
-@media print {
-  #handout-toolbar { display: none; }
-  #handout-overlay { padding: 0; }
-}
+@media print { #handout-toolbar { display: none; } #handout-overlay { padding: 0; } }
 </style>
 </head>
 <body>
@@ -228,7 +128,6 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
     </div>
     <div class="table-side">
 
-      <!-- List panel (default) -->
       <div id="list-panel" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
         <div class="results-bar">
           <strong id="shown-count">—</strong> of <strong id="total-shown">—</strong> organizations · Click row for details
@@ -257,7 +156,6 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         </div>
       </div>
 
-      <!-- Detail panel (shown on row click) -->
       <div id="detail-panel">
         <div id="detail-back" onclick="showList()">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2L4 7l5 5"/></svg>
@@ -277,8 +175,8 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 </div>
 
 <!-- Edit / Add Modal -->
-<div id="modal-overlay">
-  <div id="modal">
+<div id="modal-overlay" class="modal-overlay">
+  <div id="modal" class="modal-box">
     <h2 id="modal-title">Add Organization</h2>
     <div class="form-row">
       <label>Organization Name *</label>
@@ -399,454 +297,6 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 </div>
 
 <script src="data/services.js"></script>
-<script>
-// ═══════════════════════════════════════════════════════════
-// DATA
-// ═══════════════════════════════════════════════════════════
-const CAT_META = {
-  "SCS / OPS":                  {color:"#C0392B", icon:"💉"},
-  "Primary Care / OAT":         {color:"#1A7A4A", icon:"🩺"},
-  "Harm Reduction":             {color:"#D4AC0D", icon:"🧴"},
-  "Detox / WDM":                {color:"#D95F00", icon:"🏥"},
-  "Peer / Indigenous":          {color:"#1655A2", icon:"🤝"},
-  "Women / Sex Workers":        {color:"#A0306B", icon:"♀"},
-  "Supportive Housing":         {color:"#4A5568", icon:"🏠"},
-  "Shelter / Recovery":         {color:"#6B3FA0", icon:"🛡"},
-  "Community / Drop-in":        {color:"#0A7A6B", icon:"🏢"},
-  "Emergency Services":         {color:"#CC3300", icon:"🚨"},
-  "Transitional / Acute Care":  {color:"#2D3A8C", icon:"🏨"},
-  "System Navigation":          {color:"#1A2B6B", icon:"🔬"},
-};
-
-// ═══════════════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════════════
-let orgs = [];
-let activeCategories = new Set();
-let activeFlags = new Set();
-let searchQuery = "";
-let selectedId = null;
-let editingId = null;
-let sortCol = "name", sortDir = 1;
-let map, markers = {};
-
-// ═══════════════════════════════════════════════════════════
-// STORAGE
-// ═══════════════════════════════════════════════════════════
-function loadOrgs() {
-  try {
-    const saved = localStorage.getItem("dtes_orgs_v3");
-    orgs = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(BASE_ORGS));
-  } catch(e) { orgs = JSON.parse(JSON.stringify(BASE_ORGS)); }
-}
-function saveOrgs() {
-  try { localStorage.setItem("dtes_orgs_v3", JSON.stringify(orgs)); } catch(e) {}
-}
-
-// ═══════════════════════════════════════════════════════════
-// MAP
-// ═══════════════════════════════════════════════════════════
-function initMap() {
-  map = L.map("services-map", {zoomControl:true}).setView([49.2815, -123.099], 15);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-    attribution:"© OpenStreetMap contributors © CARTO", maxZoom:19
-  }).addTo(map);
-  setTimeout(() => map.invalidateSize(), 200);
-}
-
-function makeIcon(org) {
-  const meta = CAT_META[org.cat] || {color:"#666", icon:"●"};
-  const isSelected = org.id === selectedId;
-  const ring = isSelected
-    ? `box-shadow:0 0 0 2px white,0 0 0 4px ${meta.color},0 4px 12px rgba(0,0,0,0.3);transform:scale(1.15);`
-    : "";
-  return L.divIcon({
-    html:`<div style="background:${meta.color};width:28px;height:28px;border-radius:50%;border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;font-size:12px;${ring}cursor:pointer;transition:transform 0.1s;">${meta.icon}</div>`,
-    className:"", iconSize:[28,28], iconAnchor:[14,14], popupAnchor:[0,-16]
-  });
-}
-
-function buildPopup(org) {
-  const meta = CAT_META[org.cat] || {color:"#666"};
-  const oatBadge = org.oat && org.oat.startsWith("Yes") ? `<span class="pb pb-yes">OAT ✓</span>` : "";
-  const scsBadge = org.scs && org.scs.startsWith("Yes") && !org.scs.startsWith("No") ? `<span class="pb pb-yes">SCS/OPS ✓</span>` : "";
-  const wiBadge  = org.walkin && (org.walkin.includes("drop-in") || org.walkin.startsWith("Yes")) ? `<span class="pb pb-yes">Walk-in ✓</span>` : "";
-  const div = document.createElement("div");
-  div.className = "popup-inner";
-  div.innerHTML = `
-    <div class="popup-cat-label" style="color:${meta.color}">${org.cat}</div>
-    <div class="popup-name">${org.name}</div>
-    <div class="popup-addr">📍 ${org.addr}${org.phone ? `<br>📞 ${org.phone}` : ""}</div>
-    <div class="popup-badges">${oatBadge}${scsBadge}${wiBadge}</div>
-    <button class="popup-detail-btn" onclick="showDetail('${org.id}')">View full details →</button>
-  `;
-  return div;
-}
-
-function renderMarkers() {
-  Object.values(markers).forEach(m => m.remove());
-  markers = {};
-  orgs.forEach(org => {
-    if (!org.lat || !org.lng) return;
-    const marker = L.marker([org.lat, org.lng], {icon: makeIcon(org)});
-    marker.bindPopup(buildPopup(org), {maxWidth:280, className:""});
-    marker.on("click", () => selectOrg(org.id));
-    marker.addTo(map);
-    markers[org.id] = marker;
-  });
-}
-
-function updateMarkerIcon(id) {
-  const org = orgs.find(o=>o.id===id);
-  if (org && markers[id]) markers[id].setIcon(makeIcon(org));
-}
-
-// ═══════════════════════════════════════════════════════════
-// FILTER & SEARCH
-// ═══════════════════════════════════════════════════════════
-function getVisible() {
-  return orgs.filter(org => {
-    const catMatch  = activeCategories.size === 0 || activeCategories.has(org.cat);
-    const flagMatch = [...activeFlags].every(f => org.flags && org.flags[f]);
-    const q = searchQuery.toLowerCase();
-    const textMatch = !q
-      || (org.name||"").toLowerCase().includes(q)
-      || (org.addr||"").toLowerCase().includes(q)
-      || (org.inst||"").toLowerCase().includes(q)
-      || (org.desc||"").toLowerCase().includes(q)
-      || (org.cat||"").toLowerCase().includes(q);
-    return catMatch && flagMatch && textMatch;
-  });
-}
-
-function updateMapVisibility() {
-  const visibleIds = new Set(getVisible().map(o=>o.id));
-  orgs.forEach(org => {
-    const m = markers[org.id];
-    if (!m) return;
-    if (visibleIds.has(org.id)) { if (!map.hasLayer(m)) m.addTo(map); }
-    else                        { if (map.hasLayer(m))  m.remove(); }
-  });
-}
-
-// ═══════════════════════════════════════════════════════════
-// RENDER TABLE
-// ═══════════════════════════════════════════════════════════
-function sortedVisible() {
-  return [...getVisible()].sort((a, b) => {
-    const av = (a[sortCol]||"").toLowerCase();
-    const bv = (b[sortCol]||"").toLowerCase();
-    return av < bv ? -sortDir : av > bv ? sortDir : 0;
-  });
-}
-
-function renderTable() {
-  const data = sortedVisible();
-  const tbody = document.getElementById("table-body");
-
-  document.getElementById("total-count").textContent        = orgs.length;
-  document.getElementById("shown-count-header").textContent = data.length;
-  document.getElementById("shown-count").textContent        = data.length;
-  document.getElementById("total-shown").textContent        = orgs.length;
-
-  updateMapVisibility();
-
-  if (data.length === 0) {
-    tbody.innerHTML = `<tr class="no-results-row"><td colspan="8">No organizations match — try removing some filters.</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = data.map(org => {
-    const meta = CAT_META[org.cat] || {color:"#666"};
-    const oatClass = org.oat && org.oat.startsWith("Yes") ? "tbadge-yes" : "tbadge-no";
-    const scsClass = org.scs && org.scs.startsWith("Yes") && !org.scs.startsWith("No") ? "tbadge-yes" : "tbadge-no";
-    const wiClass  = org.walkin && (org.walkin.includes("drop-in") || org.walkin.startsWith("Yes")) ? "tbadge-yes" : "tbadge-ref";
-    return `
-      <tr id="row-${org.id}" class="${org.id === selectedId ? 'row-selected' : ''}" onclick="selectAndDetail('${org.id}')">
-        <td class="td-name">${org.name}<small>${org.inst||""}</small></td>
-        <td class="td-cat"><span class="tcat-pill" style="background:${meta.color}22;color:${meta.color}">${org.cat}</span></td>
-        <td class="td-addr">${org.addr||"—"}</td>
-        <td class="td-phone">${org.phone ? `<a href="tel:${org.phone}">${org.phone}</a>` : "—"}</td>
-        <td class="td-hours">${org.hours||"—"}</td>
-        <td><span class="${oatClass}">${org.oat||"No"}</span></td>
-        <td><span class="${scsClass}">${org.scs||"No"}</span></td>
-        <td><span class="${wiClass}">${org.walkin||"—"}</span></td>
-      </tr>
-    `;
-  }).join("");
-}
-
-function renderAll() { renderTable(); }
-
-// ═══════════════════════════════════════════════════════════
-// SELECT + DETAIL
-// ═══════════════════════════════════════════════════════════
-function selectOrg(id) {
-  const prev = selectedId;
-  selectedId = id;
-  if (prev) updateMarkerIcon(prev);
-  updateMarkerIcon(id);
-  document.querySelectorAll("#table-body tr").forEach(r =>
-    r.classList.toggle("row-selected", r.id === "row-"+id)
-  );
-  const org = orgs.find(o=>o.id===id);
-  if (org && org.lat && org.lng) {
-    map.setView([org.lat, org.lng], Math.max(map.getZoom(), 16), {animate:true});
-    if (markers[id]) markers[id].openPopup();
-  }
-}
-
-function selectAndDetail(id) {
-  selectOrg(id);
-  showDetail(id);
-}
-
-function showDetail(id) {
-  const org = orgs.find(o=>o.id===id);
-  if (!org) return;
-  selectOrg(id);
-  const meta = CAT_META[org.cat] || {color:"#666", icon:"●"};
-  const oatBadge = `<span class="dbadge ${org.oat&&org.oat.startsWith('Yes')?'dbadge-yes':'dbadge-no'}">OAT: ${org.oat||"No"}</span>`;
-  const scsBadge = `<span class="dbadge ${org.scs&&org.scs.startsWith('Yes')&&!org.scs.startsWith('No')?'dbadge-yes':'dbadge-no'}">SCS/OPS: ${org.scs||"No"}</span>`;
-  const wiBadge  = `<span class="dbadge ${org.walkin&&(org.walkin.includes('drop-in')||org.walkin.startsWith('Yes'))?'dbadge-yes':'dbadge-ref'}">Access: ${org.walkin||"—"}</span>`;
-  const noteHtml = org.note ? `<div class="detail-note">⚠️ ${org.note}</div>` : "";
-  const webHtml  = org.web ? `<div class="detail-row"><span class="detail-label">Website</span><span class="detail-val"><a href="https://${org.web}" target="_blank">${org.web}</a></span></div>` : "";
-
-  document.getElementById("detail-scroll").innerHTML = `
-    <div class="detail-icon-row">
-      <div class="detail-icon" style="background:${meta.color}22">${meta.icon}</div>
-      <div>
-        <div class="detail-cat" style="color:${meta.color}">${org.cat}</div>
-        <div class="detail-name">${org.name}</div>
-      </div>
-    </div>
-    <div class="detail-inst">${org.inst||""}</div>
-    <div class="detail-badges">${oatBadge}${scsBadge}${wiBadge}</div>
-    <div class="detail-section-title">Contact &amp; Access</div>
-    <div class="detail-row"><span class="detail-label">Address</span><span class="detail-val">${org.addr||"—"}</span></div>
-    <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-val">${org.phone ? `<a href="tel:${org.phone}">${org.phone}</a>` : "—"}</span></div>
-    <div class="detail-row"><span class="detail-label">Hours</span><span class="detail-val">${org.hours||"—"}</span></div>
-    ${webHtml}
-    <div class="detail-section-title">Services</div>
-    <div class="detail-desc">${org.desc||"No description available."}</div>
-    ${noteHtml}
-    <div class="detail-cta">
-      <button class="detail-cta-btn" onclick="openModal('${org.id}')">Edit</button>
-      ${org.phone ? `<button class="detail-cta-btn primary" onclick="window.location='tel:${org.phone}'">Call</button>` : ""}
-    </div>
-  `;
-
-  document.getElementById("list-panel").style.display = "none";
-  document.getElementById("detail-panel").classList.add("show");
-}
-
-function showList() {
-  document.getElementById("list-panel").style.display = "";
-  document.getElementById("detail-panel").classList.remove("show");
-}
-
-// ═══════════════════════════════════════════════════════════
-// EDIT / ADD
-// ═══════════════════════════════════════════════════════════
-function openModal(id) {
-  editingId = id || null;
-  const org = id ? orgs.find(o=>o.id===id) : null;
-  document.getElementById("modal-title").textContent = id ? "Edit Organization" : "Add Organization";
-  document.getElementById("btn-delete").style.display = id ? "inline-flex" : "none";
-  document.getElementById("f-name").value  = org?.name  || "";
-  document.getElementById("f-cat").value   = org?.cat   || "Primary Care / OAT";
-  document.getElementById("f-inst").value  = org?.inst  || "";
-  document.getElementById("f-addr").value  = org?.addr  || "";
-  document.getElementById("f-phone").value = org?.phone || "";
-  document.getElementById("f-web").value   = org?.web   || "";
-  document.getElementById("f-hours").value = org?.hours || "";
-  document.getElementById("f-oat").value   = org?.oat   || "No";
-  document.getElementById("f-scs").value   = org?.scs   || "No";
-  document.getElementById("f-walkin").value= org?.walkin|| "No – referral only";
-  document.getElementById("f-hrs-type").value = "";
-  if (org?.flags) {
-    if (org.flags["24hr"])      document.getElementById("f-hrs-type").value = "24hr";
-    else if (org.flags.women)   document.getElementById("f-hrs-type").value = "women";
-    else if (org.flags.indigenous) document.getElementById("f-hrs-type").value = "indigenous";
-  }
-  document.getElementById("f-desc").value = org?.desc || "";
-  document.getElementById("f-lat").value  = org?.lat  || "";
-  document.getElementById("f-lng").value  = org?.lng  || "";
-  document.getElementById("modal-overlay").classList.add("show");
-}
-
-function closeModal() {
-  document.getElementById("modal-overlay").classList.remove("show");
-  editingId = null;
-}
-
-function saveOrg() {
-  const name = document.getElementById("f-name").value.trim();
-  if (!name) { alert("Name is required."); return; }
-  const hrsType = document.getElementById("f-hrs-type").value;
-  const oatVal  = document.getElementById("f-oat").value;
-  const scsVal  = document.getElementById("f-scs").value;
-  const wiVal   = document.getElementById("f-walkin").value;
-  const flags = {
-    oat:        oatVal.startsWith("Yes"),
-    scs:        scsVal.startsWith("Yes") || scsVal.includes("OPS"),
-    walkin:     wiVal.includes("drop-in") || wiVal.startsWith("Yes"),
-    "24hr":     hrsType === "24hr",
-    women:      hrsType === "women",
-    indigenous: hrsType === "indigenous",
-  };
-  const newOrg = {
-    id: editingId || "custom_" + Date.now(),
-    name, cat: document.getElementById("f-cat").value,
-    inst:  document.getElementById("f-inst").value.trim(),
-    addr:  document.getElementById("f-addr").value.trim(),
-    phone: document.getElementById("f-phone").value.trim(),
-    web:   document.getElementById("f-web").value.trim(),
-    hours: document.getElementById("f-hours").value.trim(),
-    oat: oatVal, scs: scsVal, walkin: wiVal, flags,
-    desc: document.getElementById("f-desc").value.trim(),
-    lat: parseFloat(document.getElementById("f-lat").value) || null,
-    lng: parseFloat(document.getElementById("f-lng").value) || null,
-  };
-  if (editingId) {
-    const idx = orgs.findIndex(o=>o.id===editingId);
-    if (idx >= 0) orgs[idx] = newOrg;
-    if (markers[editingId]) markers[editingId].remove();
-    delete markers[editingId];
-  } else {
-    orgs.push(newOrg);
-  }
-  saveOrgs();
-  if (newOrg.lat && newOrg.lng) {
-    const marker = L.marker([newOrg.lat, newOrg.lng], {icon: makeIcon(newOrg)});
-    marker.bindPopup(buildPopup(newOrg), {maxWidth:280});
-    marker.on("click", () => selectOrg(newOrg.id));
-    marker.addTo(map);
-    markers[newOrg.id] = marker;
-  }
-  closeModal();
-  showList();
-  renderAll();
-}
-
-function deleteOrg() {
-  if (!editingId) return;
-  if (!confirm("Delete this organization?")) return;
-  orgs = orgs.filter(o=>o.id!==editingId);
-  if (markers[editingId]) markers[editingId].remove();
-  delete markers[editingId];
-  saveOrgs();
-  if (selectedId === editingId) selectedId = null;
-  closeModal();
-  showList();
-  renderAll();
-}
-
-// ═══════════════════════════════════════════════════════════
-// HANDOUT
-// ═══════════════════════════════════════════════════════════
-function openHandout() {
-  const visible = getVisible();
-  const byCat = {};
-  visible.forEach(org => {
-    if (!byCat[org.cat]) byCat[org.cat] = [];
-    byCat[org.cat].push(org);
-  });
-  const now = new Date().toLocaleDateString("en-CA", {year:"numeric",month:"long",day:"numeric"});
-  let html = `<div class="handout-title">DTES Harm Reduction & Addiction Services</div>
-    <div class="handout-sub">Downtown Eastside Vancouver · ${visible.length} organizations · Generated ${now} · Verify all information before use</div>`;
-  Object.entries(byCat).forEach(([cat, list]) => {
-    html += `<div class="handout-section"><div class="handout-section-title">${cat}</div>`;
-    list.forEach(org => {
-      html += `<div class="handout-item">
-        <div class="handout-item-name">${org.name}</div>
-        <div class="handout-item-addr">${org.addr||""}${org.hours?` · ${org.hours}`:""}</div>
-        <div class="handout-item-phone">${org.phone||""}</div>
-      </div>`;
-    });
-    html += `</div>`;
-  });
-  document.getElementById("handout-content").innerHTML = html;
-  document.getElementById("handout-overlay").classList.add("show");
-}
-function closeHandout() { document.getElementById("handout-overlay").classList.remove("show"); }
-
-// ═══════════════════════════════════════════════════════════
-// CSV EXPORT
-// ═══════════════════════════════════════════════════════════
-function exportCSV() {
-  const data = getVisible();
-  const cols    = ["name","cat","inst","addr","phone","hours","oat","scs","walkin","web","desc","note"];
-  const headers = ["Organization","Category","Institution","Address","Phone","Hours","OAT","SCS/OPS","Walk-in","Website","Description","Notes"];
-  const esc = v => `"${(v||"").replace(/"/g,'""')}"`;
-  const csv = [headers.map(esc).join(","), ...data.map(o => cols.map(c => esc(o[c])).join(","))].join("\n");
-  const blob = new Blob([csv], {type:"text/csv"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a"); a.href = url; a.download = "DTES_Services.csv"; a.click();
-  URL.revokeObjectURL(url);
-}
-
-// ═══════════════════════════════════════════════════════════
-// EVENTS
-// ═══════════════════════════════════════════════════════════
-function initEvents() {
-  document.getElementById("search").addEventListener("input", e => {
-    searchQuery = e.target.value;
-    renderAll();
-  });
-
-  // Category filters (multi-select OR)
-  document.querySelectorAll(".filter-btn[data-cat]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const cat = btn.dataset.cat;
-      if (activeCategories.has(cat)) { activeCategories.delete(cat); btn.classList.remove("active"); }
-      else                            { activeCategories.add(cat);    btn.classList.add("active"); }
-      renderAll();
-    });
-  });
-
-  // Flag filters (multi-select AND)
-  document.querySelectorAll(".filter-btn[data-flag]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const flag = btn.dataset.flag;
-      if (activeFlags.has(flag)) { activeFlags.delete(flag); btn.classList.remove("active"); }
-      else                        { activeFlags.add(flag);    btn.classList.add("active"); }
-      renderAll();
-    });
-  });
-
-  // Sortable column headers
-  document.querySelectorAll("thead th[data-col]").forEach(th => {
-    th.addEventListener("click", () => {
-      const col = th.dataset.col;
-      if (sortCol === col) sortDir *= -1;
-      else { sortCol = col; sortDir = 1; }
-      document.querySelectorAll("thead th").forEach(t => t.classList.remove("sort-asc","sort-desc"));
-      th.classList.add(sortDir === 1 ? "sort-asc" : "sort-desc");
-      renderAll();
-    });
-  });
-
-  document.getElementById("modal-overlay").addEventListener("click", e => {
-    if (e.target === document.getElementById("modal-overlay")) closeModal();
-  });
-
-  document.addEventListener("keydown", e => {
-    if (e.key === "Escape") { closeModal(); closeHandout(); }
-  });
-}
-
-// ═══════════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════════
-document.addEventListener("DOMContentLoaded", () => {
-  loadOrgs();
-  initMap();
-  renderMarkers();
-  renderAll();
-  initEvents();
-  setTimeout(() => { if (map) map.invalidateSize(); }, 200);
-});
-</script>
+<script src="dtes-services.js"></script>
 </body>
 </html>
