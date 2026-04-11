@@ -42,12 +42,12 @@ body{font-family:var(--font-body);color:var(--ink);background:var(--white);min-h
 .header-meta{display:flex;gap:24px;margin-top:20px;flex-wrap:wrap;}
 .meta-pill{font-size:12px;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:6px;}
 .meta-pill strong{color:var(--sky);font-size:15px;font-weight:600;}
-.hotline-box{margin-top:24px;background:rgba(232,147,10,0.15);border:1px solid rgba(232,147,10,0.4);border-radius:10px;padding:14px 18px;display:inline-flex;gap:12px;align-items:center;}
-.hotline-box .hl-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--amber);font-weight:500;}
-.hotline-box .hl-num{font-size:22px;font-weight:700;color:var(--white);font-family:var(--font-head);}
-.hotline-box .hl-sub{font-size:11px;color:rgba(255,255,255,0.5);}
+.hotline-box{margin-top:24px;background:rgba(232,147,10,0.15);border:1px solid rgba(232,147,10,0.4);border-radius:10px;padding:12px 18px;display:inline-flex;gap:14px;align-items:center;}
+.hl-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--amber);font-weight:500;}
+.hl-num{font-size:22px;font-weight:700;color:var(--white);font-family:var(--font-head);}
+.hl-sub{font-size:11px;color:rgba(255,255,255,0.5);}
 
-/* CONTROLS */
+/* CONTROLS BAR */
 .controls-bar{background:var(--white);border-bottom:1px solid var(--border);padding:14px 40px;position:sticky;top:54px;z-index:100;box-shadow:0 2px 12px rgba(7,31,27,0.06);}
 .controls-inner{max-width:1280px;margin:0 auto;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
 .search-wrap{position:relative;flex:1;min-width:200px;}
@@ -58,75 +58,87 @@ body{font-family:var(--font-body);color:var(--ink);background:var(--white);min-h
 .filter-btn{font-size:12px;font-weight:500;font-family:var(--font-body);padding:5px 11px;border-radius:20px;border:1px solid var(--border);background:var(--white);color:var(--muted);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
 .filter-btn:hover{border-color:var(--teal-mid);color:var(--teal);}
 .filter-btn.active{background:var(--teal);border-color:var(--teal);color:var(--white);}
+.sort-select{font-size:13px;font-family:var(--font-body);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:7px 10px;background:var(--surface);cursor:pointer;outline:none;}
 
-/* MAP + TABLE LAYOUT */
-.main-wrap{flex:1;display:flex;flex-direction:column;max-width:1280px;margin:0 auto;width:100%;padding:0 40px 60px;}
-.split-layout{display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:start;margin-top:18px;}
-#map-container{position:sticky;top:130px;border-radius:12px;overflow:hidden;border:1px solid var(--border);box-shadow:0 4px 20px rgba(7,31,27,0.1);height:560px;}
-#shelter-map{width:100%;height:100%;}
-.map-legend{background:rgba(7,31,27,0.82);backdrop-filter:blur(4px);padding:10px 12px;border-radius:8px;position:absolute;bottom:10px;left:10px;z-index:500;display:flex;flex-direction:column;gap:5px;}
-.legend-row{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,0.8);}
+/* LEGEND BAR */
+.legend-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 40px;}
+.legend-inner{max-width:1280px;margin:0 auto;display:flex;gap:18px;flex-wrap:wrap;align-items:center;}
+.legend-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-right:2px;}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:2px 8px;border-radius:10px;}
+.badge-perm{background:#D4EFEA;color:#0D5C50;}
+.badge-temp{background:var(--amber-pale);color:#7A4A00;}
+.badge-ewr{background:#FEE2E2;color:#991B1B;}
+.badge-women{background:#FFE4EE;color:#9B1745;}
+.badge-men{background:#EFF6FF;color:#1D4ED8;}
+.badge-youth{background:#E0E7FF;color:#3730A3;}
+.badge-family{background:#FFF4E0;color:#854D0E;}
+.badge-all{background:var(--teal-pale);color:var(--teal);}
+.badge-indig{background:#E8FBF0;color:#166534;}
+
+/* MAP SECTION */
+.map-section{background:var(--teal-deep);}
+.map-header{padding:16px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:1280px;margin:0 auto;}
+.map-header h2{font-family:var(--font-head);font-size:18px;color:var(--white);}
+.map-header p{font-size:13px;color:rgba(255,255,255,0.45);}
+.map-toggle{font-size:12px;font-family:var(--font-body);padding:6px 14px;border-radius:20px;border:1px solid rgba(126,200,192,0.4);background:transparent;color:var(--sky);cursor:pointer;transition:all 0.15s;}
+.map-toggle:hover{background:rgba(255,255,255,0.1);color:var(--white);}
+#map-container{height:440px;width:100%;}
+.leaflet-popup-content-wrapper{border-radius:8px!important;font-family:var(--font-body);font-size:13px;}
+.leaflet-popup-content{margin:12px 14px!important;}
+.leaflet-popup-content h4{margin:0 0 4px;font-size:14px;font-weight:600;color:var(--ink);}
+.leaflet-popup-content p{margin:2px 0;color:var(--muted);font-size:12px;}
+.leaflet-popup-content .pop-beds{font-weight:700;color:var(--teal);font-size:13px;}
+.map-legend-bar{padding:10px 40px;background:rgba(255,255,255,0.04);border-top:1px solid rgba(255,255,255,0.07);display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+.map-legend-bar span{font-size:12px;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:6px;}
 .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
 
-.table-side{}
-.results-count{font-size:12px;color:var(--muted);margin-bottom:10px;}
+/* TABLE AREA */
+.main-content{flex:1;padding:0 40px 60px;}
+.content-inner{max-width:1280px;margin:0 auto;}
+.results-count{padding:16px 0 10px;font-size:13px;color:var(--muted);}
 .results-count strong{color:var(--ink);}
-.shelter-cards{display:flex;flex-direction:column;gap:10px;}
-.shelter-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all 0.15s;border-left:3px solid transparent;}
-.shelter-card:hover{border-color:var(--teal-mid);box-shadow:0 2px 12px rgba(26,122,110,0.1);}
-.shelter-card.active{border-left-color:var(--teal);background:var(--teal-pale);}
-.shelter-card.type-permanent{border-left-color:#1A7A6E;}
-.shelter-card.type-women{border-left-color:#9B1745;}
-.shelter-card.type-youth{border-left-color:#1D4ED8;}
-.shelter-card.type-family{border-left-color:#854D0E;}
-.shelter-card.type-temporary{border-left-color:#E8930A;}
-.card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
-.card-name{font-weight:600;font-size:14px;color:var(--ink);}
-.card-beds{font-size:12px;font-weight:700;color:var(--teal);white-space:nowrap;}
-.card-addr{font-size:12px;color:var(--muted);margin-bottom:6px;}
-.card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;}
-.tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:8px;}
-.tag-perm{background:#D4EFEA;color:#0D5C50;}
-.tag-temp{background:var(--amber-pale);color:#7A4A00;}
-.tag-women{background:#FFE4EE;color:#9B1745;}
-.tag-men{background:#EFF6FF;color:#1D4ED8;}
-.tag-youth{background:#E0E7FF;color:#3730A3;}
-.tag-all{background:var(--teal-pale);color:var(--teal);}
-.tag-family{background:#FFF4E0;color:#854D0E;}
-.tag-indig{background:#E8FBF0;color:#166534;}
-.tag-barrier{background:#F5F5F5;color:#555;}
-.card-meta{display:flex;gap:10px;font-size:11px;color:var(--muted);}
-.card-phone a{color:var(--teal);text-decoration:none;}
-.card-phone a:hover{text-decoration:underline;}
-.card-desc{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;display:none;}
-.shelter-card.expanded .card-desc{display:block;}
-.expand-btn{font-size:10px;color:var(--teal);cursor:pointer;margin-top:4px;background:none;border:none;padding:0;font-family:var(--font-body);}
+.table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border);box-shadow:0 2px 16px rgba(7,31,27,0.05);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead{background:var(--teal-deep);position:sticky;top:107px;z-index:5;}
+thead th{padding:11px 13px;text-align:left;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--sky);border-bottom:2px solid rgba(255,255,255,0.08);white-space:nowrap;cursor:pointer;user-select:none;transition:color 0.15s;}
+thead th:hover{color:var(--white);}
+thead th.sort-asc::after{content:' ↑';opacity:0.7;}
+thead th.sort-desc::after{content:' ↓';opacity:0.7;}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;cursor:pointer;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--teal-pale);}
+tbody tr.row-highlighted{background:var(--teal-pale);outline:2px solid var(--teal-mid);}
+tbody tr.type-ewr{background:#fff8f8;}
+tbody tr.type-ewr:hover{background:#ffeaea;}
+td{padding:10px 13px;vertical-align:top;line-height:1.45;}
+.td-name{font-weight:600;color:var(--ink);min-width:160px;}
+.td-name small{display:block;font-weight:400;color:var(--muted);font-size:11px;margin-top:2px;}
+.td-addr{color:var(--muted);font-size:12px;min-width:150px;}
+.td-beds{font-weight:700;color:var(--teal);text-align:center;white-space:nowrap;}
+.td-type{min-width:80px;}
+.td-gender{min-width:90px;}
+.td-hours{font-size:12px;color:var(--muted);min-width:130px;}
+.td-operator{font-size:12px;color:var(--muted);min-width:150px;}
+.td-contact{font-size:12px;min-width:110px;}
+.td-contact a{color:var(--teal);text-decoration:none;}
+.td-contact a:hover{text-decoration:underline;}
+.td-features{min-width:80px;}
+.td-notes{font-size:12px;color:var(--muted);min-width:180px;max-width:240px;}
+.tag-row{display:flex;gap:3px;flex-wrap:wrap;}
+.no-results{text-align:center;padding:80px 20px;color:var(--muted);}
+.no-results .icon{font-size:48px;margin-bottom:16px;}
 
-/* BADGES */
-.badge-pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;}
-.b-perm{background:#D4EFEA;color:#0D5C50;}
-.b-temp{background:var(--amber-pale);color:#7A4A00;}
-.b-ewr{background:#FEE2E2;color:#991B1B;}
-
-/* POPUP */
-.leaflet-popup-content-wrapper{border-radius:10px!important;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.15)!important;}
-.leaflet-popup-content{margin:12px 14px!important;font-family:var(--font-body);font-size:13px;}
-.popup-name{font-weight:700;color:var(--ink);font-size:14px;margin-bottom:4px;}
-.popup-addr{color:var(--muted);font-size:12px;margin-bottom:6px;}
-.popup-beds{font-weight:700;color:var(--teal);}
-
-/* FOOTER */
+/* SOURCE / FOOTER */
 .source-note{background:var(--teal-pale);border-top:1px solid var(--teal-mist);padding:14px 40px;font-size:12px;color:var(--muted);}
 .source-note a{color:var(--teal);}
 footer.site-footer{background:var(--teal-deep);color:rgba(255,255,255,0.4);padding:20px 40px;font-size:12px;text-align:center;}
 footer.site-footer a{color:var(--sky);text-decoration:none;}
 
-@media(max-width:900px){
-  .split-layout{grid-template-columns:1fr;}
-  #map-container{position:static;height:320px;}
+@media(max-width:768px){
   .site-nav{padding:0 16px;}
   .nav-links{display:none;}
-  .controls-bar,.main-wrap,.source-note,.page-header{padding-left:16px;padding-right:16px;}
+  .controls-bar,.legend-bar,.main-content,.source-note,.page-header,.map-header,.map-legend-bar{padding-left:16px;padding-right:16px;}
+  thead{top:106px;}
 }
 </style>
 </head>
@@ -147,11 +159,11 @@ footer.site-footer a{color:var(--sky);text-decoration:none;}
   <div class="page-header-inner">
     <div class="page-eyebrow">🛏 Vancouver · 2024–2025</div>
     <h1>Vancouver<br><span>Emergency Shelter Directory</span></h1>
-    <p>Year-round permanent shelters, temporary shelters, and seasonal sites across Vancouver. For live bed availability, call or text <strong style="color:var(--sky)">2-1-1</strong> — updated twice daily.</p>
+    <p>Year-round permanent shelters, temporary shelters, and extreme weather response (EWR) sites across Vancouver. For live bed availability, call or text <strong style="color:var(--sky)">2-1-1</strong> — updated twice daily.</p>
     <div class="header-meta">
       <div class="meta-pill"><strong id="total-count">—</strong> shelters listed</div>
       <div class="meta-pill"><strong id="perm-count">—</strong> permanent (365 days)</div>
-      <div class="meta-pill"><strong id="bed-count">—</strong> approximate bed capacity</div>
+      <div class="meta-pill"><strong id="bed-count">—</strong> approximate beds</div>
     </div>
     <div class="hotline-box">
       <div>
@@ -173,46 +185,100 @@ footer.site-footer a{color:var(--sky);text-decoration:none;}
       <button class="filter-btn active" data-filter="all">All</button>
       <button class="filter-btn" data-filter="permanent">Permanent</button>
       <button class="filter-btn" data-filter="temporary">Temporary</button>
+      <button class="filter-btn" data-filter="ewr">EWR Only</button>
       <button class="filter-btn" data-filter="all-gender">All Genders</button>
       <button class="filter-btn" data-filter="men">Men</button>
       <button class="filter-btn" data-filter="women">Women</button>
       <button class="filter-btn" data-filter="youth">Youth</button>
       <button class="filter-btn" data-filter="family">Family</button>
+      <button class="filter-btn" data-filter="lowbarrier">Low-Barrier</button>
       <button class="filter-btn" data-filter="pets">Pets OK</button>
       <button class="filter-btn" data-filter="accessible">Accessible</button>
-      <button class="filter-btn" data-filter="lowbarrier">Low-Barrier</button>
     </div>
+    <select class="sort-select" id="sort-select">
+      <option value="name">Sort: Name A–Z</option>
+      <option value="beds">Sort: Beds (most first)</option>
+      <option value="type">Sort: Type</option>
+      <option value="addr">Sort: Address</option>
+    </select>
   </div>
 </div>
 
-<div class="main-wrap">
-  <div class="split-layout">
-    <!-- MAP -->
-    <div id="map-container">
-      <div id="shelter-map"></div>
-      <div class="map-legend">
-        <div class="legend-row"><div class="dot" style="background:#1A7A6E"></div> Permanent shelter</div>
-        <div class="legend-row"><div class="dot" style="background:#E8930A"></div> Temporary / Seasonal</div>
-        <div class="legend-row"><div class="dot" style="background:#9B1745"></div> Women / Family</div>
-        <div class="legend-row"><div class="dot" style="background:#1D4ED8"></div> Youth</div>
-      </div>
-    </div>
+<div class="legend-bar">
+  <div class="legend-inner">
+    <span class="legend-label">Type:</span>
+    <span class="badge badge-perm">Permanent</span>
+    <span class="badge badge-temp">Temporary/Seasonal</span>
+    <span class="badge badge-ewr">EWR Only</span>
+    <span style="margin-left:10px" class="legend-label">Gender:</span>
+    <span class="badge badge-all">All Genders</span>
+    <span class="badge badge-men">Men</span>
+    <span class="badge badge-women">Women</span>
+    <span class="badge badge-youth">Youth</span>
+    <span class="badge badge-family">Family</span>
+    &nbsp;
+    <span title="Pets OK">🐾 Pets</span>&nbsp;
+    <span title="Accessible">♿ Access</span>&nbsp;
+    <span title="Meals">🍽 Meals</span>
+  </div>
+</div>
 
-    <!-- CARDS -->
-    <div class="table-side">
-      <div class="results-count"><strong id="shown-count">—</strong> shelters shown · Click a card to highlight on map</div>
-      <div class="shelter-cards" id="cards-container"></div>
-      <div id="no-results" style="display:none;text-align:center;padding:60px 0;color:var(--muted)">
-        <div style="font-size:40px;margin-bottom:12px">🏠</div>
-        <strong>No shelters match</strong><br>Try different filters.
-      </div>
+<!-- MAP -->
+<div class="map-section">
+  <div class="map-header">
+    <div>
+      <h2>📍 Map View</h2>
+      <p>Click a row in the table to highlight its location. Click any pin for details.</p>
+    </div>
+    <button class="map-toggle" id="map-toggle" onclick="toggleMap()">Hide Map ▲</button>
+  </div>
+  <div id="map-container">
+    <div id="shelter-map" style="width:100%;height:100%;"></div>
+  </div>
+  <div class="map-legend-bar">
+    <span><span class="dot" style="background:#1A7A6E"></span>Permanent</span>
+    <span><span class="dot" style="background:#E8930A"></span>Temporary / Seasonal</span>
+    <span><span class="dot" style="background:#D94040"></span>EWR (extreme weather only)</span>
+    <span><span class="dot" style="background:#9B1745"></span>Women / Family</span>
+    <span><span class="dot" style="background:#6B21A8"></span>Youth</span>
+    <span style="margin-left:auto;font-size:11px;">Click a table row to zoom · Zoom/pan freely</span>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="main-content">
+  <div class="content-inner">
+    <div class="results-count"><strong id="shown-count">—</strong> shelters shown</div>
+    <div class="table-wrap">
+      <table id="shelter-table">
+        <thead>
+          <tr>
+            <th data-col="name">Name</th>
+            <th data-col="addr">Address</th>
+            <th data-col="beds">Beds</th>
+            <th data-col="type">Type</th>
+            <th data-col="gender">For</th>
+            <th data-col="hours">Hours</th>
+            <th data-col="operator">Operator</th>
+            <th data-col="contact">Phone</th>
+            <th data-col="features">Features</th>
+            <th data-col="notes">Notes</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+    <div class="no-results" id="no-results" style="display:none">
+      <div class="icon">🏠</div>
+      <h3>No shelters match</h3>
+      <p>Try different keywords or clear your filters.</p>
     </div>
   </div>
 </div>
 
 <div class="source-note">
   <div style="max-width:1280px;margin:0 auto">
-    <strong>Sources:</strong> BC Housing (Nov 2024), City of Vancouver shelter beds list, BC211 shelter list, Salvation Army Harbour Light, Lookout Housing &amp; Health Society, Union Gospel Mission, RainCity Housing, Covenant House Vancouver. 
+    <strong>Sources:</strong> BC Housing (Nov 2024), City of Vancouver shelter beds list, BC211 shelter list, Salvation Army Harbour Light, Lookout Housing &amp; Health Society, Union Gospel Mission, RainCity Housing, Covenant House Vancouver.
     For live bed availability: <a href="tel:211">call or text 2-1-1</a> or visit <a href="https://bc.211.ca/shelter-lists/" target="_blank">bc.211.ca/shelter-lists</a> ·
     Corrections: <a href="mailto:DTEShousing@gmail.com">DTEShousing@gmail.com</a>
   </div>
@@ -229,583 +295,450 @@ footer.site-footer a{color:var(--sky);text-decoration:none;}
 // gender: all | men | women | youth | family
 // barrier: low | moderate | high
 const SHELTERS = [
-  // ── DTES / DOWNTOWN CORE ─────────────────────────────────────────────────
   {
-    id:"s01", name:"The Osborn (PHS)",
-    addr:"15–27 W Hastings St, Vancouver",
-    lat:49.2806, lng:-123.1075,
-    type:"permanent", gender:"all",
-    operator:"PHS Community Services Society",
-    phone:"604-683-0073", web:"phs.ca",
-    beds:80, hours:"24/7",
-    barrier:"low", pets:false, accessible:true, meals:true, couples:true,
-    desc:"40-bed 24/7 low-barrier emergency shelter with co-ed and women's-only sections. Range of supports including meals, showers, and secure storage. Transition planning to housing.",
-    tags:["all-gender","lowbarrier","accessible","meals"]
+    id:"s01", name:"The Osborn", addr:"15–27 W Hastings St",
+    lat:49.2806, lng:-123.1075, type:"permanent", gender:"all",
+    operator:"PHS Community Services Society", phone:"604-683-0073",
+    beds:80, hours:"24/7", barrier:"low", pets:false, accessible:true, meals:true, couples:true,
+    notes:"40-bed 24/7 low-barrier emergency shelter. Co-ed and women's-only sections. Meals, showers, secure storage, transition planning."
   },
   {
-    id:"s02", name:"The Haven (Salvation Army Harbour Light)",
-    addr:"108 E Hastings St, Vancouver",
-    lat:49.2808, lng:-123.1000,
-    type:"permanent", gender:"men",
-    operator:"Salvation Army Harbour Light",
-    phone:"604-646-6868", web:"vancouverharbourlightsa.ca",
-    beds:34, hours:"24/7",
-    barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
-    desc:"Part of the Harbour Light complex at 108 E Hastings. 34 beds for men. Case planning, job skills, education and living skills programming. VCH nursing team, laundry, hygiene supplies.",
-    tags:["men","accessible","meals"]
+    id:"s02", name:"The Haven (Harbour Light)", addr:"108 E Hastings St",
+    lat:49.2808, lng:-123.1000, type:"permanent", gender:"men",
+    operator:"Salvation Army Harbour Light", phone:"604-646-6868",
+    beds:34, hours:"24/7", barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
+    notes:"Part of 136-bed Beacon/Haven/Crosswalk complex. Case workers, VCH nursing, job skills, education programming."
   },
   {
-    id:"s03", name:"The Beacon (Salvation Army Harbour Light)",
-    addr:"108 E Hastings St, Vancouver",
-    lat:49.28085, lng:-123.1001,
-    type:"permanent", gender:"men",
-    operator:"Salvation Army Harbour Light",
-    phone:"604-646-6868", web:"vancouverharbourlightsa.ca",
-    beds:66, hours:"24/7",
-    barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
-    desc:"66-bed men's shelter in the Harbour Light complex. Part of 136-bed Beacon/Haven/Crosswalk facility. Case workers, VCH nursing, meals, laundry, hygiene, housing navigation.",
-    tags:["men","accessible","meals"]
+    id:"s03", name:"The Beacon (Harbour Light)", addr:"108 E Hastings St",
+    lat:49.28085, lng:-123.1001, type:"permanent", gender:"men",
+    operator:"Salvation Army Harbour Light", phone:"604-646-6868",
+    beds:66, hours:"24/7", barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
+    notes:"66-bed men's shelter in Harbour Light complex. Case workers, VCH nursing, laundry, hygiene, housing navigation."
   },
   {
-    id:"s04", name:"Crosswalk (Salvation Army Harbour Light)",
-    addr:"108 E Hastings St, Vancouver",
-    lat:49.2809, lng:-123.1002,
-    type:"permanent", gender:"men",
-    operator:"Salvation Army Harbour Light",
-    phone:"604-646-6868", web:"vancouverharbourlightsa.ca",
-    beds:36, hours:"24/7 (intake open 9:30pm)",
-    barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
-    desc:"36-bed men's shelter in Harbour Light complex. Part of the Beacon/Haven/Crosswalk facility. Sandwiches on arrival, no admissions after 2am (check current hours). Harm reduction support.",
-    tags:["men","accessible","meals"]
+    id:"s04", name:"Crosswalk (Harbour Light)", addr:"108 E Hastings St",
+    lat:49.2809, lng:-123.1002, type:"permanent", gender:"men",
+    operator:"Salvation Army Harbour Light", phone:"604-646-6868",
+    beds:36, hours:"24/7 (intake 9:30pm)", barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
+    notes:"36-bed men's shelter in Harbour Light complex. Sandwiches on arrival. No admissions after 2am."
   },
   {
-    id:"s05", name:"Harbour Light (Salvation Army) – Drop-In",
-    addr:"119 E Cordova St, Vancouver",
-    lat:49.2832, lng:-123.1033,
-    type:"permanent", gender:"men",
-    operator:"Salvation Army Harbour Light",
-    phone:"604-646-6868", web:"vancouverharbourlightsa.ca",
-    beds:40, hours:"24/7",
-    barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
-    desc:"40 additional shelter beds. Salvation Army's flagship DTES facility. Addiction recovery programs, chapel, counselling. Part of winter shelter strategy.",
-    tags:["men","accessible","meals"]
+    id:"s05", name:"Harbour Light Drop-In", addr:"119 E Cordova St",
+    lat:49.2832, lng:-123.1033, type:"permanent", gender:"men",
+    operator:"Salvation Army Harbour Light", phone:"604-646-6868",
+    beds:40, hours:"24/7", barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
+    notes:"40 additional shelter beds. Addiction recovery programs, chapel, counselling. Part of winter shelter strategy."
   },
   {
-    id:"s06", name:"New Fountain Shelter",
-    addr:"356 E Hastings St, Vancouver",
-    lat:49.2808, lng:-123.0946,
-    type:"permanent", gender:"all",
-    operator:"Lookout Housing & Health Society",
-    phone:"604-331-1246", web:"lookoutsociety.ca",
-    beds:60, hours:"24/7",
-    barrier:"low", pets:true, accessible:true, meals:true, couples:true,
-    desc:"60-bed low-barrier shelter. All genders and couples welcome. Harm reduction, pets allowed, carts OK. One of DTES's busiest shelters. Meals, harm reduction supplies, housing navigation.",
-    tags:["all-gender","lowbarrier","accessible","meals","pets"]
+    id:"s06", name:"New Fountain Shelter", addr:"356 E Hastings St",
+    lat:49.2808, lng:-123.0946, type:"permanent", gender:"all",
+    operator:"Lookout Housing & Health Society", phone:"604-331-1246",
+    beds:60, hours:"24/7", barrier:"low", pets:true, accessible:true, meals:true, couples:true,
+    notes:"Low-barrier. All genders and couples welcome. Harm reduction, pets, carts OK. Meals, harm reduction supplies, housing navigation."
   },
   {
-    id:"s07", name:"Lookout Al Mitchell Shelter",
-    addr:"346 Alexander St, Vancouver",
-    lat:49.2844, lng:-123.0944,
-    type:"permanent", gender:"all",
-    operator:"Lookout Housing & Health Society",
-    phone:"604-696-0011", web:"lookoutsociety.ca",
-    beds:46, hours:"24/7",
-    barrier:"low", pets:true, accessible:true, meals:true, couples:false,
-    desc:"Lookout's original downtown shelter, purpose-built in 1981. 46 beds with 39 units of transitional housing co-located. Medication management, wound care, home care referrals, case planning. Pets welcome.",
-    tags:["all-gender","lowbarrier","accessible","meals","pets"]
+    id:"s07", name:"Lookout Al Mitchell Shelter", addr:"346 Alexander St",
+    lat:49.2844, lng:-123.0944, type:"permanent", gender:"all",
+    operator:"Lookout Housing & Health Society", phone:"604-696-0011",
+    beds:46, hours:"24/7", barrier:"low", pets:true, accessible:true, meals:true, couples:false,
+    notes:"Lookout's original downtown shelter (1981). 39 transitional housing units co-located. Medication management, wound care, case planning."
   },
   {
-    id:"s08", name:"Lookout Walton Hotel Shelter",
-    addr:"261 E Hastings St, Vancouver",
-    lat:49.2808, lng:-123.0959,
-    type:"temporary", gender:"all",
-    operator:"Lookout Housing & Health Society",
-    phone:"604-688-9129", web:"lookoutsociety.ca",
-    beds:15, hours:"24/7",
-    barrier:"low", pets:true, accessible:false, meals:false, couples:false,
-    desc:"15 temporary shelter spaces in the Walton Hotel building. Operated by Lookout.",
-    tags:["all-gender","lowbarrier"]
+    id:"s08", name:"Lookout Walton Hotel Shelter", addr:"261 E Hastings St",
+    lat:49.2808, lng:-123.0959, type:"temporary", gender:"all",
+    operator:"Lookout Housing & Health Society", phone:"604-688-9129",
+    beds:15, hours:"24/7", barrier:"low", pets:true, accessible:false, meals:false, couples:false,
+    notes:"15 temporary shelter spaces in the Walton Hotel building."
   },
   {
-    id:"s09", name:"Triage Emergency Shelter (RainCity)",
-    addr:"707 Powell St, Vancouver",
-    lat:49.2828, lng:-123.0892,
-    type:"permanent", gender:"all",
-    operator:"RainCity Housing and Support Society",
-    phone:"604-254-3700", web:"raincityhousing.org",
-    beds:28, hours:"24/7",
-    barrier:"low", pets:true, accessible:true, meals:false, couples:true,
-    desc:"Low-barrier shelter for people with complex needs — often turned away elsewhere due to mental illness, addictions, trauma. Staff have more time to build relationships and connect clients to housing. Harm reduction, needle exchange, medication administration. Pets OK.",
-    tags:["all-gender","lowbarrier","accessible","pets"]
+    id:"s09", name:"Triage Emergency Shelter", addr:"707 Powell St",
+    lat:49.2828, lng:-123.0892, type:"permanent", gender:"all",
+    operator:"RainCity Housing", phone:"604-254-3700",
+    beds:28, hours:"24/7", barrier:"low", pets:true, accessible:true, meals:false, couples:true,
+    notes:"Low-barrier for complex needs — mental illness, addictions, trauma. Harm reduction, needle exchange, medication administration."
   },
   {
-    id:"s10", name:"Powell Place Emergency Shelter (St James CSS)",
-    addr:"329 Powell St, Vancouver",
-    lat:49.2828, lng:-123.0922,
-    type:"permanent", gender:"women",
-    operator:"St. James Community Service Society",
-    phone:"604-606-0403", web:"stjamescss.ca",
-    beds:52, hours:"24/7",
-    barrier:"low", pets:false, accessible:true, meals:true, couples:false,
-    desc:"52-bed shelter for women (including lesbian couples). Harm reduction focus. Laundry facilities, meals, 24/7 support. St James CSS.",
-    tags:["women","lowbarrier","accessible","meals"]
+    id:"s10", name:"Powell Place Emergency Shelter", addr:"329 Powell St",
+    lat:49.2828, lng:-123.0922, type:"permanent", gender:"women",
+    operator:"St. James Community Service Society", phone:"604-606-0403",
+    beds:52, hours:"24/7", barrier:"low", pets:false, accessible:true, meals:true, couples:false,
+    notes:"Women (including lesbian couples). Harm reduction, laundry, meals, 24/7 support."
   },
   {
-    id:"s11", name:"Downtown Eastside Women's Shelter (BC Housing/Atira)",
-    addr:"412 E Cordova St, Vancouver",
-    lat:49.2833, lng:-123.0921,
-    type:"permanent", gender:"women",
-    operator:"Atira Women's Resource Society",
-    phone:"604-423-4807", web:"atira.bc.ca",
-    beds:57, hours:"24/7",
-    barrier:"low", pets:false, accessible:true, meals:true, couples:false,
-    desc:"57-bed women's emergency shelter operated by Atira. Low-barrier harm reduction focus. Meals, showers, laundry, support services, housing navigation. 19+.",
-    tags:["women","lowbarrier","accessible","meals"]
+    id:"s11", name:"DTES Women's Shelter", addr:"412 E Cordova St",
+    lat:49.2833, lng:-123.0921, type:"permanent", gender:"women",
+    operator:"Atira Women's Resource Society", phone:"604-423-4807",
+    beds:57, hours:"24/7", barrier:"low", pets:false, accessible:true, meals:true, couples:false,
+    notes:"57-bed low-barrier women's shelter. Meals, showers, laundry, support services, housing navigation. 19+."
   },
   {
-    id:"s12", name:"UGM Men's Emergency Shelter (Cornerstone)",
-    addr:"601 E Hastings St, Vancouver",
-    lat:49.2808, lng:-123.0868,
-    type:"permanent", gender:"men",
-    operator:"Union Gospel Mission",
-    phone:"604-253-3323", web:"ugm.ca",
-    beds:92, hours:"9pm–6:50am (tickets from 5pm)",
-    barrier:"moderate", pets:false, accessible:true, meals:false, couples:false,
-    desc:"92 shelter beds for men 19+. Tickets available from 5pm. Check-in 9pm. No re-entry after leaving. Showers, limited laundry. Substance-free. Additional winter capacity Nov–Mar. Name and DOB only required.",
-    tags:["men","accessible"]
+    id:"s12", name:"UGM Men's Shelter (Cornerstone)", addr:"601 E Hastings St",
+    lat:49.2808, lng:-123.0868, type:"permanent", gender:"men",
+    operator:"Union Gospel Mission", phone:"604-253-3323",
+    beds:92, hours:"9pm–6:50am", barrier:"moderate", pets:false, accessible:true, meals:false, couples:false,
+    notes:"92 beds for men 19+. Tickets from 5pm, check-in 9pm. No re-entry. Showers, laundry. Substance-free. Extra capacity Nov–Mar."
   },
   {
-    id:"s13", name:"UGM Women's Emergency Shelter",
-    addr:"616 E Cordova St, Vancouver",
-    lat:49.2835, lng:-123.0865,
-    type:"permanent", gender:"women",
-    operator:"Union Gospel Mission",
-    phone:"604-253-4044", web:"ugm.ca",
-    beds:20, hours:"8pm–6am (seasonal)",
-    barrier:"moderate", pets:false, accessible:true, meals:false, couples:false,
-    desc:"Temporary winter shelter (Nov 1–Mar 31) with 20 cots for women. Tickets available from 4pm. Check-in at 8pm at Women & Families Centre entrance (E Cordova & Princess). First-come basis after ticket holders.",
-    tags:["women","accessible"]
+    id:"s13", name:"UGM Women's Shelter (Seasonal)", addr:"616 E Cordova St",
+    lat:49.2835, lng:-123.0865, type:"temporary", gender:"women",
+    operator:"Union Gospel Mission", phone:"604-253-4044",
+    beds:20, hours:"8pm–6am (Nov 1–Mar 31)", barrier:"moderate", pets:false, accessible:true, meals:false, couples:false,
+    notes:"20 cots for women. Tickets from 4pm at Women & Families Centre. First-come after ticket holders."
   },
   {
-    id:"s14", name:"UGM Hastings Housing Society Shelter",
-    addr:"601 E Hastings St, Vancouver",
-    lat:49.28085, lng:-123.0867,
-    type:"permanent", gender:"men",
-    operator:"Union Gospel Mission / Hastings Housing Society",
-    phone:"604-253-3323", web:"ugm.ca",
-    beds:82, hours:"24/7",
-    barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
-    desc:"82 permanent shelter beds in the Hastings corridor. Operated by Union Gospel Mission / Hastings Housing Society. Meals, case planning, housing navigation.",
-    tags:["men","accessible","meals"]
+    id:"s14", name:"UGM Hastings Housing Shelter", addr:"601 E Hastings St",
+    lat:49.28085, lng:-123.0867, type:"permanent", gender:"men",
+    operator:"Union Gospel Mission / Hastings Housing Society", phone:"604-253-3323",
+    beds:82, hours:"24/7", barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
+    notes:"82 permanent shelter beds. Meals, case planning, housing navigation."
   },
   {
-    id:"s15", name:"The Lark Shelter (PHS)",
-    addr:"103 E Hastings St, Vancouver",
-    lat:49.2808, lng:-123.0986,
-    type:"permanent", gender:"all",
-    operator:"PHS Community Services Society",
-    phone:"604-558-2070", web:"phs.ca",
-    beds:14, hours:"24/7",
-    barrier:"low", pets:false, accessible:true, meals:true, couples:true,
-    desc:"14 shelter spaces including double rooms for couples and hostel-style rooms. Two meals daily, laundry. Close to Insite and Molson OPS.",
-    tags:["all-gender","lowbarrier","accessible","meals"]
+    id:"s15", name:"The Lark (PHS)", addr:"103 E Hastings St",
+    lat:49.2808, lng:-123.0986, type:"permanent", gender:"all",
+    operator:"PHS Community Services Society", phone:"604-558-2070",
+    beds:14, hours:"24/7", barrier:"low", pets:false, accessible:true, meals:true, couples:true,
+    notes:"Double rooms for couples and hostel-style rooms. Two meals daily, laundry. Near Insite and Molson OPS."
   },
   {
-    id:"s16", name:"Klahowya at Terminal",
-    addr:"875 Terminal Ave, Vancouver",
-    lat:49.2757, lng:-123.0924,
-    type:"permanent", gender:"all",
-    operator:"BC Housing / Connective",
-    phone:"604-800-3007", web:"connective.ca",
-    beds:60, hours:"24/7",
-    barrier:"low", pets:true, accessible:true, meals:true, couples:true,
-    desc:"60-bed permanent shelter. All genders and couples welcome. Accessible, pets OK. Hot meals, harm reduction supports.",
-    tags:["all-gender","lowbarrier","accessible","meals","pets"]
+    id:"s16", name:"Klahowya at Terminal", addr:"875 Terminal Ave",
+    lat:49.2757, lng:-123.0924, type:"permanent", gender:"all",
+    operator:"BC Housing / Connective", phone:"604-800-3007",
+    beds:60, hours:"24/7", barrier:"low", pets:true, accessible:true, meals:true, couples:true,
+    notes:"All genders and couples welcome. Accessible, pets OK. Hot meals, harm reduction."
   },
   {
-    id:"s17", name:"Belkin House Shelter (Salvation Army)",
-    addr:"555 Homer St, Vancouver",
-    lat:49.2792, lng:-123.1157,
-    type:"permanent", gender:"all",
-    operator:"Salvation Army",
-    phone:"604-681-3405", web:"salvationarmy.ca",
-    beds:142, hours:"24/7",
-    barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
-    desc:"142-bed shelter and transitional housing facility for men and women. 30 units for male federal offenders re-entering community. No alcohol/drug use on site. Dorms, case workers, meals.",
-    tags:["all-gender","accessible","meals"]
+    id:"s17", name:"Belkin House (Salvation Army)", addr:"555 Homer St",
+    lat:49.2792, lng:-123.1157, type:"permanent", gender:"all",
+    operator:"Salvation Army", phone:"604-681-3405",
+    beds:142, hours:"24/7", barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
+    notes:"142-bed shelter and transitional housing for men and women. 30 units for federal offenders re-entering. No alcohol/drug use on site."
   },
   {
-    id:"s18", name:"Lookout Yukon St Shelter",
-    addr:"2088 Yukon St, Vancouver",
-    lat:49.2652, lng:-123.1116,
-    type:"permanent", gender:"all",
-    operator:"Lookout Housing & Health Society",
-    phone:"604-264-1680", web:"lookoutsociety.ca",
-    beds:71, hours:"24/7",
-    barrier:"low", pets:true, accessible:true, meals:true, couples:true,
-    desc:"71-bed shelter in Mount Pleasant, co-located with transitional housing. Co-designed with VCH, St Paul's Hospital, VGH and community partners. Low-barrier, pets, meals, couples welcome.",
-    tags:["all-gender","lowbarrier","accessible","meals","pets"]
+    id:"s18", name:"Lookout Yukon St Shelter", addr:"2088 Yukon St",
+    lat:49.2652, lng:-123.1116, type:"permanent", gender:"all",
+    operator:"Lookout Housing & Health Society", phone:"604-264-1680",
+    beds:71, hours:"24/7", barrier:"low", pets:true, accessible:true, meals:true, couples:true,
+    notes:"Mount Pleasant. Co-located with transitional housing. Designed with VCH, St Paul's, VGH. Couples, pets, meals, low-barrier."
   },
   {
-    id:"s19", name:"Springhouse Shelter (Bloom Group)",
-    addr:"333 E 16th Ave, Vancouver",
-    lat:49.2553, lng:-123.0919,
-    type:"permanent", gender:"women",
-    operator:"The Bloom Group",
-    phone:"604-606-0300", web:"thebloomgroup.org",
-    beds:32, hours:"24/7",
-    barrier:"low", pets:true, accessible:true, meals:true, couples:false,
-    desc:"32-bed shelter for women, or single parents with children. Laundry facilities, 2 meals, harm reduction. Pets case-by-case. Wheelchair accessible.",
-    tags:["women","family","lowbarrier","accessible","meals","pets"]
+    id:"s19", name:"Springhouse Shelter (Bloom Group)", addr:"333 E 16th Ave",
+    lat:49.2553, lng:-123.0919, type:"permanent", gender:"women",
+    operator:"The Bloom Group", phone:"604-606-0300",
+    beds:32, hours:"24/7", barrier:"low", pets:true, accessible:true, meals:true, couples:false,
+    notes:"Women and single parents with children. 2 meals, laundry, harm reduction. Pets case-by-case. Wheelchair accessible."
   },
   {
-    id:"s20", name:"Vi Fineday Family Shelter (Bloom Group)",
-    addr:"1906 W 15th Ave, Vancouver",
-    lat:49.2563, lng:-123.1596,
-    type:"permanent", gender:"family",
-    operator:"The Bloom Group / VCH",
-    phone:"604-606-0300", web:"thebloomgroup.org",
-    beds:18, hours:"24/7",
-    barrier:"low", pets:false, accessible:true, meals:true, couples:true,
-    desc:"18-space family shelter. Families, single women, single parents of any gender, or childless couples 19+. Laundry, harm reduction. No alcohol/drug use on site. Curfew.",
-    tags:["family","all-gender","lowbarrier","accessible","meals"]
+    id:"s20", name:"Vi Fineday Family Shelter", addr:"1906 W 15th Ave",
+    lat:49.2563, lng:-123.1596, type:"permanent", gender:"family",
+    operator:"The Bloom Group / VCH", phone:"604-606-0300",
+    beds:18, hours:"24/7", barrier:"low", pets:false, accessible:true, meals:true, couples:true,
+    notes:"Families, single women, single parents (any gender), or childless couples 19+. Laundry, harm reduction. No alcohol/drug use on site."
   },
   {
-    id:"s21", name:"Directions Youth Resource Centre Shelter",
-    addr:"1138 Burrard St, Vancouver",
-    lat:49.2793, lng:-123.1272,
-    type:"permanent", gender:"youth",
-    operator:"Directions Youth Services",
-    phone:"604-736-1881", web:"directionsinbc.com",
-    beds:10, hours:"24/7",
-    barrier:"low", pets:false, accessible:true, meals:true, couples:false,
-    desc:"10 shelter spaces for youth 16–24. Year-round low-barrier. Harm reduction, mental health and addictions support, laundry, meals, housing navigation. Additional EWR beds available seasonally.",
-    tags:["youth","lowbarrier","accessible","meals"]
+    id:"s21", name:"Directions Youth Resource Centre", addr:"1138 Burrard St",
+    lat:49.2793, lng:-123.1272, type:"permanent", gender:"youth",
+    operator:"Directions Youth Services", phone:"604-736-1881",
+    beds:10, hours:"24/7", barrier:"low", pets:false, accessible:true, meals:true, couples:false,
+    notes:"Youth 16–24. Year-round low-barrier. Mental health, addictions, laundry, meals, housing navigation."
   },
   {
-    id:"s22", name:"Covenant House Vancouver (Crisis Shelter)",
-    addr:"1302 Seymour St, Vancouver",
-    lat:49.2772, lng:-123.1254,
-    type:"permanent", gender:"youth",
-    operator:"Covenant House Vancouver",
-    phone:"604-685-7474", web:"covenanthousebc.org",
-    beds:40, hours:"24/7 · Drop-in 24/7",
-    barrier:"low", pets:false, accessible:true, meals:true, couples:true,
-    desc:"Year-round, 24-hour, low-barrier crisis shelter for youth 16–24. Accepts couples. Harm reduction focus. No prescribed maximum stay. Social workers and youth workers on site. Youth can self-refer by phone or in person any time. 30 additional beds for female-identified youth.",
-    tags:["youth","lowbarrier","accessible","meals"]
+    id:"s22", name:"Covenant House Crisis Shelter", addr:"1302 Seymour St",
+    lat:49.2772, lng:-123.1254, type:"permanent", gender:"youth",
+    operator:"Covenant House Vancouver", phone:"604-685-7474",
+    beds:40, hours:"24/7", barrier:"low", pets:false, accessible:true, meals:true, couples:true,
+    notes:"Youth 16–24, includes couples. Harm reduction, no max stay. Social workers and youth workers on site. Self-refer anytime."
   },
   {
-    id:"s23", name:"Covenant House – Rights of Passage (Young Men)",
-    addr:"326 W Pender St, Vancouver",
-    lat:49.2813, lng:-123.1134,
-    type:"permanent", gender:"youth",
-    operator:"Covenant House Vancouver",
-    phone:"604-685-7474", web:"covenanthousebc.org",
-    beds:16, hours:"24/7",
-    barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
-    desc:"16 beds for male-identified youth 16–24. Access to continuum of youth services and housing. Harm reduction. Self-referral welcome. Curfew.",
-    tags:["youth","men","accessible","meals"]
+    id:"s23", name:"Covenant House – Rights of Passage", addr:"326 W Pender St",
+    lat:49.2813, lng:-123.1134, type:"permanent", gender:"youth",
+    operator:"Covenant House Vancouver", phone:"604-685-7474",
+    beds:16, hours:"24/7", barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
+    notes:"Male-identified youth 16–24. Harm reduction, continuum of youth services. Self-referral. Curfew."
   },
   {
-    id:"s24", name:"RainCity HPP Shelter (Powell St)",
-    addr:"707 Powell St, Vancouver",
-    lat:49.28285, lng:-123.0891,
-    type:"permanent", gender:"all",
-    operator:"RainCity Housing and Support Society",
-    phone:"604-254-3700", web:"raincityhousing.org",
-    beds:28, hours:"24/7",
-    barrier:"low", pets:true, accessible:true, meals:false, couples:true,
-    desc:"Housing Placement Program emergency shelter. Combined with Triage. Supports people experiencing mental illness and concurrent disorders.",
-    tags:["all-gender","lowbarrier","accessible","pets"]
+    id:"s24", name:"RainCity HPP Shelter", addr:"707 Powell St",
+    lat:49.28285, lng:-123.0891, type:"permanent", gender:"all",
+    operator:"RainCity Housing", phone:"604-254-3700",
+    beds:28, hours:"24/7", barrier:"low", pets:true, accessible:true, meals:false, couples:true,
+    notes:"Housing Placement Program shelter. Supports people with mental illness and concurrent disorders."
   },
   {
-    id:"s25", name:"Salvation Army Haven (128 E Cordova)",
-    addr:"128 E Cordova St, Vancouver",
-    lat:49.2833, lng:-123.1030,
-    type:"permanent", gender:"all",
-    operator:"Salvation Army",
-    phone:"604-646-6868", web:"salvationarmy.ca",
-    beds:30, hours:"8am–11:30pm intake; 24hr site",
-    barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
-    desc:"30-bed Salvation Army shelter. Case planning. Harm reduction. Intake 8am–11:30pm, curfew 10:30pm.",
-    tags:["all-gender","accessible","meals"]
+    id:"s25", name:"Salvation Army Haven", addr:"128 E Cordova St",
+    lat:49.2833, lng:-123.1030, type:"permanent", gender:"all",
+    operator:"Salvation Army", phone:"604-646-6868",
+    beds:30, hours:"Intake 8am–11:30pm", barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
+    notes:"Case planning, harm reduction, curfew 10:30pm."
   },
   {
-    id:"s26", name:"Lookout Commercial Hastings Shelter (EWR)",
-    addr:"1726 E Hastings St, Vancouver",
-    lat:49.2806, lng:-123.0683,
-    type:"ewr", gender:"all",
-    operator:"Lookout Housing & Health Society",
-    phone:"236-877-6311", web:"lookoutsociety.ca",
-    beds:20, hours:"8pm–7:30am (EWR activation only)",
-    barrier:"low", pets:true, accessible:true, meals:false, couples:true,
-    desc:"Extreme Weather Response shelter. Open only when City of Vancouver EWR alert is activated (Nov 1–Apr 15). All genders, couples welcome. Pets accepted. No cart storage or showers on site.",
-    tags:["all-gender","lowbarrier","accessible","pets"]
+    id:"s26", name:"Lookout Commercial Hastings (EWR)", addr:"1726 E Hastings St",
+    lat:49.2806, lng:-123.0683, type:"ewr", gender:"all",
+    operator:"Lookout Housing & Health Society", phone:"236-877-6311",
+    beds:20, hours:"8pm–7:30am (EWR only)", barrier:"low", pets:true, accessible:true, meals:false, couples:true,
+    notes:"Open only when Vancouver EWR alert activated (Nov 1–Apr 15). All genders, couples. Pets. No cart storage or showers on site."
   },
   {
-    id:"s27", name:"Marpole Neighbourhood House EWR",
-    addr:"8585 Hudson St, Vancouver",
-    lat:49.2130, lng:-123.1297,
-    type:"ewr", gender:"all",
-    operator:"Lookout Housing & Health Society",
-    phone:"604-317-4307", web:"lookoutsociety.ca",
-    beds:30, hours:"9:30pm–7:15am (EWR activation only)",
-    barrier:"low", pets:true, accessible:true, meals:false, couples:true,
-    desc:"Extreme Weather Response shelter in Marpole. Open when Vancouver EWR is activated (Nov 1–Apr 15). All genders, couples welcome. Pets accepted. Wheelchair accessible. Storage available.",
-    tags:["all-gender","lowbarrier","accessible","pets"]
+    id:"s27", name:"Marpole Neighbourhood House (EWR)", addr:"8585 Hudson St",
+    lat:49.2130, lng:-123.1297, type:"ewr", gender:"all",
+    operator:"Lookout Housing & Health Society", phone:"604-317-4307",
+    beds:30, hours:"9:30pm–7:15am (EWR only)", barrier:"low", pets:true, accessible:true, meals:false, couples:true,
+    notes:"Marpole. Open when Vancouver EWR activated (Nov 1–Apr 15). Pets, wheelchair accessible, storage available."
   },
   {
-    id:"s28", name:"Kiwassa Neighbourhood House EWR",
-    addr:"2425 Oxford St, Vancouver",
-    lat:49.2764, lng:-123.0568,
-    type:"ewr", gender:"all",
-    operator:"Lookout Housing & Health Society",
-    phone:"778-792-3276", web:"lookoutsociety.ca",
-    beds:25, hours:"8:30pm–7:30am (EWR activation only)",
-    barrier:"low", pets:false, accessible:false, meals:false, couples:true,
-    desc:"Extreme Weather Response shelter in East Vancouver. Open when Vancouver EWR is activated. All genders, couples welcome.",
-    tags:["all-gender","lowbarrier"]
+    id:"s28", name:"Kiwassa Neighbourhood House (EWR)", addr:"2425 Oxford St",
+    lat:49.2764, lng:-123.0568, type:"ewr", gender:"all",
+    operator:"Lookout Housing & Health Society", phone:"778-792-3276",
+    beds:25, hours:"8:30pm–7:30am (EWR only)", barrier:"low", pets:false, accessible:false, meals:false, couples:true,
+    notes:"East Vancouver. Open when Vancouver EWR activated. All genders, couples welcome."
   },
   {
-    id:"s29", name:"St. Elizabeth's Shelter (St James CSS)",
-    addr:"277 E Broadway, Vancouver",
-    lat:49.2625, lng:-123.0959,
-    type:"permanent", gender:"women",
-    operator:"St. James Community Service Society",
-    phone:"604-606-0412", web:"stjamescss.ca",
-    beds:22, hours:"24/7",
-    barrier:"low", pets:false, accessible:true, meals:true, couples:false,
-    desc:"22-bed women's shelter in Mount Pleasant. Operated by St James CSS. Harm reduction, laundry, meals, housing navigation.",
-    tags:["women","lowbarrier","accessible","meals"]
+    id:"s29", name:"St. Elizabeth's Shelter (St James)", addr:"277 E Broadway",
+    lat:49.2625, lng:-123.0959, type:"permanent", gender:"women",
+    operator:"St. James Community Service Society", phone:"604-606-0412",
+    beds:22, hours:"24/7", barrier:"low", pets:false, accessible:true, meals:true, couples:false,
+    notes:"Women's shelter in Mount Pleasant. Harm reduction, laundry, meals, housing navigation."
   },
   {
-    id:"s30", name:"Aboriginal Safehouse (Lookout / Indigenous)",
-    addr:"201 Central St, Vancouver",
-    lat:49.2815, lng:-123.0870,
-    type:"permanent", gender:"all",
-    operator:"Lu'ma Native Housing / Aboriginal Community",
-    phone:"604-347-0299", web:"luma.ca",
-    beds:20, hours:"5:30pm–10am",
-    barrier:"low", pets:true, accessible:true, meals:true, couples:false,
-    desc:"Indigenous-focused shelter. 2 meals. No alcohol/drug use on site. Pets allowed, carts OK. Wheelchair accessible.",
-    tags:["all-gender","indig","lowbarrier","accessible","meals","pets"]
+    id:"s30", name:"Aboriginal Safehouse", addr:"201 Central St",
+    lat:49.2815, lng:-123.0870, type:"permanent", gender:"all",
+    operator:"Lu'ma Native Housing", phone:"604-347-0299",
+    beds:20, hours:"5:30pm–10am", barrier:"low", pets:true, accessible:true, meals:true, couples:false,
+    notes:"Indigenous-focused shelter. 2 meals. Pets and carts OK. Wheelchair accessible. No alcohol/drug use on site."
   },
   {
-    id:"s31", name:"Grace Mansion Shelter (Salvation Army)",
-    addr:"596 E Hastings St, Vancouver",
-    lat:49.2810, lng:-123.0868,
-    type:"permanent", gender:"all",
-    operator:"Salvation Army",
-    phone:"778-329-0674", web:"salvationarmy.ca",
-    beds:85, hours:"24/7",
-    barrier:"high", pets:false, accessible:true, meals:false, couples:false,
-    desc:"85 units. Supportive, transitional. Substance free. Participation in Personal Development Plan. Accessible. No pets. Apply on site.",
-    tags:["all-gender","accessible"]
+    id:"s31", name:"YWCA Crabtree Corner Shelter", addr:"533 E Hastings St",
+    lat:49.2809, lng:-123.0877, type:"permanent", gender:"women",
+    operator:"YWCA Metro Vancouver", phone:"604-216-1650",
+    beds:8, hours:"24/7", barrier:"low", pets:false, accessible:true, meals:false, couples:false,
+    notes:"8 shelter spaces for women. Harm reduction, some accessible units."
   },
   {
-    id:"s32", name:"YWCA Crabtree Corner Shelter",
-    addr:"533 E Hastings St, Vancouver",
-    lat:49.2809, lng:-123.0877,
-    type:"permanent", gender:"women",
-    operator:"YWCA Metro Vancouver",
-    phone:"604-216-1650", web:"ywcavan.org",
-    beds:8, hours:"24/7",
-    barrier:"low", pets:false, accessible:true, meals:false, couples:false,
-    desc:"8 studio shelter spaces for women. Harm reduction. Some accessible units.",
-    tags:["women","lowbarrier","accessible"]
+    id:"s32", name:"Lookout Downtown Shelter", addr:"70 E Cordova St",
+    lat:49.2835, lng:-123.1052, type:"permanent", gender:"all",
+    operator:"Lookout Housing & Health Society", phone:"604-696-0011",
+    beds:46, hours:"24/7", barrier:"low", pets:true, accessible:false, meals:true, couples:false,
+    notes:"Downtown Lookout facility. Outreach workers based here. Case planning, housing navigation."
   },
   {
-    id:"s33", name:"Aboriginal Youth Safe House",
-    addr:"Vancouver (location confidential)",
-    lat:49.2808, lng:-123.0990,
-    type:"permanent", gender:"youth",
-    operator:"Community agency",
-    phone:"604-254-5147", web:"",
-    beds:10, hours:"24/7",
-    barrier:"low", pets:false, accessible:false, meals:true, couples:false,
-    desc:"16–18 years. Aboriginal and non-Aboriginal youth. Laundry, self-referral, harm reduction, goal-oriented. No alcohol/drug use on site. Curfew.",
-    tags:["youth","indig","lowbarrier"]
+    id:"s33", name:"Grace Mansion (Salvation Army)", addr:"596 E Hastings St",
+    lat:49.2810, lng:-123.0868, type:"permanent", gender:"all",
+    operator:"Salvation Army", phone:"778-329-0674",
+    beds:85, hours:"24/7", barrier:"high", pets:false, accessible:true, meals:false, couples:false,
+    notes:"Substance-free. Participation in Personal Development Plan. Accessible. Apply on site."
   },
   {
-    id:"s34", name:"Directions Youth Haven Shelter",
-    addr:"1138 Burrard St, Vancouver",
-    lat:49.27935, lng:-123.1273,
-    type:"permanent", gender:"youth",
-    operator:"Directions Youth Services / VCH",
-    phone:"604-736-1881", web:"directionsinbc.com",
-    beds:12, hours:"24/7",
-    barrier:"low", pets:true, accessible:false, meals:true, couples:false,
-    desc:"Youth shelter 16–19 (with exceptions). Medical care and counselling. Up to 30 days. Pets allowed. Self-referral.",
-    tags:["youth","lowbarrier","meals","pets"]
+    id:"s34", name:"Directions Youth Haven", addr:"1138 Burrard St",
+    lat:49.27935, lng:-123.1273, type:"permanent", gender:"youth",
+    operator:"Directions Youth Services / VCH", phone:"604-736-1881",
+    beds:12, hours:"24/7", barrier:"low", pets:true, accessible:false, meals:true, couples:false,
+    notes:"Youth 16–19 (with exceptions). Medical care and counselling. Up to 30 days. Pets, self-referral."
   },
   {
-    id:"s35", name:"Lookout Downtown Shelter (Al Mitchell area)",
-    addr:"70 E Cordova St, Vancouver",
-    lat:49.2835, lng:-123.1052,
-    type:"permanent", gender:"all",
-    operator:"Lookout Housing & Health Society",
-    phone:"604-696-0011", web:"lookoutsociety.ca",
-    beds:46, hours:"24/7",
-    barrier:"low", pets:true, accessible:false, meals:true, couples:false,
-    desc:"Downtown Lookout shelter facility. Outreach workers based here for downtown Vancouver outreach. Tenant support, case planning, housing navigation.",
-    tags:["all-gender","lowbarrier","meals","pets"]
+    id:"s35", name:"Belkin House Women's Shelter", addr:"555 Homer St",
+    lat:49.27925, lng:-123.1158, type:"permanent", gender:"women",
+    operator:"Salvation Army", phone:"604-694-6623",
+    beds:30, hours:"24/7", barrier:"moderate", pets:false, accessible:true, meals:true, couples:false,
+    notes:"Single women and women with children (boys under 13). No alcohol/drug use on site. Men also housed in adjacent units."
   },
 ];
 
 // ── MAP ───────────────────────────────────────────────────────────────────────
-const typeColors = {permanent:"#1A7A6E", temporary:"#E8930A", ewr:"#D94040"};
-const genderColors = {all:"#1A7A6E", men:"#1D4ED8", women:"#9B1745", youth:"#6B21A8", family:"#854D0E"};
-
 function markerColor(s) {
-  if (s.gender === "women" || s.gender === "family") return genderColors[s.gender];
-  if (s.gender === "youth") return genderColors.youth;
-  if (s.type === "ewr") return typeColors.ewr;
-  if (s.type === "temporary") return typeColors.temporary;
-  return genderColors.all;
+  if (s.gender === "women") return "#9B1745";
+  if (s.gender === "family") return "#9B1745";
+  if (s.gender === "youth") return "#6B21A8";
+  if (s.type === "ewr") return "#D94040";
+  if (s.type === "temporary") return "#E8930A";
+  return "#1A7A6E";
 }
 
-function svgIcon(color, size=10) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size*2+4}" height="${size*2+8}" viewBox="0 0 ${size*2+4} ${size*2+8}">
-    <circle cx="${size+2}" cy="${size+2}" r="${size}" fill="${color}" stroke="white" stroke-width="2"/>
-    <line x1="${size+2}" y1="${size*2+2}" x2="${size+2}" y2="${size*2+8}" stroke="${color}" stroke-width="2"/>
-  </svg>`;
-  return L.divIcon({html:svg, className:'', iconAnchor:[size+2, size*2+8], popupAnchor:[0,-size*2-8]});
+function svgPin(color) {
+  return L.divIcon({
+    className: '',
+    html: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="30" viewBox="0 0 22 30">
+      <circle cx="11" cy="11" r="9" fill="${color}" stroke="white" stroke-width="2"/>
+      <line x1="11" y1="20" x2="11" y2="30" stroke="${color}" stroke-width="2"/>
+    </svg>`,
+    iconAnchor: [11, 30],
+    popupAnchor: [0, -30]
+  });
 }
 
-const map = L.map('shelter-map', {zoomControl:true}).setView([49.275, -123.105], 13);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
-  attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com">CARTO</a>',
-  maxZoom:19
-}).addTo(map);
+const smap = L.map('shelter-map').setView([49.275, -123.105], 13);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com">CARTO</a>',
+  maxZoom: 19
+}).addTo(smap);
 
-const markers = {};
+const markerMap = {};
 SHELTERS.forEach(s => {
-  const m = L.marker([s.lat, s.lng], {icon: svgIcon(markerColor(s))}).addTo(map);
+  const m = L.marker([s.lat, s.lng], {icon: svgPin(markerColor(s))}).addTo(smap);
   m.bindPopup(`
-    <div class="popup-name">${s.name}</div>
-    <div class="popup-addr">${s.addr}</div>
-    <div style="margin-top:4px;display:flex;gap:8px;flex-wrap:wrap">
-      <span class="popup-beds">${s.beds} beds</span>
-      <span style="font-size:11px;color:#666">${s.hours}</span>
-    </div>
-    ${s.phone ? `<div style="margin-top:4px;font-size:12px"><a href="tel:${s.phone.replace(/[^0-9]/g,'')}" style="color:#1A7A6E">${s.phone}</a></div>` : ''}
+    <h4>${s.name}</h4>
+    <p>📍 ${s.addr}</p>
+    <p class="pop-beds">${s.beds} beds · ${s.hours}</p>
+    <p>${s.operator}</p>
+    ${s.phone ? `<p><a href="tel:${s.phone.replace(/[^0-9]/g,'')}" style="color:#1A7A6E">${s.phone}</a></p>` : ''}
   `);
-  markers[s.id] = m;
+  markerMap[s.id] = m;
 });
 
-// ── CARDS ─────────────────────────────────────────────────────────────────────
-let activeFilter = "all", searchQ = "";
-
-function typeBadge(s) {
-  if (s.type === "permanent") return `<span class="badge-pill b-perm">Permanent</span>`;
-  if (s.type === "temporary") return `<span class="badge-pill b-temp">Seasonal</span>`;
-  return `<span class="badge-pill b-ewr">EWR Only</span>`;
+// Map toggle
+let mapVisible = true;
+function toggleMap() {
+  const container = document.getElementById('map-container');
+  const btn = document.getElementById('map-toggle');
+  mapVisible = !mapVisible;
+  container.style.display = mapVisible ? 'block' : 'none';
+  btn.textContent = mapVisible ? 'Hide Map ▲' : 'Show Map ▼';
+  if (mapVisible) smap.invalidateSize();
 }
 
-function genderTag(s) {
-  const map = {all:"All Genders",men:"Men",women:"Women",youth:"Youth",family:"Families"};
-  const cls = {all:"tag-all",men:"tag-men",women:"tag-women",youth:"tag-youth",family:"tag-family"};
-  return `<span class="tag ${cls[s.gender]||'tag-all'}">${map[s.gender]||s.gender}</span>`;
-}
+// ── TABLE ─────────────────────────────────────────────────────────────────────
+let sortCol = "name", sortDir = 1, activeFilter = "all", activeRowId = null;
 
 function matchFilter(s) {
-  if (activeFilter === "all") return true;
-  if (activeFilter === "permanent") return s.type === "permanent";
-  if (activeFilter === "temporary") return s.type === "temporary" || s.type === "ewr";
-  if (activeFilter === "all-gender") return s.gender === "all";
-  if (activeFilter === "men") return s.gender === "men";
-  if (activeFilter === "women") return s.gender === "women";
-  if (activeFilter === "youth") return s.gender === "youth";
-  if (activeFilter === "family") return s.gender === "family";
-  if (activeFilter === "pets") return s.pets;
-  if (activeFilter === "accessible") return s.accessible;
-  if (activeFilter === "lowbarrier") return s.barrier === "low";
+  switch(activeFilter) {
+    case "all": return true;
+    case "permanent": return s.type === "permanent";
+    case "temporary": return s.type === "temporary";
+    case "ewr": return s.type === "ewr";
+    case "all-gender": return s.gender === "all";
+    case "men": return s.gender === "men";
+    case "women": return s.gender === "women";
+    case "youth": return s.gender === "youth";
+    case "family": return s.gender === "family";
+    case "lowbarrier": return s.barrier === "low";
+    case "pets": return s.pets;
+    case "accessible": return s.accessible;
+  }
   return true;
 }
 
-function matchSearch(s) {
-  if (!searchQ) return true;
-  const txt = [s.name, s.addr, s.operator, s.desc].join(" ").toLowerCase();
-  return searchQ.split(" ").every(w => txt.includes(w));
+function matchSearch(s, q) {
+  if (!q) return true;
+  const txt = [s.name, s.addr, s.operator, s.notes, s.gender].join(" ").toLowerCase();
+  return q.toLowerCase().split(" ").every(w => txt.includes(w));
 }
 
-function renderCards() {
-  const q = document.getElementById("search").value.trim().toLowerCase();
-  searchQ = q;
-  const filtered = SHELTERS.filter(s => matchFilter(s) && matchSearch(s));
+function sortData(arr) {
+  return [...arr].sort((a, b) => {
+    let av, bv;
+    if (sortCol === "name")  { av = a.name.toLowerCase(); bv = b.name.toLowerCase(); }
+    else if (sortCol === "addr") { av = a.addr.toLowerCase(); bv = b.addr.toLowerCase(); }
+    else if (sortCol === "beds") { av = -a.beds; bv = -b.beds; }
+    else if (sortCol === "type") { av = a.type; bv = b.type; }
+    else { av = a.name.toLowerCase(); bv = b.name.toLowerCase(); }
+    if (av < bv) return -sortDir;
+    if (av > bv) return sortDir;
+    return 0;
+  });
+}
+
+function typeBadge(s) {
+  if (s.type === "permanent") return `<span class="badge badge-perm">Permanent</span>`;
+  if (s.type === "temporary") return `<span class="badge badge-temp">Seasonal</span>`;
+  return `<span class="badge badge-ewr">EWR Only</span>`;
+}
+
+function genderBadge(s) {
+  const cfg = {
+    all:    ["badge-all",    "All Genders"],
+    men:    ["badge-men",    "Men"],
+    women:  ["badge-women",  "Women"],
+    youth:  ["badge-youth",  "Youth"],
+    family: ["badge-family", "Family"],
+  };
+  const [cls, label] = cfg[s.gender] || ["badge-all", s.gender];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function featureIcons(s) {
+  let out = "";
+  if (s.pets)       out += `<span title="Pets OK">🐾</span> `;
+  if (s.accessible) out += `<span title="Accessible">♿</span> `;
+  if (s.meals)      out += `<span title="Meals provided">🍽</span> `;
+  if (s.couples)    out += `<span title="Couples welcome">👫</span> `;
+  if (s.barrier === "low") out += `<span title="Low-barrier" style="font-size:11px;color:#166534;background:#E8FBF0;padding:1px 5px;border-radius:6px;">Low-barrier</span>`;
+  return out || "—";
+}
+
+function renderTable() {
+  const q = document.getElementById("search").value.trim();
+  const filtered = sortData(SHELTERS.filter(s => matchFilter(s) && matchSearch(s, q)));
 
   document.getElementById("total-count").textContent = SHELTERS.length;
-  document.getElementById("perm-count").textContent = SHELTERS.filter(s=>s.type==="permanent").length;
-  document.getElementById("bed-count").textContent = SHELTERS.reduce((a,s)=>a+s.beds,0).toLocaleString() + "+";
+  document.getElementById("perm-count").textContent = SHELTERS.filter(s => s.type === "permanent").length;
+  document.getElementById("bed-count").textContent = SHELTERS.reduce((a, s) => a + s.beds, 0).toLocaleString() + "+";
   document.getElementById("shown-count").textContent = filtered.length;
 
   // Update marker visibility
   SHELTERS.forEach(s => {
-    const m = markers[s.id];
-    const show = filtered.includes(s);
-    if (show) { if (!map.hasLayer(m)) m.addTo(map); }
-    else { if (map.hasLayer(m)) map.removeLayer(m); }
+    const m = markerMap[s.id];
+    if (!m) return;
+    if (filtered.find(f => f.id === s.id)) { if (!smap.hasLayer(m)) m.addTo(smap); }
+    else { if (smap.hasLayer(m)) smap.removeLayer(m); }
   });
 
-  const container = document.getElementById("cards-container");
   document.getElementById("no-results").style.display = filtered.length === 0 ? "" : "none";
 
-  container.innerHTML = filtered.map(s => `
-    <div class="shelter-card type-${s.gender}" id="card-${s.id}" onclick="selectShelter('${s.id}')">
-      <div class="card-header">
-        <div class="card-name">${s.name}</div>
-        <div class="card-beds">${s.beds} beds</div>
-      </div>
-      <div class="card-addr">📍 ${s.addr}</div>
-      <div class="card-tags">
-        ${typeBadge(s)}
-        ${genderTag(s)}
-        ${s.barrier === "low" ? '<span class="tag tag-barrier">Low-Barrier</span>' : ''}
-        ${s.pets ? '<span class="tag tag-all">🐾 Pets</span>' : ''}
-        ${s.accessible ? '<span class="tag tag-all">♿</span>' : ''}
-        ${s.meals ? '<span class="tag tag-all">🍽 Meals</span>' : ''}
-      </div>
-      <div class="card-meta">
-        <span>🕐 ${s.hours}</span>
-        ${s.phone ? `<span class="card-phone"><a href="tel:${s.phone.replace(/[^0-9]/g,'')}">${s.phone}</a></span>` : ''}
-      </div>
-      <div class="card-desc">${s.desc}<br><br><em>Operator: ${s.operator}</em></div>
-      <button class="expand-btn" onclick="event.stopPropagation();toggleDesc('card-${s.id}')">▸ More info</button>
-    </div>
+  const tbody = document.getElementById("table-body");
+  tbody.innerHTML = filtered.map(s => `
+    <tr class="type-${s.type}" id="row-${s.id}" onclick="selectRow('${s.id}')">
+      <td class="td-name">${s.name}${s.type==="ewr"?'<br><small style="color:#991B1B">⚡ Extreme weather only</small>':''}</td>
+      <td class="td-addr">${s.addr}</td>
+      <td class="td-beds">${s.beds}</td>
+      <td class="td-type">${typeBadge(s)}</td>
+      <td class="td-gender">${genderBadge(s)}</td>
+      <td class="td-hours">${s.hours}</td>
+      <td class="td-operator">${s.operator}</td>
+      <td class="td-contact">${s.phone ? `<a href="tel:${s.phone.replace(/[^0-9]/g,'')}">${s.phone}</a>` : "—"}</td>
+      <td class="td-features">${featureIcons(s)}</td>
+      <td class="td-notes">${s.notes}</td>
+    </tr>
   `).join("");
 }
 
-function toggleDesc(id) {
-  const el = document.getElementById(id);
-  el.classList.toggle("expanded");
-  el.querySelector(".expand-btn").textContent = el.classList.contains("expanded") ? "▾ Less" : "▸ More info";
-}
-
-let selectedCard = null;
-function selectShelter(id) {
-  if (selectedCard) {
-    document.getElementById("card-"+selectedCard)?.classList.remove("active");
-  }
-  selectedCard = id;
-  document.getElementById("card-"+id)?.classList.add("active");
-  const m = markers[id];
-  if (m) {
-    map.setView(m.getLatLng(), 16, {animate:true});
+function selectRow(id) {
+  if (activeRowId) document.getElementById("row-"+activeRowId)?.classList.remove("row-highlighted");
+  activeRowId = id;
+  document.getElementById("row-"+id)?.classList.add("row-highlighted");
+  const m = markerMap[id];
+  if (m && mapVisible) {
+    smap.setView(m.getLatLng(), 16, {animate: true});
     m.openPopup();
   }
 }
 
-document.getElementById("search").addEventListener("input", renderCards);
+// Sort on column header click
+document.querySelectorAll("thead th[data-col]").forEach(th => {
+  th.addEventListener("click", () => {
+    const col = th.dataset.col;
+    if (sortCol === col) sortDir *= -1;
+    else { sortCol = col; sortDir = 1; }
+    document.querySelectorAll("thead th").forEach(t => t.classList.remove("sort-asc","sort-desc"));
+    th.classList.add(sortDir === 1 ? "sort-asc" : "sort-desc");
+    renderTable();
+  });
+});
+
+document.getElementById("search").addEventListener("input", renderTable);
+
 document.querySelectorAll(".filter-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     activeFilter = btn.dataset.filter;
-    renderCards();
+    renderTable();
   });
 });
 
-renderCards();
+document.getElementById("sort-select").addEventListener("change", e => {
+  sortCol = e.target.value;
+  renderTable();
+});
+
+renderTable();
 </script>
 </body>
 </html>
