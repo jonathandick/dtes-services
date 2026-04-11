@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTCT – Community Transitional Care Team · DTES Community Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<link rel="stylesheet" href="shared.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+
+/* ── Layout ── */
+body { min-height: 100vh; display: flex; flex-direction: column; }
+.page-content { flex: 1; background: var(--surface); }
+.content-wrap { max-width: 860px; margin: 0 auto; padding: 48px 32px 80px; }
+
+/* ── Hero override for this page ── */
+.page-header { padding: 48px 40px 40px; }
+.page-header-inner { flex-direction: column; align-items: flex-start; gap: 20px; }
+.hero-stats { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 4px; }
+.hero-stat { display: flex; flex-direction: column; gap: 2px; }
+.hero-stat-value { font-size: 20px; font-weight: 700; color: var(--sky); font-family: var(--font-head); }
+.hero-stat-label { font-size: 11px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.8px; }
+.hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.hero-badge {
+  font-size: 11px; font-weight: 500; padding: 4px 12px; border-radius: 20px;
+  letter-spacing: 0.3px; white-space: nowrap;
+}
+.hb-green  { background: rgba(46,168,107,0.2); color: #6EE7B7; border: 1px solid rgba(46,168,107,0.3); }
+.hb-amber  { background: rgba(232,147,10,0.15); color: #FCD34D; border: 1px solid rgba(232,147,10,0.25); }
+.hb-sky    { background: rgba(126,200,192,0.15); color: var(--sky); border: 1px solid rgba(126,200,192,0.25); }
+.hb-red    { background: rgba(217,64,64,0.15); color: #FCA5A5; border: 1px solid rgba(217,64,64,0.25); }
+
+/* ── Section cards ── */
+.section-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px 32px; margin-bottom: 20px;
+}
+.section-card + .section-card { }
+.section-eyebrow {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--teal-mid); margin-bottom: 8px;
+}
+.section-title {
+  font-family: var(--font-head); font-size: 22px; color: var(--ink);
+  margin-bottom: 14px; line-height: 1.25;
+}
+.section-body { font-size: 14px; color: var(--muted); line-height: 1.75; }
+.section-body p + p { margin-top: 12px; }
+.section-body strong { color: var(--ink); }
+
+/* ── Timeline ── */
+.timeline { margin-top: 20px; display: flex; flex-direction: column; gap: 0; }
+.tl-item { display: flex; gap: 16px; position: relative; }
+.tl-item:not(:last-child)::before {
+  content: '';
+  position: absolute; left: 19px; top: 30px; bottom: -10px; width: 1px;
+  background: var(--border);
+}
+.tl-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--teal-pale); border: 2px solid var(--teal-mid);
+  flex-shrink: 0; margin-top: 14px; margin-left: 13px;
+}
+.tl-dot.milestone { background: var(--teal); border-color: var(--teal-dark); }
+.tl-body { padding: 10px 0 24px; flex: 1; }
+.tl-year {
+  font-size: 11px; font-weight: 700; color: var(--teal-mid);
+  letter-spacing: 0.5px; margin-bottom: 2px;
+}
+.tl-event { font-size: 14px; color: var(--ink); font-weight: 500; margin-bottom: 3px; }
+.tl-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ── Model pillars grid ── */
+.pillars-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 20px; }
+.pillar {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px 18px;
+}
+.pillar-icon { font-size: 22px; margin-bottom: 8px; }
+.pillar-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.pillar-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* ── Referral pathway ── */
+.pathway { display: flex; align-items: flex-start; gap: 0; margin-top: 20px; flex-wrap: wrap; }
+.pathway-step { flex: 1; min-width: 130px; text-align: center; position: relative; }
+.pathway-step:not(:last-child)::after {
+  content: '→';
+  position: absolute; right: -10px; top: 18px;
+  font-size: 18px; color: var(--teal-mist);
+}
+.pathway-circle {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--teal-pale); border: 2px solid var(--teal-mid);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; margin: 0 auto 8px;
+}
+.pathway-label { font-size: 12px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.pathway-desc  { font-size: 11px; color: var(--muted); line-height: 1.45; padding: 0 4px; }
+
+/* ── Info rows ── */
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+.info-item { display: flex; flex-direction: column; gap: 2px; }
+.info-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); }
+.info-value { font-size: 14px; color: var(--ink); font-weight: 500; }
+.info-value.highlight { color: var(--teal); }
+.info-value small { font-size: 12px; font-weight: 400; color: var(--muted); }
+
+/* ── Alert/note boxes ── */
+.note-box {
+  border-radius: 8px; padding: 12px 16px; font-size: 13px; line-height: 1.6;
+  margin-top: 16px; display: flex; gap: 10px; align-items: flex-start;
+}
+.note-box.amber { background: #fff9e8; border: 1px solid #f0c040; color: #7a5a00; }
+.note-box.teal  { background: var(--teal-pale); border: 1px solid var(--teal-mist); color: var(--teal-dark); }
+.note-box.green { background: #f0faf4; border: 1px solid #a8dfbe; color: #0e4a28; }
+.note-icon { flex-shrink: 0; font-size: 16px; }
+
+/* ── Map ── */
+#ctct-map { height: 260px; border-radius: 10px; margin-top: 16px; border: 1px solid var(--border); }
+
+/* ── Partner list ── */
+.partner-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.partner-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; }
+.partner-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
+.partner-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.partner-role { font-size: 12px; color: var(--muted); }
+
+/* ── PSS sidebar-style card ── */
+.co-located { background: var(--teal-pale); border: 1px solid var(--teal-mist); border-radius: 12px; padding: 20px 24px; margin-top: 20px; }
+.co-located-title { font-size: 14px; font-weight: 700; color: var(--teal-dark); margin-bottom: 6px; }
+.co-located-desc  { font-size: 13px; color: var(--teal-dark); line-height: 1.6; }
+
+/* ── Source strip ── */
+.source-note { background: var(--teal-pale); border-top: 1px solid var(--teal-mist); padding: 12px 32px; font-size: 12px; color: var(--muted); }
+.source-note a { color: var(--teal); }
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .content-wrap { padding: 28px 16px 60px; }
+  .section-card { padding: 20px 18px; }
+  .info-grid { grid-template-columns: 1fr; }
+  .pillars-grid { grid-template-columns: 1fr 1fr; }
+  .pathway-step:not(:last-child)::after { display: none; }
+  .hero-stats { gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<script src="nav.js"></script>
+
+<!-- ── Hero Header ── -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div>
+      <div class="page-eyebrow">🏥 Pennsylvania Hotel · 401 E Hastings St</div>
+      <h1>Community Transitional <span>Care Team</span></h1>
+      <p>Residential acute care for people who use drugs — bridging hospital discharge to stable housing in the Downtown Eastside.</p>
+
+      <div class="hero-badges">
+        <span class="hero-badge hb-green">24/7 Nursing &amp; Physician</span>
+        <span class="hero-badge hb-sky">OAT Continuation &amp; Initiation</span>
+        <span class="hero-badge hb-amber">Harm Reduction Model</span>
+        <span class="hero-badge hb-red">Clinician Referral Only</span>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-value">24/7</span>
+        <span class="hero-stat-label">Nursing Coverage</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value">3</span>
+        <span class="hero-stat-label">Meals / Day</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value">100%</span>
+        <span class="hero-stat-label">Housing Before Discharge</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value">2003</span>
+        <span class="hero-stat-label">Program Founded</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Main Content ── -->
+<div class="page-content">
+<div class="content-wrap">
+
+  <!-- Overview -->
+  <div class="section-card">
+    <div class="section-eyebrow">Overview</div>
+    <div class="section-title">What is CTCT?</div>
+    <div class="section-body">
+      <p>The <strong>Community Transitional Care Team (CTCT)</strong> is a residential acute-care program housed on the second floor of the <strong>Pennsylvania Hotel</strong> in Vancouver's Downtown Eastside. CTCT provides people who use drugs (PWUD) with a safe, supported place to complete acute medical treatment — most commonly intravenous antibiotics for infections like endocarditis, osteomyelitis, and cellulitis — after being discharged from St. Paul's Hospital or Vancouver General Hospital.</p>
+      <p>Patients receive a private room with en-suite kitchen and bathroom, 24/7 nursing and physician coverage, three meals a day, OAT initiation or continuation, psychosocial support, and staff accompaniment to every off-site appointment. <strong>Active substance use is permitted</strong> — CTCT operates on an explicit harm reduction model, meeting people where they are rather than requiring abstinence as a condition of care.</p>
+      <p>Housing is secured for every patient before discharge. The program is run by <strong>PHS Community Services Society</strong> in partnership with <strong>Vancouver Coastal Health (VCH)</strong> and <strong>Providence Health Care</strong>, with a formal partnership established with St. Paul's Hospital at Home (HAH) in November 2025.</p>
+    </div>
+
+    <div class="note-box amber">
+      <span class="note-icon">⚠️</span>
+      <span><strong>Referral required.</strong> CTCT is not a walk-in service. Access is by referral from a Providence Health Care (St. Paul's) or VCH clinician only — typically initiated during a hospital admission or via the Access Central system.</span>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="section-card">
+    <div class="section-eyebrow">History</div>
+    <div class="section-title">How CTCT came to be</div>
+    <div class="section-body">
+      <p>CTCT grew out of a well-documented crisis in hospital-to-community transitions for PWUD: patients discharged from acute care to unstable or street situations almost universally failed to complete antibiotic courses, resulting in high readmission rates, treatment failures, and preventable deaths. The Pennsylvania Hotel — PHS Community Services Society's founding building — provided the physical and organisational infrastructure to respond differently.</p>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot milestone"></div>
+        <div class="tl-body">
+          <div class="tl-year">1991</div>
+          <div class="tl-event">Pennsylvania Hotel — PHS founding project</div>
+          <div class="tl-desc">PHS Community Services Society opens the Pennsylvania Hotel at 401 E Hastings St as its first project, providing 44 units of supportive housing in the DTES. The building becomes the anchor of PHS's low-barrier care model.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <div class="tl-year">Early 2000s</div>
+          <div class="tl-event">CTCT model developed</div>
+          <div class="tl-desc">PHS and VCH begin formalising the transitional care model at the PA Hotel in response to repeated failed hospital discharges for DTES residents needing IV antibiotics. Active drug use permitted as a core design principle — a significant departure from mainstream acute-care practice.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <div class="tl-year">2000s–2010s</div>
+          <div class="tl-event">Program growth &amp; evidence base</div>
+          <div class="tl-desc">CTCT expands its capacity and deepens partnerships with St. Paul's Hospital and VGH. Published research documents high rates of treatment completion, low re-admission, and successful housing outcomes compared to standard discharge planning for PWUD requiring parenteral antibiotics.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <div class="tl-year">2010s</div>
+          <div class="tl-event">Pennsylvania Supported Suites (PSS) added</div>
+          <div class="tl-desc">PSS (10 rooms with 24/7 nursing) is established on the second floor alongside CTCT, serving individuals with long-term complex care needs who cannot be managed in the community. The two programs share infrastructure and staffing under a VCH co-management model.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot milestone"></div>
+        <div class="tl-body">
+          <div class="tl-year">November 2025</div>
+          <div class="tl-event">Formal HAH partnership — St. Paul's Hospital at Home</div>
+          <div class="tl-desc">CTCT formalises a partnership with Providence Health Care's Hospital at Home (HAH) program, based at St. Paul's. The agreement creates an integrated pathway allowing HAH to refer directly into CTCT beds, with shared clinical oversight and documentation. This represents the most significant structural evolution of the program in over a decade.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Current Model -->
+  <div class="section-card">
+    <div class="section-eyebrow">Current Model</div>
+    <div class="section-title">How CTCT works today</div>
+    <div class="section-body">
+      <p>CTCT operates as a harm reduction–oriented residential acute-care facility embedded within a supportive housing building. It is not a shelter, a detox, or a treatment program — it is a medical unit that happens to be community-based and drug-use tolerant.</p>
+    </div>
+
+    <div class="pillars-grid">
+      <div class="pillar">
+        <div class="pillar-icon">🏠</div>
+        <div class="pillar-title">Private Room</div>
+        <div class="pillar-desc">Each patient has their own room with a kitchen and private bathroom in the Pennsylvania Hotel. Not a shared dorm or ward.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">💉</div>
+        <div class="pillar-title">IV Antibiotics</div>
+        <div class="pillar-desc">Primary clinical purpose: completion of parenteral antibiotic courses for endocarditis, osteomyelitis, cellulitis, and other serious infections common in PWUD.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🕐</div>
+        <div class="pillar-title">24/7 Care</div>
+        <div class="pillar-desc">Nursing coverage around the clock and physician oversight throughout the stay. Patients are never left without access to medical support.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">💊</div>
+        <div class="pillar-title">OAT Continuity</div>
+        <div class="pillar-desc">OAT (methadone, Suboxone, iOAT) initiated or continued throughout the stay — no gaps in opioid agonist therapy at discharge.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🤝</div>
+        <div class="pillar-title">Staff Accompaniment</div>
+        <div class="pillar-desc">Staff go with patients to every off-site appointment — imaging, specialist consultations, labs. No solo navigation of a system that has often excluded PWUD.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🍽️</div>
+        <div class="pillar-title">3 Meals / Day</div>
+        <div class="pillar-desc">Nutritious meals provided daily. Malnutrition is common at admission; supported nutrition is integral to recovery from severe infection.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🚬</div>
+        <div class="pillar-title">Active Use Permitted</div>
+        <div class="pillar-desc">CTCT does not require abstinence. Patients may continue to use drugs during their stay. This is a deliberate harm reduction principle, not a gap in policy.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🏡</div>
+        <div class="pillar-title">Housing at Discharge</div>
+        <div class="pillar-desc">No patient is discharged to the street. Housing is confirmed before every discharge — CTCT will not release a patient without a stable destination.</div>
+      </div>
+    </div>
+
+    <div class="note-box teal">
+      <span class="note-icon">ℹ️</span>
+      <span>CTCT is one of very few programs in Canada where people can receive IV antibiotic treatment for serious infections <strong>while continuing to use drugs</strong>. This model dramatically increases treatment completion rates compared to conventional inpatient or outpatient antibiotic programs, which typically require abstinence or stable housing.</span>
+    </div>
+  </div>
+
+  <!-- Referral & Eligibility -->
+  <div class="section-card">
+    <div class="section-eyebrow">Eligibility &amp; Referral</div>
+    <div class="section-title">Who CTCT serves and how to access it</div>
+    <div class="section-body">
+      <p>CTCT accepts individuals who are being discharged from an acute care facility (primarily St. Paul's or VGH) and require ongoing medical treatment — most often intravenous antibiotics — that cannot safely or practically be completed in a standard community setting due to housing instability or active substance use.</p>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="info-label">Who it serves</span>
+        <span class="info-value">People who use drugs requiring post-discharge acute care</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Primary conditions</span>
+        <span class="info-value">Endocarditis, osteomyelitis, cellulitis, wound infections <small>(IV antibiotics)</small></span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Referring hospitals</span>
+        <span class="info-value class="highlight"">St. Paul's Hospital, VGH</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Referral route</span>
+        <span class="info-value">PHC or VCH clinician referral only <small>(not walk-in)</small></span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Abstinence required?</span>
+        <span class="info-value highlight">No — active use permitted</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Phone</span>
+        <span class="info-value">Via St. Paul's / VGH referral pathway</span>
+      </div>
+    </div>
+
+    <div class="section-eyebrow" style="margin-top: 24px;">Referral Pathway</div>
+    <div class="pathway">
+      <div class="pathway-step">
+        <div class="pathway-circle">🏥</div>
+        <div class="pathway-label">Hospital Admission</div>
+        <div class="pathway-desc">Patient admitted to St. Paul's or VGH with acute infection</div>
+      </div>
+      <div class="pathway-step">
+        <div class="pathway-circle">👩‍⚕️</div>
+        <div class="pathway-label">Clinician Referral</div>
+        <div class="pathway-desc">PHC or VCH clinician initiates CTCT referral</div>
+      </div>
+      <div class="pathway-step">
+        <div class="pathway-circle">✅</div>
+        <div class="pathway-label">CTCT Assessment</div>
+        <div class="pathway-desc">CTCT team reviews appropriateness &amp; bed availability</div>
+      </div>
+      <div class="pathway-step">
+        <div class="pathway-circle">🏠</div>
+        <div class="pathway-label">Admission to PA Hotel</div>
+        <div class="pathway-desc">Patient moves to private room; IV antibiotics continue</div>
+      </div>
+      <div class="pathway-step">
+        <div class="pathway-circle">🏡</div>
+        <div class="pathway-label">Discharge with Housing</div>
+        <div class="pathway-desc">Stable housing confirmed before every discharge</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Partners -->
+  <div class="section-card">
+    <div class="section-eyebrow">Organisational Partners</div>
+    <div class="section-title">Who runs CTCT</div>
+    <div class="section-body">
+      <p>CTCT is a tri-organisational program, with each partner contributing distinct clinical, funding, and operational roles.</p>
+    </div>
+    <div class="partner-list">
+      <div class="partner-item">
+        <div class="partner-dot"></div>
+        <div>
+          <div class="partner-name">PHS Community Services Society</div>
+          <div class="partner-role">Building operator (Pennsylvania Hotel), day-to-day program management, harm reduction staffing, housing support at discharge</div>
+        </div>
+      </div>
+      <div class="partner-item">
+        <div class="partner-dot"></div>
+        <div>
+          <div class="partner-name">Vancouver Coastal Health (VCH)</div>
+          <div class="partner-role">Clinical oversight and funding, nursing staff, OAT prescribing, co-management of PSS (Pennsylvania Supported Suites)</div>
+        </div>
+      </div>
+      <div class="partner-item">
+        <div class="partner-dot"></div>
+        <div>
+          <div class="partner-name">Providence Health Care — St. Paul's HAH</div>
+          <div class="partner-role">Primary referral source; formal Hospital at Home (HAH) partnership formalised November 2025 — shared clinical pathway and direct bed referral</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Location -->
+  <div class="section-card">
+    <div class="section-eyebrow">Location</div>
+    <div class="section-title">Pennsylvania Hotel — 401 E Hastings St</div>
+    <div class="section-body">
+      <p>CTCT occupies the second floor of the Pennsylvania Hotel, a 44-unit supportive housing building operated by PHS Community Services Society since 1991 — PHS's founding project and a cornerstone of low-barrier care in the DTES.</p>
+    </div>
+    <div id="ctct-map"></div>
+    <div class="info-grid" style="margin-top:16px;">
+      <div class="info-item">
+        <span class="info-label">Address</span>
+        <span class="info-value">401 E Hastings St, Vancouver</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Floor</span>
+        <span class="info-value">2nd Floor (CTCT + PSS)</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Hours</span>
+        <span class="info-value highlight">24/7 residential</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Web</span>
+        <span class="info-value"><a href="https://phs.ca/program/community-transitional-care-team/" target="_blank" rel="noopener">phs.ca → CTCT</a></span>
+      </div>
+    </div>
+
+    <div class="co-located">
+      <div class="co-located-title">Also on-site: Pennsylvania Supported Suites (PSS)</div>
+      <div class="co-located-desc">PSS provides 10 rooms of long-term complex care with 24/7 nursing for individuals with ongoing high-complexity needs who cannot be managed in the general community. Co-managed by PHS and VCH. PSS is distinct from CTCT — it is not a transitional program but a longer-term supported care environment.</div>
+    </div>
+  </div>
+
+  <!-- Research & Context -->
+  <div class="section-card">
+    <div class="section-eyebrow">Clinical Context</div>
+    <div class="section-title">Why this model matters</div>
+    <div class="section-body">
+      <p>People who inject drugs have markedly higher rates of serious bacterial infections — endocarditis, septic arthritis, osteomyelitis — that require prolonged IV antibiotic courses, often 4–6 weeks. Standard care requires either inpatient hospitalisation for the full course (costly, often not tolerated by patients, disrupts community ties) or outpatient parenteral antibiotic therapy (OPAT), which typically requires stable housing and abstinence — conditions most DTES residents cannot meet.</p>
+      <p>Without a model like CTCT, the most common outcome for PWUD is early self-discharge from hospital, incomplete antibiotic courses, treatment failure, relapse of the infection, and readmission — a cycle that is harmful to patients and extremely costly to the health system.</p>
+      <p><strong>CTCT breaks this cycle</strong> by removing the abstinence requirement, providing stable housing during treatment, and wrapping clinical care in harm reduction supports. Published outcomes data from the PA Hotel model show high rates of antibiotic course completion and successful housing transitions at discharge.</p>
+      <p>The November 2025 HAH partnership extends this model further — allowing some patients to receive acute care in true home settings while CTCT continues to serve those requiring more intensive support in a supervised residential environment.</p>
+    </div>
+
+    <div class="note-box green">
+      <span class="note-icon">📋</span>
+      <span>CTCT is frequently cited in Canadian harm reduction and infectious disease literature as a leading example of low-barrier transitional care for PWUD. The program's "housing at discharge" guarantee has influenced provincial policy discussions on discharge planning standards.</span>
+    </div>
+  </div>
+
+</div><!-- /content-wrap -->
+</div><!-- /page-content -->
+
+<div class="source-note">
+  Data sources: <a href="https://phs.ca/program/community-transitional-care-team/" target="_blank" rel="noopener">PHS Community Services Society</a> · Vancouver Coastal Health · Providence Health Care. Last reviewed April 2026.
+</div>
+
+<script>
+// ── Leaflet map for PA Hotel ──
+const map = L.map('ctct-map', { zoomControl: true, scrollWheelZoom: false }).setView([49.2808, -123.0940], 16);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap contributors © CARTO',
+  subdomains: 'abcd', maxZoom: 20
+}).addTo(map);
+
+const icon = L.divIcon({
+  className: '',
+  html: `<div style="width:38px;height:38px;border-radius:50%;background:#1A7A6E;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:18px;">🏥</div>`,
+  iconSize: [38, 38], iconAnchor: [19, 19]
+});
+
+L.marker([49.2808, -123.0940], { icon })
+  .addTo(map)
+  .bindPopup(`
+    <div style="font-family:'DM Sans',sans-serif;padding:4px 2px;">
+      <div style="font-weight:700;font-size:14px;margin-bottom:3px;">Pennsylvania Hotel</div>
+      <div style="font-size:12px;color:#5A6E6C;margin-bottom:6px;">401 E Hastings St · 2nd Floor</div>
+      <div style="font-size:11px;font-weight:600;color:#1A7A6E;">CTCT + PSS</div>
+    </div>
+  `, { maxWidth: 220 })
+  .openPopup();
+</script>
+
+</body>
+</html>

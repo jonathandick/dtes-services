@@ -19,6 +19,7 @@
     { href: "treatment-programs.html", label: "Treatment" },
     { href: "vancouver-shelters.html", label: "Shelters" },
     { href: "social-housing.html",     label: "Social Housing" },
+    { href: "ctct.html",              label: "CTCT" },
   ];
 
   // ── CSS ────────────────────────────────────────────────────
