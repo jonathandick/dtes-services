@@ -2,380 +2,331 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LM Treatment Programs – DTES Community Tools</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<link rel="stylesheet" href="shared.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
-:root {
-  --teal:#1A7A6E;--teal-dark:#0D3D35;--teal-deep:#071F1B;--teal-mid:#2AA090;
-  --teal-pale:#E6F5F3;--teal-mist:#C2E8E2;
-  --amber:#E8930A;--amber-pale:#FEF3DC;
-  --red:#C0392B;--orange:#D95F00;--green:#1A7A4A;--blue:#1655A2;
-  --purple:#6B3FA0;--slate:#4A5568;--pink:#A0306B;
-  --bg:#F5F4F1;--surface:#FFFFFF;--surface2:#EFEDE8;
-  --border:#E0DCD5;--border2:#CBC5BD;
-  --text:#18160F;--text2:#6A6259;--text3:#9D9489;
-  --radius:10px;--radius-sm:6px;--radius-lg:14px;
-  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md:0 4px 16px rgba(0,0,0,0.10),0 2px 6px rgba(0,0,0,0.06);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;min-height:100vh;}
-button{font-family:inherit;cursor:pointer;border:none;background:none;}
-input,select{font-family:inherit;}
-a{color:var(--blue);text-decoration:none;}
-a:hover{text-decoration:underline;}
+/* ── Page-specific styles only ── */
+body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-/* ── Page header ── */
-#page-header{
-  background:var(--surface);border-bottom:1px solid var(--border);
-  padding:14px 16px 0;
-}
-#page-header h1{font-size:17px;font-weight:600;color:var(--text);}
-#page-header p{font-size:12px;color:var(--text2);margin-top:2px;}
+/* Table columns */
+.td-name     { font-weight: 500; color: var(--ink); min-width: 160px; }
+.td-name small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; margin-top: 2px; }
+.td-location { color: var(--muted); font-size: 12px; min-width: 110px; }
+.td-type     { min-width: 90px; white-space: nowrap; }
+.td-ha       { min-width: 80px; white-space: nowrap; }
+.td-for      { min-width: 80px; }
+.td-tags     { min-width: 80px; }
+.td-access   { font-size: 12px; color: var(--muted); min-width: 140px; }
+.td-phone    { font-size: 12px; white-space: nowrap; }
+.td-phone a  { color: var(--teal); text-decoration: none; }
+.td-phone a:hover { text-decoration: underline; }
+.flag { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 11px; margin: 1px; }
+.flag-oat   { background: #D1FAE5; }
+.flag-fund  { background: var(--teal-pale); }
+.flag-faith { background: #FEF3DC; }
+.flag-virt  { background: #DBEAFE; }
+.flag-note  { background: #FEE2E2; }
 
-/* ── Controls bar ── */
-#controls{
-  background:var(--surface);border-bottom:1px solid var(--border);
-  padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;
-  position:sticky;top:44px;z-index:200;
-}
-#search-wrap{position:relative;flex:1;min-width:160px;max-width:300px;}
-#search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;width:14px;height:14px;}
-#search{
-  width:100%;height:32px;border:1px solid var(--border);border-radius:20px;
-  padding:0 10px 0 30px;font-size:13px;background:var(--surface2);color:var(--text);outline:none;
-  transition:border-color 0.15s,background 0.15s;
-}
-#search:focus{border-color:var(--teal);background:var(--surface);}
-.filter-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
-.chip{
-  height:28px;padding:0 11px;border:1px solid var(--border);border-radius:20px;
-  background:var(--surface);font-size:11.5px;font-weight:500;color:var(--text2);
-  cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;
-  transition:all 0.15s;
-}
-.chip:hover{border-color:var(--border2);color:var(--text);}
-.chip.active{background:var(--teal-deep);border-color:var(--teal-deep);color:#fff;}
-#results-count{font-size:11px;color:var(--text3);margin-left:auto;white-space:nowrap;font-variant-numeric:tabular-nums;}
-
-/* ── Main content ── */
-#main{padding:16px;max-width:1200px;margin:0 auto;}
-
-/* ── Section headings ── */
-.section-banner{
-  display:flex;align-items:center;gap:10px;margin:20px 0 10px;
-  padding:10px 14px;border-radius:var(--radius);
-  border-left:4px solid;
-}
-.section-banner.bed{background:#EEF4FF;border-color:var(--blue);}
-.section-banner.outpatient{background:#EEFAF5;border-color:var(--green);}
-.section-banner h2{font-size:14px;font-weight:600;}
-.section-banner p{font-size:11.5px;color:var(--text2);margin-top:1px;}
-.section-banner .sb-icon{font-size:20px;flex-shrink:0;}
-
-/* ── Cards grid ── */
-.cards-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-  gap:10px;
-}
-
-/* ── Program card ── */
-.prog-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
-  box-shadow:var(--shadow);overflow:hidden;transition:box-shadow 0.15s,border-color 0.15s;
-  display:flex;flex-direction:column;
-}
-.prog-card:hover{box-shadow:var(--shadow-md);border-color:var(--border2);}
-.prog-card.hidden{display:none;}
-
-.card-top{padding:12px 14px 10px;flex:1;}
-.card-name{font-size:13.5px;font-weight:600;line-height:1.3;margin-bottom:4px;}
-.card-inst{font-size:11px;color:var(--text2);margin-bottom:8px;}
-.card-desc{font-size:12px;color:var(--text2);line-height:1.5;}
-
-.card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
-.ctag{
-  display:inline-flex;align-items:center;gap:3px;
-  padding:2px 7px;border-radius:20px;font-size:10.5px;font-weight:500;
-  background:var(--surface2);color:var(--text2);border:1px solid var(--border);
-}
-.ctag.oat{background:#EEFAF5;color:#1A7A4A;border-color:#B6E8D4;}
-.ctag.women{background:#FDF0F5;color:#A0306B;border-color:#F0BDD6;}
-.ctag.men{background:#EEF4FF;color:#1655A2;border-color:#BDD0F0;}
-.ctag.youth{background:#FFF8EE;color:#D95F00;border-color:#F5D8A8;}
-.ctag.indigenous{background:#F5F0FF;color:#6B3FA0;border-color:#D4BBFF;}
-.ctag.funded{background:#F0FFF4;color:#1A7A4A;border-color:#B2DFCC;}
-.ctag.faith{background:#FFF9F0;color:#9A6F00;border-color:#EDD9A3;}
-.ctag.virtual{background:#F0F8FF;color:#1655A2;border-color:#BAD4F5;}
-
-.card-footer{
-  padding:8px 14px;background:var(--surface2);
-  border-top:1px solid var(--border);
-  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
-}
-.card-footer-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);}
-.card-footer-item svg{flex-shrink:0;color:var(--text3);}
-.card-footer-item a{color:var(--blue);font-size:11px;}
-
-/* ── HA badge ── */
-.ha-badge{
-  display:inline-flex;align-items:center;gap:4px;padding:2px 8px;
-  border-radius:20px;font-size:10px;font-weight:600;letter-spacing:0.3px;
-  text-transform:uppercase;
-}
-.ha-vch{background:#E6F5F3;color:#0D3D35;}
-.ha-fh{background:#EEF4FF;color:#1A2B6B;}
-.ha-phsa{background:#F5F0FF;color:#4B1EA0;}
-.ha-private{background:#F5F4F1;color:#4A5568;}
-
-/* ── Type badge ── */
-.type-badge{
-  display:inline-flex;align-items:center;gap:4px;padding:2px 8px;
-  border-radius:20px;font-size:10px;font-weight:600;margin-left:6px;
-}
-.type-bed{background:#DDEEFF;color:#1655A2;}
-.type-out{background:#DDFFEE;color:#1A7A4A;}
-
-/* ── Access box ── */
-#access-box{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
-  padding:16px 18px;margin:16px 0 4px;box-shadow:var(--shadow);
-}
-#access-box h3{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:7px;}
-.access-table{width:100%;border-collapse:collapse;}
-.access-table th,.access-table td{padding:7px 10px;font-size:12px;text-align:left;border-bottom:1px solid var(--border);}
-.access-table th{font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:var(--text3);background:var(--surface2);}
-.access-table tr:last-child td{border-bottom:none;}
-.access-table a{color:var(--blue);}
-
-/* ── Empty state ── */
-#empty{display:none;text-align:center;padding:60px 20px;color:var(--text3);}
-#empty.show{display:block;}
-
-/* ── Footer ── */
-footer{
-  margin-top:40px;padding:16px;text-align:center;
-  font-size:11px;color:var(--text3);border-top:1px solid var(--border);
-}
-
-@media(max-width:600px){
-  .cards-grid{grid-template-columns:1fr;}
-  #controls{flex-direction:column;align-items:stretch;}
-  #search-wrap{max-width:100%;}
-  .filter-chips{justify-content:flex-start;}
-  #results-count{margin-left:0;}
-  .access-table th:nth-child(3),.access-table td:nth-child(3){display:none;}
-}
+#map-container { border-right: 1px solid var(--border); }
+#treatment-map { width: 100%; height: 100%; }
 </style>
 </head>
 <body>
 
-<!-- ── Site Nav ── -->
-<nav id="site-nav">
-  <a href="index.html" class="sn-logo">
-    <span class="sn-pulse"></span>
-    DTES Community Tools
-  </a>
-  <div class="sn-links">
-    <a href="index.html">Home</a>
-    <a href="dtes-services.html">Services Map</a>
-    <a href="overdose-watch.html">OD Watch</a>
-    <a href="treatment-programs.html" class="sn-active">Treatment</a>
-  </div>
-</nav>
+<script src="nav.js"></script>
 
-<!-- ── Page Header + Controls ── -->
-<div id="page-header">
-  <h1>Lower Mainland Treatment Programs</h1>
-  <p>Bed-based (residential) and non-bed-based (outpatient) substance use treatment — VCH &amp; Fraser Health regions</p>
-  <div id="controls">
-    <div id="search-wrap">
-      <svg id="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input type="text" id="search" placeholder="Search programs…" autocomplete="off">
+<div class="page-header">
+  <div class="page-header-inner">
+    <div>
+      <div class="page-eyebrow">💊 Lower Mainland · VCH &amp; Fraser Health</div>
+      <h1>Lower Mainland <span>Treatment Programs</span></h1>
+      <p>Bed-based (residential) and outpatient substance use treatment. For access, call <strong style="color:var(--sky)">1-866-658-1221</strong> (VCH) or <strong style="color:var(--sky)">604-585-5610</strong> (Fraser Health).</p>
     </div>
-    <div class="filter-chips">
-      <button class="chip active" data-filter="all">All</button>
-      <button class="chip" data-filter="bed">🛏 Bed-Based</button>
-      <button class="chip" data-filter="outpatient">🚶 Outpatient</button>
-      <button class="chip" data-filter="vch">VCH</button>
-      <button class="chip" data-filter="fh">Fraser Health</button>
-      <button class="chip" data-filter="women">Women</button>
-      <button class="chip" data-filter="oat">OAT-Friendly</button>
-      <button class="chip" data-filter="funded">Publicly Funded</button>
+    <div class="header-meta">
+      <div class="meta-pill"><strong id="total-count">—</strong> programs listed</div>
+      <div class="meta-pill"><strong id="bed-count">—</strong> bed-based</div>
+      <div class="meta-pill"><strong id="out-count">—</strong> outpatient</div>
     </div>
-    <span id="results-count"></span>
   </div>
 </div>
 
-<!-- ── Main ── -->
-<div id="main">
-
-  <div id="access-box">
-    <h3>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-      How to Access — Entry Points
-    </h3>
-    <table class="access-table">
-      <thead><tr><th>Region</th><th>Line / Route</th><th>Hours</th></tr></thead>
-      <tbody>
-        <tr><td><strong>VCH</strong> (Vancouver, Richmond, North Shore)</td><td>Access Central: <a href="tel:18666581221">1-866-658-1221</a></td><td>Daily 9am–7:45pm</td></tr>
-        <tr><td><strong>Fraser Health</strong> (Burnaby, Surrey, Tri-Cities, etc.)</td><td>FH Access Line or RAAC clinics: <a href="tel:16046585610">604-585-5610</a></td><td>Daily 8:30am–8:30pm</td></tr>
-        <tr><td><strong>Province-wide</strong></td><td>Alcohol &amp; Drug Info Line: <a href="tel:18006631441">1-800-663-1441</a> &nbsp;·&nbsp; <a href="https://helpstartshere.gov.bc.ca" target="_blank">helpstartshere.gov.bc.ca</a></td><td>24/7</td></tr>
-        <tr><td><strong>211 BC</strong></td><td>Call or text <a href="tel:211">2-1-1</a></td><td>Daily</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="section-banner bed" data-section="bed">
-    <span class="sb-icon">🛏</span>
-    <div>
-      <h2>Bed-Based Programs <span class="type-badge type-bed">Residential</span></h2>
-      <p>Live-in treatment — short-term stabilization, intensive residential, and long-term recovery. Clients reside at the facility during treatment.</p>
+<div class="controls-bar">
+  <div class="controls-inner">
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="search" class="search-input" placeholder="Search by name, location, description…">
     </div>
-  </div>
-  <div class="cards-grid" id="bed-grid"></div>
-
-  <div class="section-banner outpatient" data-section="outpatient">
-    <span class="sb-icon">🚶</span>
-    <div>
-      <h2>Non-Bed-Based Programs <span class="type-badge type-out">Outpatient</span></h2>
-      <p>Day, evening, and weekend programs — clients live at home or in community housing and attend structured sessions.</p>
+    <div class="filter-group">
+      <button class="filter-btn" data-filter="bed">Bed-Based</button>
+      <button class="filter-btn" data-filter="outpatient">Outpatient</button>
+      <button class="filter-btn" data-filter="vch">VCH</button>
+      <button class="filter-btn" data-filter="fh">Fraser Health</button>
+      <button class="filter-btn" data-filter="phsa">PHSA</button>
+      <button class="filter-btn" data-filter="women">Women</button>
+      <button class="filter-btn" data-filter="men">Men</button>
+      <button class="filter-btn" data-filter="youth">Youth</button>
+      <button class="filter-btn" data-filter="indigenous">Indigenous</button>
+      <button class="filter-btn" data-filter="oat">OAT-Friendly</button>
+      <button class="filter-btn" data-filter="funded">Publicly Funded</button>
     </div>
+    <select class="sort-select" id="sort-select">
+      <option value="name">Sort: Name A–Z</option>
+      <option value="location">Sort: Location</option>
+      <option value="type">Sort: Type</option>
+      <option value="ha">Sort: Region</option>
+    </select>
   </div>
-  <div class="cards-grid" id="outpatient-grid"></div>
-
-  <div id="empty">No programs match your search. Try different keywords or clear the filters.</div>
 </div>
 
-<footer>
-  Lower Mainland Treatment Programs &nbsp;·&nbsp; Data from VCH, Fraser Health, BCMHSUS, BCCSU &amp; program websites &nbsp;·&nbsp;
-  <a href="dtes-services.html">DTES Services Map</a> &nbsp;·&nbsp; Always verify program availability directly with the provider.
-</footer>
+<div class="main-wrap">
+  <div class="split-layout">
+    <div id="map-container">
+      <div id="treatment-map"></div>
+    </div>
+    <div class="table-side">
+      <div class="results-bar"><strong id="shown-count">—</strong> of <strong id="total-shown">—</strong> programs · Click row to highlight on map</div>
+      <div class="table-scroll">
+        <table id="treatment-table">
+          <thead>
+            <tr>
+              <th data-col="name">Name</th>
+              <th data-col="location">Location</th>
+              <th data-col="type">Type</th>
+              <th data-col="ha">Region</th>
+              <th data-col="for">For</th>
+              <th data-col="tags">Tags</th>
+              <th data-col="access">Access</th>
+              <th data-col="phone">Phone</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="source-note">
+  <strong>Access:</strong>
+  VCH Access Central <a href="tel:18666581221">1-866-658-1221</a> (daily 9am–7:45pm) ·
+  Fraser Health <a href="tel:16046585610">604-585-5610</a> (daily 8:30am–8:30pm) ·
+  Province-wide <a href="tel:18006631441">1-800-663-1441</a> (24/7) ·
+  <a href="https://helpstartshere.gov.bc.ca" target="_blank">helpstartshere.gov.bc.ca</a> ·
+  Always verify availability directly with the provider.
+</div>
 
 <script src="data/treatment-programs.js"></script>
 <script>
-// ── Render ──────────────────────────────────
-const HA_LABELS = {vch:"VCH",fh:"Fraser Health",phsa:"PHSA",private:"Private"};
-const HA_CLASS  = {vch:"ha-vch",fh:"ha-fh",phsa:"ha-phsa",private:"ha-private"};
-const TAG_META  = {
-  oat:      ["oat","OAT-Friendly"],
-  women:    ["women","Women"],
-  men:      ["men","Men"],
-  youth:    ["youth","Youth"],
-  indigenous:["indigenous","Indigenous"],
-  funded:   ["funded","Publicly Funded"],
-  faith:    ["faith","Faith-Based"],
-  virtual:  ["virtual","Virtual Option"],
-};
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let sortCol = "name", sortDir = 1;
+let activeFilters = new Set();
 
-function makeCard(p) {
-  const tagHtml = p.tags
-    .filter(t => TAG_META[t])
-    .map(t => `<span class="ctag ${t}">${TAG_META[t][1]}</span>`)
-    .join("");
-
-  const webHost = p.web ? p.web.replace(/^https?:\/\//,"").replace(/\/.*/,"") : "";
-  const webLink = p.web ? `<a href="https://${p.web.replace(/^https?:\/\//,"")}" target="_blank" rel="noopener">${webHost}</a>` : "";
-
-  return `
-<div class="prog-card"
-     data-type="${p.type}" data-ha="${p.ha}"
-     data-tags="${p.tags.join(" ")}"
-     data-search="${[p.name,p.inst,p.location,p.desc,p.tags.join(" ")].join(" ").toLowerCase()}">
-  <div class="card-top">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:5px;">
-      <div class="card-name">${p.name}</div>
-      <span class="ha-badge ${HA_CLASS[p.ha]||"ha-private"}" style="flex-shrink:0;margin-top:2px;">${HA_LABELS[p.ha]||p.ha}</span>
-    </div>
-    <div class="card-inst">${p.inst} &mdash; <em>${p.location}</em></div>
-    <div class="card-desc">${p.desc}</div>
-    ${tagHtml ? `<div class="card-tags">${tagHtml}</div>` : ""}
-    ${p.note ? `<div style="margin-top:8px;padding:6px 9px;background:#FFF8EE;border:1px solid #F5D8A8;border-radius:6px;font-size:11px;color:#9A6F00;">⚠️ ${p.note}</div>` : ""}
-  </div>
-  <div class="card-footer">
-    ${p.phone ? `<div class="card-footer-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>${p.phone}</div>` : ""}
-    ${webLink ? `<div class="card-footer-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>${webLink}</div>` : ""}
-    <div class="card-footer-item" style="width:100%;margin-top:2px;">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-      <strong style="margin-right:3px;color:var(--text);">Access:</strong>${p.access}
-    </div>
-  </div>
-</div>`;
+// ── MAP ───────────────────────────────────────────────────────────────────────
+function approxCoords(location) {
+  const l = location.toLowerCase();
+  const jitter = () => (Math.random() * 0.006) - 0.003;
+  if (l.includes("dtes") || (l.includes("vancouver") && l.includes("dtes")))
+    return [49.2808 + jitter()*0.5, -123.098 + jitter()*0.5];
+  if (l.includes("vancouver"))  return [49.2827 + jitter(), -123.120 + jitter()];
+  if (l.includes("burnaby"))    return [49.2488 + jitter(), -122.980 + jitter()];
+  if (l.includes("richmond"))   return [49.1666 + jitter(), -123.133 + jitter()];
+  if (l.includes("north van"))  return [49.3254 + jitter(), -123.072 + jitter()];
+  if (l.includes("coquitlam"))  return [49.2838 + jitter(), -122.793 + jitter()];
+  if (l.includes("new westminster")) return [49.2057 + jitter(), -122.911 + jitter()];
+  if (l.includes("port coquitlam")) return [49.2627 + jitter(), -122.781 + jitter()];
+  if (l.includes("maple ridge")) return [49.2193 + jitter(), -122.598 + jitter()];
+  if (l.includes("langley"))    return [49.1044 + jitter(), -122.660 + jitter()];
+  if (l.includes("surrey"))     return [49.1913 + jitter(), -122.849 + jitter()];
+  if (l.includes("abbotsford")) return [49.0504 + jitter(), -122.304 + jitter()];
+  if (l.includes("chilliwack")) return [49.1579 + jitter(), -121.951 + jitter()];
+  // Various / Fraser Health region — spread across lower mainland center
+  return [49.220 + jitter()*2, -122.900 + jitter()*2];
 }
 
-function renderAll() {
-  document.getElementById("bed-grid").innerHTML =
-    PROGRAMS.filter(p=>p.type==="bed").map(makeCard).join("");
-  document.getElementById("outpatient-grid").innerHTML =
-    PROGRAMS.filter(p=>p.type==="outpatient").map(makeCard).join("");
-  updateCount();
+const typeColors = { bed:"#1A7A6E", outpatient:"#1D4ED8" };
+const haColors   = { vch:"#1A7A6E", fh:"#1D4ED8", phsa:"#9333EA", private:"#E8930A" };
+
+const map = L.map('treatment-map', {zoomControl:true}).setView([49.230, -122.950], 10);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com">CARTO</a>',
+  maxZoom:19
+}).addTo(map);
+setTimeout(() => map.invalidateSize(), 200);
+
+const treatmentMarkers = {};
+PROGRAMS.forEach(p => {
+  const [lat, lng] = approxCoords(p.location);
+  p._lat = lat; p._lng = lng;
+  const color = haColors[p.ha] || "#666";
+  const icon = L.divIcon({
+    html:`<div style="background:${color};width:10px;height:10px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>`,
+    className:'', iconSize:[10,10], iconAnchor:[5,5], popupAnchor:[0,-8]
+  });
+  const m = L.marker([lat, lng], {icon}).addTo(map);
+  m.bindPopup(`
+    <div class="popup-name">${p.name}</div>
+    <div class="popup-addr">${p.location}</div>
+    <div style="margin-top:4px;font-size:11px;color:#666">${p.inst}</div>
+    ${p.phone ? `<div style="margin-top:4px;font-size:12px"><a href="tel:${p.phone.replace(/[^0-9]/g,'')}" style="color:#1A7A6E">${p.phone}</a></div>` : ''}
+  `);
+  treatmentMarkers[p.id] = m;
+});
+
+// ── FILTERS & SORT ────────────────────────────────────────────────────────────
+function matchFilters(p) {
+  if (activeFilters.size === 0) return true;
+  for (const f of activeFilters) {
+    let match = false;
+    if      (f === "bed")       match = p.type === "bed";
+    else if (f === "outpatient")match = p.type === "outpatient";
+    else if (f === "vch")       match = p.ha === "vch";
+    else if (f === "fh")        match = p.ha === "fh";
+    else if (f === "phsa")      match = p.ha === "phsa";
+    else if (f === "women")     match = p.tags.includes("women");
+    else if (f === "men")       match = p.tags.includes("men");
+    else if (f === "youth")     match = p.tags.includes("youth");
+    else if (f === "indigenous")match = p.tags.includes("indigenous");
+    else if (f === "oat")       match = p.tags.includes("oat");
+    else if (f === "funded")    match = p.tags.includes("funded");
+    if (!match) return false;
+  }
+  return true;
 }
 
-// ── Filter + Search ─────────────────────────
-let activeFilter = "all";
-let searchVal = "";
+function matchSearch(p, q) {
+  if (!q) return true;
+  const txt = [p.name, p.inst, p.location, p.desc, p.tags.join(" "), p.access].join(" ").toLowerCase();
+  return q.toLowerCase().split(" ").every(w => txt.includes(w));
+}
 
-function applyFilters() {
-  let visible = 0;
-  document.querySelectorAll(".prog-card").forEach(card => {
-    const ha = card.dataset.ha;
-    const type = card.dataset.type;
-    const tags = card.dataset.tags;
-    const matchFilter = (() => {
-      if (activeFilter === "all") return true;
-      if (activeFilter === "bed") return type === "bed";
-      if (activeFilter === "outpatient") return type === "outpatient";
-      if (activeFilter === "vch") return ha === "vch" || ha === "phsa";
-      if (activeFilter === "fh") return ha === "fh";
-      if (activeFilter === "women") return tags.includes("women");
-      if (activeFilter === "oat") return tags.includes("oat");
-      if (activeFilter === "funded") return tags.includes("funded");
-      return true;
-    })();
-    const matchSearch = !searchVal || card.dataset.search.includes(searchVal);
-    const show = matchFilter && matchSearch;
-    card.classList.toggle("hidden", !show);
-    if (show) visible++;
+function sortData(arr) {
+  return [...arr].sort((a, b) => {
+    let av, bv;
+    if      (sortCol === "name")     { av = a.name.toLowerCase();     bv = b.name.toLowerCase(); }
+    else if (sortCol === "location") { av = a.location.toLowerCase(); bv = b.location.toLowerCase(); }
+    else if (sortCol === "type")     { av = a.type;                   bv = b.type; }
+    else if (sortCol === "ha")       { av = a.ha;                     bv = b.ha; }
+    else                             { av = a.name.toLowerCase();     bv = b.name.toLowerCase(); }
+    return av < bv ? -sortDir : av > bv ? sortDir : 0;
+  });
+}
+
+// ── BADGE HELPERS ─────────────────────────────────────────────────────────────
+function typeBadge(p) {
+  if (p.type === "bed")       return `<span class="badge badge-shelter">Bed-Based</span>`;
+  if (p.type === "outpatient")return `<span class="badge badge-income">Outpatient</span>`;
+  return `<span class="badge">${p.type}</span>`;
+}
+
+function haBadge(p) {
+  const labels = { vch:"VCH", fh:"Fraser H.", phsa:"PHSA", private:"Private" };
+  const classes = { vch:"badge-shelter", fh:"badge-income", phsa:"badge-youth", private:"badge-market" };
+  return `<span class="badge ${classes[p.ha]||''}">${labels[p.ha]||p.ha}</span>`;
+}
+
+function forBadges(p) {
+  const popTags = ["women","men","youth","indigenous"];
+  const labels  = { women:"badge-women", men:"badge-income", youth:"badge-youth", indigenous:"badge-indig" };
+  const text    = { women:"Women", men:"Men", youth:"Youth", indigenous:"Indig." };
+  return p.tags
+    .filter(t => popTags.includes(t))
+    .map(t => `<span class="badge ${labels[t]||''}">${text[t]||t}</span>`)
+    .join(" ");
+}
+
+function tagIcons(p) {
+  let out = "";
+  if (p.tags.includes("oat"))     out += `<span title="OAT-Friendly" class="flag flag-oat">💊</span>`;
+  if (p.tags.includes("funded"))  out += `<span title="Publicly Funded" class="flag flag-fund">🟢</span>`;
+  if (p.tags.includes("virtual")) out += `<span title="Virtual Option" class="flag flag-virt">💻</span>`;
+  if (p.tags.includes("faith"))   out += `<span title="Faith-Based" class="flag flag-faith">✝</span>`;
+  if (p.note)                     out += `<span title="${p.note}" class="flag flag-note">⚠️</span>`;
+  return out;
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+let selectedProgram = null;
+function selectProgram(id) {
+  selectedProgram = id;
+  document.querySelectorAll("#table-body tr").forEach(r => r.classList.remove("row-selected"));
+  const row = document.getElementById("prow-" + id);
+  if (row) row.classList.add("row-selected");
+  const m = treatmentMarkers[id];
+  if (m) { map.setView(m.getLatLng(), 13, {animate:true}); m.openPopup(); }
+}
+
+function renderTable() {
+  const q = document.getElementById("search").value;
+  const filtered = sortData(PROGRAMS.filter(p => matchFilters(p) && matchSearch(p, q)));
+  const tbody = document.getElementById("table-body");
+
+  document.getElementById("total-count").textContent = PROGRAMS.length;
+  document.getElementById("bed-count").textContent   = PROGRAMS.filter(p => p.type === "bed").length;
+  document.getElementById("out-count").textContent   = PROGRAMS.filter(p => p.type === "outpatient").length;
+  document.getElementById("shown-count").textContent = filtered.length;
+  document.getElementById("total-shown").textContent = PROGRAMS.length;
+
+  PROGRAMS.forEach(p => {
+    const m = treatmentMarkers[p.id];
+    if (!m) return;
+    const show = filtered.some(f => f.id === p.id);
+    if (show) { if (!map.hasLayer(m)) m.addTo(map); }
+    else      { if (map.hasLayer(m)) map.removeLayer(m); }
   });
 
-  // hide empty sections
-  ["bed","outpatient"].forEach(type => {
-    const banner = document.querySelector(`.section-banner[data-section="${type}"]`);
-    const grid   = document.getElementById(`${type}-grid`);
-    const any    = grid && grid.querySelectorAll(".prog-card:not(.hidden)").length > 0;
-    if (banner) banner.style.display = any ? "" : "none";
-    if (grid)   grid.style.display   = any ? "" : "none";
-  });
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr class="no-results-row"><td colspan="8">💊 No programs match — try removing some filters.</td></tr>`;
+    return;
+  }
 
-  document.getElementById("empty").classList.toggle("show", visible === 0);
-  updateCount(visible);
+  tbody.innerHTML = filtered.map(p => `
+    <tr id="prow-${p.id}" onclick="selectProgram('${p.id}')">
+      <td class="td-name">${p.name}<small>${p.inst}</small></td>
+      <td class="td-location">${p.location}</td>
+      <td class="td-type">${typeBadge(p)}</td>
+      <td class="td-ha">${haBadge(p)}</td>
+      <td class="td-for"><div class="tag-row">${forBadges(p)}</div></td>
+      <td class="td-tags">${tagIcons(p)}</td>
+      <td class="td-access">${p.access}</td>
+      <td class="td-phone">${p.phone ? `<a href="tel:${p.phone.replace(/[^0-9]/g,'')}">${p.phone}</a>` : "—"}</td>
+    </tr>
+  `).join("");
 }
 
-function updateCount(n) {
-  const total = PROGRAMS.length;
-  const showing = (n !== undefined) ? n : total;
-  document.getElementById("results-count").textContent =
-    showing === total ? `${total} programs` : `${showing} of ${total}`;
-}
+// ── EVENTS ────────────────────────────────────────────────────────────────────
+document.getElementById("search").addEventListener("input", renderTable);
 
-document.querySelectorAll(".chip").forEach(btn => {
+document.querySelectorAll(".filter-btn").forEach(btn => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".chip").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    activeFilter = btn.dataset.filter;
-    applyFilters();
+    const f = btn.dataset.filter;
+    if (activeFilters.has(f)) { activeFilters.delete(f); btn.classList.remove("active"); }
+    else                       { activeFilters.add(f);    btn.classList.add("active"); }
+    renderTable();
   });
 });
 
-document.getElementById("search").addEventListener("input", e => {
-  searchVal = e.target.value.toLowerCase().trim();
-  applyFilters();
+document.getElementById("sort-select").addEventListener("change", e => {
+  sortCol = e.target.value;
+  renderTable();
 });
 
-document.addEventListener("DOMContentLoaded", renderAll);
+document.querySelectorAll("thead th[data-col]").forEach(th => {
+  th.addEventListener("click", () => {
+    const col = th.dataset.col;
+    if (sortCol === col) sortDir *= -1;
+    else { sortCol = col; sortDir = 1; }
+    document.querySelectorAll("thead th").forEach(t => t.classList.remove("sort-asc","sort-desc"));
+    th.classList.add(sortDir === 1 ? "sort-asc" : "sort-desc");
+    renderTable();
+  });
+});
+
+renderTable();
 </script>
 </body>
 </html>
