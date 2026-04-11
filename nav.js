@@ -18,7 +18,7 @@
     { href: "overdose-watch.html",     label: "OD Watch" },
     { href: "treatment-programs.html", label: "Treatment" },
     { href: "vancouver-shelters.html", label: "Shelters" },
-    { href: "social-housing.html",     label: "Social Housing" },
+    { href: "social-housing.html",     label: "Housing" },
   ];
 
   // ── CSS ────────────────────────────────────────────────────

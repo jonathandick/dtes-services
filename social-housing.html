@@ -6,8 +6,6 @@
 <title>Social Housing Directory – DTES Community Tools</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 :root {
   --teal:       #1A7A6E;
@@ -32,19 +30,6 @@
 html { scroll-behavior: smooth; }
 body { font-family: var(--font-body); color: var(--ink); background: var(--white); min-height: 100vh; display: flex; flex-direction: column; }
 
-/* NAV */
-.site-nav {
-  background: var(--teal-deep); padding: 0 32px;
-  display: flex; align-items: center; justify-content: space-between;
-  height: 54px; position: sticky; top: 0; z-index: 100;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.logo { font-family: var(--font-head); font-size: 17px; color: var(--white); display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); animation: pulse 2.2s ease-in-out infinite; flex-shrink: 0; }
-@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(232,147,10,0.6)} 50%{box-shadow:0 0 0 5px rgba(232,147,10,0)} }
-.nav-links { display: flex; gap: 4px; }
-.nav-links a { font-size: 13px; color: var(--sky); padding: 5px 12px; border-radius: 6px; transition: all 0.15s; text-decoration: none; }
-.nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.1); color: var(--white); }
 
 /* PAGE HEADER */
 .page-header {
@@ -185,23 +170,6 @@ td { padding: 11px 14px; vertical-align: top; line-height: 1.45; }
 .no-results .icon { font-size: 48px; margin-bottom: 16px; }
 .no-results h3 { font-size: 18px; margin-bottom: 8px; color: var(--ink); }
 
-/* MAP */
-.map-section { background: var(--teal-deep); padding: 0; }
-.map-header { padding: 20px 40px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.map-header h2 { font-family: var(--font-head); font-size: 20px; color: var(--white); }
-.map-header p { font-size: 13px; color: rgba(255,255,255,0.5); }
-.map-toggle { font-size: 12px; font-family: var(--font-body); padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(126,200,192,0.4); background: transparent; color: var(--sky); cursor: pointer; transition: all 0.15s; }
-.map-toggle:hover { background: rgba(255,255,255,0.1); color: var(--white); }
-#map-container { height: 460px; width: 100%; display: block; }
-#map-container.open { display: block; }
-.leaflet-popup-content-wrapper { border-radius: 8px; font-family: var(--font-body); font-size: 13px; }
-.leaflet-popup-content h4 { margin: 0 0 4px; font-size: 14px; font-weight: 600; color: var(--ink); }
-.leaflet-popup-content p { margin: 2px 0; color: var(--muted); font-size: 12px; }
-.leaflet-popup-content .pop-rent { font-weight: 600; color: var(--teal); font-size: 12px; }
-.map-legend { padding: 12px 40px; background: rgba(255,255,255,0.04); border-top: 1px solid rgba(255,255,255,0.06); display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
-.map-legend span { font-size: 12px; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: 6px; }
-.dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-
 /* GLOSSARY */
 .glossary { background: var(--surface); border-top: 1px solid var(--border); padding: 32px 40px; margin-top: 0; }
 .glossary-inner { max-width: 1200px; margin: 0 auto; }
@@ -225,8 +193,6 @@ footer.site-footer {
 footer.site-footer a { color: var(--sky); text-decoration: none; }
 
 @media (max-width: 768px) {
-  .site-nav { padding: 0 16px; }
-  .nav-links { display: none; }
   .controls-bar, .legend-bar, .main-content, .glossary, .source-note { padding-left: 16px; padding-right: 16px; }
   .page-header { padding: 36px 16px 32px; }
   .header-meta { gap: 12px; }
@@ -235,20 +201,7 @@ footer.site-footer a { color: var(--sky); text-decoration: none; }
 </head>
 <body>
 
-<nav class="site-nav">
-  <a href="index.html" class="logo">
-    <span class="pulse"></span>
-    DTES Community Tools
-  </a>
-  <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="dtes-services.html">Services Map</a>
-    <a href="overdose-watch.html">OD Watch</a>
-    <a href="social-housing.html" class="active">Housing Directory</a>
-    <a href="vancouver-shelters.html">Shelters</a>
-    <a href="vancouver-shelters.html">Shelters</a>
-  </div>
-</nav>
+<script src="nav.js"></script>
 
 <div class="page-header">
   <div class="page-header-inner">
@@ -307,27 +260,6 @@ footer.site-footer a { color: var(--sky); text-decoration: none; }
     <span title="Elevator">🛗 Elev</span>&nbsp;
     <span title="Meals provided">🍽 Meals</span>&nbsp;
     <span title="Accessible units">♿ Access</span>
-  </div>
-</div>
-
-<div class="map-section">
-  <div class="map-header">
-    <div>
-      <h2>📍 Map View</h2>
-      <p>Locations of all listings with known coordinates. Click a pin for details.</p>
-    </div>
-    <button class="map-toggle" id="map-toggle" onclick="toggleMap()">Hide Map ▲</button>
-  </div>
-  <div id="map-container">
-    <div id="map" style="height:100%;width:100%;"></div>
-  </div>
-  <div class="map-legend" id="map-legend" style="display:flex">
-    <span><span class="dot" style="background:#1A7A6E"></span>Shelter rate (~$500)</span>
-    <span><span class="dot" style="background:#3B7DD8"></span>Income-based</span>
-    <span><span class="dot" style="background:#E8930A"></span>Below-market / Private</span>
-    <span><span class="dot" style="background:#9333EA"></span>In development</span>
-    <span><span class="dot" style="background:#C62828"></span>Women-specific</span>
-    <span style="margin-left:auto;font-size:11px">Click any marker for details · Zoom/pan freely</span>
   </div>
 </div>
 
@@ -737,228 +669,6 @@ document.querySelectorAll("thead th[data-col]").forEach(th => {
 });
 
 renderTable();
-</script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-// ── MAP ───────────────────────────────────────────────────────────────────────
-// Coordinates for known housing locations
-const COORDS = {
-  "162 Main St": [49.2803, -123.1000],
-  "220 Terminal St": [49.2752, -123.0990],
-  "Alexander Residence": [49.2839, -123.1057],
-  "Alexander Street Community": [49.2848, -123.0978],
-  "Alewem (East Van Modular)": [49.2783, -123.0717],
-  "American Hotel": [49.2758, -123.0997],
-  "Aneki Housing for Women": [49.2843, -123.0920],
-  "Anjok Building": [49.2808, -123.1003],
-  "Aoki-Ross House": [49.2840, -123.1014],
-  "Arco Hotel": [49.2818, -123.1090],
-  "Beacon Hotel": [49.2806, -123.1060],
-  "Belkin House": [49.2795, -123.1149],
-  "Biltmore Hotel": [49.2608, -123.0942],
-  "Bob and Michael's Place": [49.2806, -123.1085],
-  "Brennan's Place": [49.2822, -123.0940],
-  "Bridge Housing for Women": [49.2833, -123.1054],
-  "Bridge Transition Program for Women": [49.2833, -123.1054],
-  "Bridget Moran Place": [49.2843, -123.0940],
-  "Budzey": [49.2841, -123.0973],
-  "Burnham Place": [49.2619, -123.0973],
-  "Carl Rooms": [49.2810, -123.0958],
-  "Central Residence": [49.2832, -123.1054],
-  "Chartrand Place": [49.2860, -123.0855],
-  "Colonial Hotel": [49.2853, -123.1086],
-  "Cordova's Residence (Cordova Rooms)": [49.2832, -123.1063],
-  "Cosmopolitan Hotel": [49.2806, -123.1072],
-  "Cow'aa (former Ramada Inn)": [49.2813, -123.1158],
-  "Crabtree Corner": [49.2809, -123.0930],
-  "Dodson Hotel": [49.2806, -123.1081],
-  "Dominion Hotel": [49.2854, -123.1077],
-  "Dovetail Annex": [49.2742, -123.1192],
-  "Empress Rooms": [49.2840, -123.0988],
-  "First Place": [49.2764, -123.0997],
-  "Flint Hotel": [49.2856, -123.0651],
-  "Gastown Hotel": [49.2853, -123.1086],
-  "Granville Residence": [49.2728, -123.1258],
-  "Granville Villa": [49.2785, -123.1266],
-  "Gresham Hotel": [49.2790, -123.1220],
-  "Hampton Hotel": [49.2843, -123.1062],
-  "Hazelton Residence": [49.2844, -123.0988],
-  "Hazelwood Hotel": [49.2808, -123.0967],
-  "Hotel Canada": [49.2831, -123.1182],
-  "Howe Street": [49.2744, -123.1265],
-  "Hugh Bird Residence": [49.2833, -123.1130],
-  "Hummingbird Place": [49.2735, -123.1202],
-  "Hutchison Block": [49.2814, -123.1158],
-  "Imouto Housing (Young Women)": [49.2827, -123.0941],
-  "Irving Hotel": [49.2808, -123.0987],
-  "Jeffrey Ross Residence": [49.2840, -123.0930],
-  "Jim Green Residence": [49.2840, -123.0969],
-  "Jubilee Rooms": [49.2803, -123.1001],
-  "Kettle on Burrard": [49.2799, -123.1290],
-  "Kingsway Supportive Housing (ex Day's Inn)": [49.2479, -123.0595],
-  "Kwayatsut": [49.2574, -123.0893],
-  "Lark, The": [49.2808, -123.0987],
-  "London Hotel": [49.2778, -123.0997],
-  "Luugat (ex Howard Johnson's)": [49.2757, -123.1267],
-  "Lux Apartments": [49.2806, -123.1046],
-  "Lux Transitional Housing": [49.2806, -123.1046],
-  "Maple Hotel": [49.2808, -123.0980],
-  "Marguerite Ford": [49.2735, -123.1202],
-  "Margaret Mitchell Place": [49.2742, -123.1192],
-  "Molson Hotel": [49.2811, -123.0987],
-  "Murray Hotel": [49.2803, -123.1225],
-  "New Beginnings": [49.2339, -123.1215],
-  "New Continental": [49.2791, -123.1232],
-  "Nora Hendrix Place": [49.2763, -123.0975],
-  "Olivia Skye": [49.2806, -123.1081],
-  "Oneesan Housing (Older Women)": [49.2840, -123.0932],
-  "Oppenheimer Lodge": [49.2822, -123.0940],
-  "Orwell Hotel": [49.2807, -123.0920],
-  "Pacific Coast Apartments": [49.2813, -123.1158],
-  "Patricia Hotel": [49.2807, -123.0950],
-  "Pennsylvania Hotel": [49.2802, -123.1043],
-  "Portland Hotel": [49.2807, -123.1085],
-  "Rainier Hotel": [49.2803, -123.1041],
-  "Regal Place Hotel": [49.2805, -123.1100],
-  "Reiderman Residence": [49.2178, -123.1205],
-  "Rice Block (Support Recovery, Women)": [49.2807, -123.0907],
-  "Roddan Lodge": [49.2840, -123.0988],
-  "Sakura So": [49.2843, -123.0988],
-  "Sanctuary": [49.2822, -123.0928],
-  "Sarah Ross House": [49.2577, -123.0541],
-  "Savoy Hotel": [49.2808, -123.1003],
-  "Secord Housing for Women": [49.2843, -123.0917],
-  "Sereena's House for Women": [49.2843, -123.0988],
-  "Sisela Housing (Older Women)": [49.2827, -123.0983],
-  "Skeena House": [49.2806, -123.0370],
-  "Sorella Housing (Women & Children)": [49.2811, -123.1100],
-  "Stanley Hotel": [49.2838, -123.1084],
-  "Station Street Community": [49.2761, -123.0952],
-  "Tamura House": [49.2843, -123.0988],
-  "Tawow (ex Columbia Hotel)": [49.2833, -123.1050],
-  "Veronica Block": [49.2806, -123.1085],
-  "Vivian Transitional Housing for Women": [49.2822, -123.0940],
-  "Walton Hotel": [49.2808, -123.1003],
-  "Woodward's Community Housing": [49.2808, -123.1095],
-  "Abbott Mansion": [49.2811, -123.1130],
-  "Alexander House": [49.2840, -123.1000],
-  "Belcourt Residence": [49.2807, -123.0863],
-  "Bill Hennessey Place": [49.2807, -123.0941],
-  "Bonaventure": [49.2804, -123.1345],
-  "Brookland Court": [49.2778, -123.1198],
-  "Cause We Care House": [49.2810, -123.0877],
-  "Chalmer's Lodge": [49.2603, -123.1360],
-  "Chinatown Lions Manor": [49.2783, -123.0878],
-  "Chinatown Lions Manor III": [49.2803, -123.1000],
-  "China Villa": [49.2820, -123.1003],
-  "Chinese Freemasons Manor": [49.2763, -123.0955],
-  "Chinese United Church Lodge": [49.2832, -123.0973],
-  "Columbia House": [49.2843, -123.1057],
-  "Cooper Place": [49.2833, -123.1040],
-  "Cordova House": [49.2832, -123.0970],
-  "Deluxe Hotel": [49.2296, -123.0280],
-  "Doug Story Apartments": [49.2802, -123.1210],
-  "Europe Hotel": [49.2843, -123.1062],
-  "Ford Building": [49.2806, -123.0997],
-  "Golden Age Court": [49.2832, -123.1000],
-  "Grace Mansion": [49.2808, -123.0928],
-  "Hampton Hotel": [49.2843, -123.1062],
-  "Hastings House": [49.2808, -123.0928],
-  "Helmcken House": [49.2790, -123.1265],
-  "Hooper Apartments": [49.2811, -123.1365],
-  "Howe Street": [49.2744, -123.1265],
-  "Jennie Pentland Place": [49.2808, -123.0927],
-  "Kingsway Continental": [49.2318, -123.0308],
-  "Lu'ma – 950 Main": [49.2763, -123.0997],
-  "Mavis McMullen Place": [49.2820, -123.0960],
-  "Maurice McElrea Place": [49.2807, -123.0877],
-  "May Wah Hotel": [49.2820, -123.1003],
-  "Mole Hill Housing": [49.2818, -123.1375],
-  "New Jubilee House": [49.2803, -123.1225],
-  "Nicholson Tower": [49.2820, -123.1363],
-  "Antoinette Lodge": [49.2822, -123.0940],
-  "Seymour Place": [49.2747, -123.1252],
-  "Smith-Yuen Apartments": [49.2807, -123.0918],
-  "Somerville Place": [49.2843, -123.0988],
-  "Taylor Manor": [49.2490, -123.0030],
-  "The View": [49.2843, -123.1062],
-  "Vet's Memorial Manor": [49.2840, -123.1000],
-  "Victory House": [49.2832, -123.0970],
-  "Wellspring": [49.2781, -123.1197],
-  "West End Manor": [49.2808, -123.1368],
-  "Windchimes": [49.2807, -123.0877],
-  "Kye7e Housing for Women": [49.2833, -123.1054],
-  "Central City Lodge": [49.2813, -123.1158],
-  "Santiago Lodge": [49.2843, -123.1062],
-  "Cecilia House": [49.2843, -123.1062],
-  "Metson Rooms": [49.2790, -123.1265],
-  "Yale Hotel": [49.2720, -123.1265],
-  "188 Keefer (SUCCESS)": [49.2795, -123.0942],
-  "Shon Yee Place": [49.2808, -123.0928],
-  "Patrick Anthony Residence": [49.2808, -123.0918],
-  "Sequel 138": [49.2808, -123.1046],
-  "Kettle on Burrard": [49.2799, -123.1290],
-};
-
-const RENT_COLORS = { shelter: "#1A7A6E", income: "#3B7DD8", market: "#E8930A", dev: "#9333EA" };
-
-let mapInitialized = false;
-let leafletMap = null;
-
-// Auto-init map on load
-window.addEventListener('load', () => { initMap(); });
-
-function toggleMap() {
-  const container = document.getElementById("map-container");
-  const legend = document.getElementById("map-legend");
-  const btn = document.getElementById("map-toggle");
-  const isOpen = container.style.display !== "none";
-  if (isOpen) {
-    container.style.display = "none";
-    legend.style.display = "none";
-    btn.textContent = "Show Map ▼";
-  } else {
-    container.style.display = "block";
-    legend.style.display = "flex";
-    btn.textContent = "Hide Map ▲";
-    if (!mapInitialized) initMap();
-    else if (leafletMap) leafletMap.invalidateSize();
-  }
-}
-
-function initMap() {
-  mapInitialized = true;
-  leafletMap = L.map("map").setView([49.281, -123.097], 15);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com">CARTO</a>',
-    maxZoom: 19
-  }).addTo(leafletMap);
-
-  let placed = 0;
-  HOUSING.forEach(h => {
-    const coord = COORDS[h.name];
-    if (!coord) return;
-    const color = h.pop.includes("women") && !h.pop.includes("general")
-      ? "#C62828"
-      : RENT_COLORS[h.rentType] || "#888";
-    const marker = L.circleMarker(coord, {
-      radius: h.units ? Math.min(4 + Math.sqrt(h.units / 4), 14) : 6,
-      fillColor: color, color: "#fff", weight: 1.5,
-      fillOpacity: 0.85, opacity: 1
-    }).addTo(leafletMap);
-    const rentLabel = h.rentType === "dev" ? "In development"
-      : h.rentType === "income" ? "Income-based"
-      : h.rentLabel;
-    marker.bindPopup(`
-      <h4>${h.name}</h4>
-      <p>${h.addr}</p>
-      <p class="pop-rent">${rentLabel}${h.units ? ` · ${h.units} units` : ""}</p>
-      <p>${h.type}${h.manager ? ` · ${h.manager}` : ""}</p>
-      ${h.contact ? `<p><a href="tel:${h.contact.replace(/[^0-9]/g,'')}">${h.contact}</a></p>` : ""}
-    `);
-    placed++;
-  });
-}
 </script>
 </body>
 </html>
