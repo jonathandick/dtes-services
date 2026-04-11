@@ -30,6 +30,20 @@
 html { scroll-behavior: smooth; }
 body { font-family: var(--font-body); color: var(--ink); background: var(--white); min-height: 100vh; display: flex; flex-direction: column; }
 
+/* NAV */
+.site-nav {
+  background: var(--teal-deep); padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 54px; position: sticky; top: 0; z-index: 100;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.logo { font-family: var(--font-head); font-size: 17px; color: var(--white); display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); animation: pulse 2.2s ease-in-out infinite; flex-shrink: 0; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(232,147,10,0.6)} 50%{box-shadow:0 0 0 5px rgba(232,147,10,0)} }
+.nav-links { display: flex; gap: 4px; }
+.nav-links a { font-size: 13px; color: var(--sky); padding: 5px 12px; border-radius: 6px; transition: all 0.15s; text-decoration: none; }
+.nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.1); color: var(--white); }
+
 /* HERO */
 .hero {
   background: var(--teal-deep);
@@ -145,7 +159,20 @@ body { font-family: var(--font-body); color: var(--ink); background: var(--white
 </head>
 <body>
 
-<script src="nav.js"></script>
+<nav class="site-nav">
+  <a href="index.html" class="logo">
+    <span class="pulse"></span>
+    DTES Community Tools
+  </a>
+  <div class="nav-links">
+    <a href="index.html" class="active">Home</a>
+    <a href="dtes-services.html">Services Map</a>
+    <a href="overdose-watch.html">OD Watch</a>
+    <a href="social-housing.html">Housing Directory</a>
+    <a href="vancouver-shelters.html">Shelters</a>
+    <a href="shelters.html">Shelter Directory</a>
+  </div>
+</nav>
 
 <section class="hero">
   <div class="hero-eyebrow">Downtown Eastside · Vancouver</div>
@@ -208,6 +235,54 @@ body { font-family: var(--font-body); color: var(--ink); background: var(--white
           <a href="onepager.html" class="btn btn-outline" style="flex:1;justify-content:center;font-size:12px;">One-Pager</a>
           <a href="qa.html" class="btn btn-outline" style="flex:1;justify-content:center;font-size:12px;">Q&amp;A Doc</a>
         </div>
+      </div>
+    </div>
+
+    <!-- HOUSING DIRECTORY -->
+    <div class="app-card">
+      <div class="app-card-header">
+        <div class="app-icon teal">🏠</div>
+        <span class="app-badge badge-live">Live</span>
+      </div>
+      <div class="app-card-body">
+        <h3>Social Housing Directory</h3>
+        <p>A searchable, filterable table of low-income, supportive, and social housing across the Downtown Eastside — updated January 2025.</p>
+        <ul class="feature-list">
+          <li>Shelter rate, income-based &amp; below-market listings</li>
+          <li>Filter by population: women, seniors, Indigenous, youth</li>
+          <li>Application pathway and contact info for each listing</li>
+          <li>In-development units flagged for future reference</li>
+        </ul>
+      </div>
+      <div class="app-card-footer">
+        <a href="social-housing.html" class="btn btn-primary btn-full">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Open Housing Directory
+        </a>
+      </div>
+    </div>
+
+    <!-- SHELTER DIRECTORY -->
+    <div class="app-card">
+      <div class="app-card-header">
+        <div class="app-icon amber">🛏</div>
+        <span class="app-badge badge-live">Live</span>
+      </div>
+      <div class="app-card-body">
+        <h3>Vancouver Shelter Directory</h3>
+        <p>A complete guide to Vancouver's emergency shelters — permanent, temporary, and extreme weather response — with map, bed counts, hours, and intake info.</p>
+        <ul class="feature-list">
+          <li>Permanent, temporary &amp; EWR shelters</li>
+          <li>Filter by gender, hours, features (pets, low-barrier…)</li>
+          <li>Interactive map of all shelter locations</li>
+          <li>Dial 2-1-1 for real-time bed availability</li>
+        </ul>
+      </div>
+      <div class="app-card-footer">
+        <a href="vancouver-shelters.html" class="btn btn-primary btn-full">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          Open Shelter Directory
+        </a>
       </div>
     </div>
 
