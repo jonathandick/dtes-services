@@ -22,6 +22,14 @@
 html{scroll-behavior:smooth;}
 body{font-family:var(--font-body);color:var(--ink);background:var(--white);min-height:100vh;display:flex;flex-direction:column;}
 
+/* NAV */
+.site-nav{background:var(--teal-deep);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:200;border-bottom:1px solid rgba(255,255,255,0.06);}
+.logo{font-family:var(--font-head);font-size:17px;color:var(--white);display:flex;align-items:center;gap:10px;text-decoration:none;}
+.pulse{width:8px;height:8px;border-radius:50%;background:var(--amber);animation:pulse 2.2s ease-in-out infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,147,10,0.6)}50%{box-shadow:0 0 0 5px rgba(232,147,10,0)}}
+.nav-links{display:flex;gap:4px;}
+.nav-links a{font-size:13px;color:var(--sky);padding:5px 12px;border-radius:6px;transition:all 0.15s;text-decoration:none;}
+.nav-links a:hover,.nav-links a.active{background:rgba(255,255,255,0.1);color:var(--white);}
 
 /* PAGE HEADER */
 .page-header{background:var(--teal-deep);padding:52px 40px 44px;position:relative;overflow:hidden;}
@@ -52,49 +60,49 @@ body{font-family:var(--font-body);color:var(--ink);background:var(--white);min-h
 .filter-btn.active{background:var(--teal);border-color:var(--teal);color:var(--white);}
 
 /* MAP + TABLE LAYOUT */
-.main-wrap{flex:1;display:flex;flex-direction:column;max-width:1280px;margin:0 auto;width:100%;padding:0 40px 60px;}
-.split-layout{display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:start;margin-top:18px;}
-#map-container{position:sticky;top:130px;border-radius:12px;overflow:hidden;border:1px solid var(--border);box-shadow:0 4px 20px rgba(7,31,27,0.1);height:560px;}
+.main-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.split-layout{display:grid;grid-template-columns:33% 1fr;flex:1;overflow:hidden;}
+#map-container{position:relative;border-right:1px solid var(--border);}
 #shelter-map{width:100%;height:100%;}
 .map-legend{background:rgba(7,31,27,0.82);backdrop-filter:blur(4px);padding:10px 12px;border-radius:8px;position:absolute;bottom:10px;left:10px;z-index:500;display:flex;flex-direction:column;gap:5px;}
 .legend-row{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,0.8);}
 .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
 
-.table-side{}
-.results-count{font-size:12px;color:var(--muted);margin-bottom:10px;}
-.results-count strong{color:var(--ink);}
-.shelter-cards{display:flex;flex-direction:column;gap:10px;}
-.shelter-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all 0.15s;border-left:3px solid transparent;}
-.shelter-card:hover{border-color:var(--teal-mid);box-shadow:0 2px 12px rgba(26,122,110,0.1);}
-.shelter-card.active{border-left-color:var(--teal);background:var(--teal-pale);}
-.shelter-card.type-permanent{border-left-color:#1A7A6E;}
-.shelter-card.type-women{border-left-color:#9B1745;}
-.shelter-card.type-youth{border-left-color:#1D4ED8;}
-.shelter-card.type-family{border-left-color:#854D0E;}
-.shelter-card.type-temporary{border-left-color:#E8930A;}
-.card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
-.card-name{font-weight:600;font-size:14px;color:var(--ink);}
-.card-beds{font-size:12px;font-weight:700;color:var(--teal);white-space:nowrap;}
-.card-addr{font-size:12px;color:var(--muted);margin-bottom:6px;}
-.card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;}
-.tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:8px;}
+/* TABLE SIDE */
+.table-side{display:flex;flex-direction:column;overflow:hidden;}
+.results-bar{padding:10px 16px;font-size:12px;color:var(--muted);border-bottom:1px solid var(--border);flex-shrink:0;background:var(--surface);}
+.results-bar strong{color:var(--ink);}
+.table-scroll{flex:1;overflow-y:auto;overflow-x:auto;}
+.shelter-table{width:100%;border-collapse:collapse;font-size:13px;}
+.shelter-table thead{background:var(--teal-deep);position:sticky;top:0;z-index:5;}
+.shelter-table thead th{padding:10px 12px;text-align:left;font-size:11px;font-weight:500;letter-spacing:0.7px;text-transform:uppercase;color:var(--sky);white-space:nowrap;cursor:pointer;user-select:none;}
+.shelter-table thead th:hover{color:var(--white);}
+.shelter-table tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;cursor:pointer;}
+.shelter-table tbody tr:last-child{border-bottom:none;}
+.shelter-table tbody tr:hover{background:var(--teal-pale);}
+.shelter-table tbody tr.row-selected{background:var(--teal-pale);outline:2px solid var(--teal);outline-offset:-2px;}
+.shelter-table td{padding:9px 12px;vertical-align:top;line-height:1.4;}
+.td-name{font-weight:500;color:var(--ink);min-width:160px;}
+.td-addr{color:var(--muted);font-size:12px;min-width:140px;}
+.td-beds{font-weight:700;color:var(--teal);white-space:nowrap;text-align:center;}
+.td-hours{font-size:12px;color:var(--muted);min-width:120px;}
+.td-phone a{color:var(--teal);text-decoration:none;font-size:12px;}
+.td-phone a:hover{text-decoration:underline;}
+.td-tags{min-width:160px;}
+.tag-wrap{display:flex;gap:3px;flex-wrap:wrap;}
+.tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:8px;white-space:nowrap;}
 .tag-perm{background:#D4EFEA;color:#0D5C50;}
 .tag-temp{background:var(--amber-pale);color:#7A4A00;}
+.tag-ewr{background:#FEE2E2;color:#991B1B;}
 .tag-women{background:#FFE4EE;color:#9B1745;}
 .tag-men{background:#EFF6FF;color:#1D4ED8;}
 .tag-youth{background:#E0E7FF;color:#3730A3;}
 .tag-all{background:var(--teal-pale);color:var(--teal);}
 .tag-family{background:#FFF4E0;color:#854D0E;}
-.tag-indig{background:#E8FBF0;color:#166534;}
-.tag-barrier{background:#F5F5F5;color:#555;}
-.card-meta{display:flex;gap:10px;font-size:11px;color:var(--muted);}
-.card-phone a{color:var(--teal);text-decoration:none;}
-.card-phone a:hover{text-decoration:underline;}
-.card-desc{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;display:none;}
-.shelter-card.expanded .card-desc{display:block;}
-.expand-btn{font-size:10px;color:var(--teal);cursor:pointer;margin-top:4px;background:none;border:none;padding:0;font-family:var(--font-body);}
+.tag-lb{background:#F5F5F5;color:#555;}
+.no-results-row td{text-align:center;padding:60px;color:var(--muted);}
 
-/* BADGES */
+/* BADGES (kept for popup) */
 .badge-pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;}
 .b-perm{background:#D4EFEA;color:#0D5C50;}
 .b-temp{background:var(--amber-pale);color:#7A4A00;}
@@ -113,16 +121,29 @@ body{font-family:var(--font-body);color:var(--ink);background:var(--white);min-h
 footer.site-footer{background:var(--teal-deep);color:rgba(255,255,255,0.4);padding:20px 40px;font-size:12px;text-align:center;}
 footer.site-footer a{color:var(--sky);text-decoration:none;}
 
+body{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
 @media(max-width:900px){
-  .split-layout{grid-template-columns:1fr;}
-  #map-container{position:static;height:320px;}
-  .controls-bar,.main-wrap,.source-note,.page-header{padding-left:16px;padding-right:16px;}
+  body{height:auto;overflow:auto;}
+  .split-layout{grid-template-columns:1fr;height:auto;}
+  #map-container{height:300px;border-right:none;border-bottom:1px solid var(--border);}
+  .table-scroll{max-height:none;overflow-x:auto;}
+  .site-nav{padding:0 16px;}
+  .nav-links{display:none;}
 }
 </style>
 </head>
 <body>
 
-<script src="nav.js"></script>
+<nav class="site-nav">
+  <a href="index.html" class="logo"><span class="pulse"></span>DTES Community Tools</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="dtes-services.html">Services Map</a>
+    <a href="overdose-watch.html">OD Watch</a>
+    <a href="social-housing.html">Housing Directory</a>
+    <a href="vancouver-shelters.html" class="active">Shelters</a>
+  </div>
+</nav>
 
 <div class="page-header">
   <div class="page-header-inner">
@@ -151,7 +172,6 @@ footer.site-footer a{color:var(--sky);text-decoration:none;}
       <input type="text" id="search" placeholder="Search by name, address, operator…">
     </div>
     <div class="filter-group">
-      <button class="filter-btn active" data-filter="all">All</button>
       <button class="filter-btn" data-filter="permanent">Permanent</button>
       <button class="filter-btn" data-filter="temporary">Temporary</button>
       <button class="filter-btn" data-filter="all-gender">All Genders</button>
@@ -179,13 +199,23 @@ footer.site-footer a{color:var(--sky);text-decoration:none;}
       </div>
     </div>
 
-    <!-- CARDS -->
+    <!-- TABLE -->
     <div class="table-side">
-      <div class="results-count"><strong id="shown-count">—</strong> shelters shown · Click a card to highlight on map</div>
-      <div class="shelter-cards" id="cards-container"></div>
-      <div id="no-results" style="display:none;text-align:center;padding:60px 0;color:var(--muted)">
-        <div style="font-size:40px;margin-bottom:12px">🏠</div>
-        <strong>No shelters match</strong><br>Try different filters.
+      <div class="results-bar"><strong id="shown-count">—</strong> of <strong id="total-shown">—</strong> shelters · Click row to highlight on map</div>
+      <div class="table-scroll">
+        <table class="shelter-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Address</th>
+              <th>Beds</th>
+              <th>Hours</th>
+              <th>Phone</th>
+              <th>Features</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -199,16 +229,8 @@ footer.site-footer a{color:var(--sky);text-decoration:none;}
   </div>
 </div>
 
-<footer class="site-footer">
-  Community tools for the Downtown Eastside · Vancouver, BC ·
-  <a href="https://bc.211.ca">BC 211</a> · <a href="https://bchousing.org">BC Housing</a> · <a href="https://lookoutsociety.ca">Lookout</a>
-</footer>
-
 <script>
 // ── DATA ──────────────────────────────────────────────────────────────────────
-// type: permanent | temporary | ewr
-// gender: all | men | women | youth | family
-// barrier: low | moderate | high
 const SHELTERS = [
   // ── DTES / DOWNTOWN CORE ─────────────────────────────────────────────────
   {
@@ -658,6 +680,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
   attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com">CARTO</a>',
   maxZoom:19
 }).addTo(map);
+setTimeout(() => map.invalidateSize(), 200);
 
 const markers = {};
 SHELTERS.forEach(s => {
@@ -674,33 +697,40 @@ SHELTERS.forEach(s => {
   markers[s.id] = m;
 });
 
-// ── CARDS ─────────────────────────────────────────────────────────────────────
-let activeFilter = "all", searchQ = "";
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let activeFilters = new Set(); // multi-select: empty = show all
+let searchQ = "";
+let selectedId = null;
 
-function typeBadge(s) {
-  if (s.type === "permanent") return `<span class="badge-pill b-perm">Permanent</span>`;
-  if (s.type === "temporary") return `<span class="badge-pill b-temp">Seasonal</span>`;
-  return `<span class="badge-pill b-ewr">EWR Only</span>`;
-}
+// ── FILTER LOGIC ──────────────────────────────────────────────────────────────
+function matchFilters(s) {
+  if (activeFilters.size === 0) return true;
+  // Shelter must match ALL active filters (AND logic within same group, OR across)
+  // Group filters: type filters and gender filters are OR within group, features are AND
+  const typeFilters = ["permanent","temporary"].filter(f => activeFilters.has(f));
+  const genderFilters = ["all-gender","men","women","youth","family"].filter(f => activeFilters.has(f));
+  const featureFilters = ["pets","accessible","lowbarrier"].filter(f => activeFilters.has(f));
 
-function genderTag(s) {
-  const map = {all:"All Genders",men:"Men",women:"Women",youth:"Youth",family:"Families"};
-  const cls = {all:"tag-all",men:"tag-men",women:"tag-women",youth:"tag-youth",family:"tag-family"};
-  return `<span class="tag ${cls[s.gender]||'tag-all'}">${map[s.gender]||s.gender}</span>`;
-}
-
-function matchFilter(s) {
-  if (activeFilter === "all") return true;
-  if (activeFilter === "permanent") return s.type === "permanent";
-  if (activeFilter === "temporary") return s.type === "temporary" || s.type === "ewr";
-  if (activeFilter === "all-gender") return s.gender === "all";
-  if (activeFilter === "men") return s.gender === "men";
-  if (activeFilter === "women") return s.gender === "women";
-  if (activeFilter === "youth") return s.gender === "youth";
-  if (activeFilter === "family") return s.gender === "family";
-  if (activeFilter === "pets") return s.pets;
-  if (activeFilter === "accessible") return s.accessible;
-  if (activeFilter === "lowbarrier") return s.barrier === "low";
+  if (typeFilters.length > 0) {
+    const typeMatch = typeFilters.some(f => {
+      if (f === "permanent") return s.type === "permanent";
+      if (f === "temporary") return s.type === "temporary" || s.type === "ewr";
+      return false;
+    });
+    if (!typeMatch) return false;
+  }
+  if (genderFilters.length > 0) {
+    const genderMatch = genderFilters.some(f => {
+      if (f === "all-gender") return s.gender === "all";
+      return s.gender === f;
+    });
+    if (!genderMatch) return false;
+  }
+  for (const f of featureFilters) {
+    if (f === "pets" && !s.pets) return false;
+    if (f === "accessible" && !s.accessible) return false;
+    if (f === "lowbarrier" && s.barrier !== "low") return false;
+  }
   return true;
 }
 
@@ -710,83 +740,88 @@ function matchSearch(s) {
   return searchQ.split(" ").every(w => txt.includes(w));
 }
 
-function renderCards() {
-  const q = document.getElementById("search").value.trim().toLowerCase();
-  searchQ = q;
-  const filtered = SHELTERS.filter(s => matchFilter(s) && matchSearch(s));
+// ── RENDER ────────────────────────────────────────────────────────────────────
+const genderLabel = {all:"All Genders",men:"Men",women:"Women",youth:"Youth",family:"Families"};
+const genderTagClass = {all:"tag-all",men:"tag-men",women:"tag-women",youth:"tag-youth",family:"tag-family"};
+
+function renderTable() {
+  const filtered = SHELTERS.filter(s => matchFilters(s) && matchSearch(s));
 
   document.getElementById("total-count").textContent = SHELTERS.length;
   document.getElementById("perm-count").textContent = SHELTERS.filter(s=>s.type==="permanent").length;
   document.getElementById("bed-count").textContent = SHELTERS.reduce((a,s)=>a+s.beds,0).toLocaleString() + "+";
   document.getElementById("shown-count").textContent = filtered.length;
+  document.getElementById("total-shown").textContent = SHELTERS.length;
 
-  // Update marker visibility
+  // Marker visibility
   SHELTERS.forEach(s => {
     const m = markers[s.id];
-    const show = filtered.includes(s);
+    const show = filtered.some(f => f.id === s.id);
     if (show) { if (!map.hasLayer(m)) m.addTo(map); }
     else { if (map.hasLayer(m)) map.removeLayer(m); }
   });
 
-  const container = document.getElementById("cards-container");
-  document.getElementById("no-results").style.display = filtered.length === 0 ? "" : "none";
+  const tbody = document.getElementById("table-body");
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr class="no-results-row"><td colspan="6">🏠 No shelters match — try removing some filters.</td></tr>`;
+    return;
+  }
 
-  container.innerHTML = filtered.map(s => `
-    <div class="shelter-card type-${s.gender}" id="card-${s.id}" onclick="selectShelter('${s.id}')">
-      <div class="card-header">
-        <div class="card-name">${s.name}</div>
-        <div class="card-beds">${s.beds} beds</div>
-      </div>
-      <div class="card-addr">📍 ${s.addr}</div>
-      <div class="card-tags">
-        ${typeBadge(s)}
-        ${genderTag(s)}
-        ${s.barrier === "low" ? '<span class="tag tag-barrier">Low-Barrier</span>' : ''}
-        ${s.pets ? '<span class="tag tag-all">🐾 Pets</span>' : ''}
-        ${s.accessible ? '<span class="tag tag-all">♿</span>' : ''}
-        ${s.meals ? '<span class="tag tag-all">🍽 Meals</span>' : ''}
-      </div>
-      <div class="card-meta">
-        <span>🕐 ${s.hours}</span>
-        ${s.phone ? `<span class="card-phone"><a href="tel:${s.phone.replace(/[^0-9]/g,'')}">${s.phone}</a></span>` : ''}
-      </div>
-      <div class="card-desc">${s.desc}<br><br><em>Operator: ${s.operator}</em></div>
-      <button class="expand-btn" onclick="event.stopPropagation();toggleDesc('card-${s.id}')">▸ More info</button>
-    </div>
-  `).join("");
+  tbody.innerHTML = filtered.map(s => {
+    const typeTag = s.type === "permanent"
+      ? `<span class="tag tag-perm">Permanent</span>`
+      : s.type === "temporary"
+        ? `<span class="tag tag-temp">Seasonal</span>`
+        : `<span class="tag tag-ewr">EWR</span>`;
+    const gTag = `<span class="tag ${genderTagClass[s.gender]||'tag-all'}">${genderLabel[s.gender]||s.gender}</span>`;
+    const feats = [
+      s.barrier === "low" ? `<span class="tag tag-lb">Low-Barrier</span>` : "",
+      s.pets ? `<span class="tag tag-all">🐾 Pets</span>` : "",
+      s.accessible ? `<span class="tag tag-all">♿</span>` : "",
+      s.meals ? `<span class="tag tag-all">🍽 Meals</span>` : "",
+    ].filter(Boolean).join("");
+    const isSelected = s.id === selectedId;
+    return `<tr id="row-${s.id}" class="${isSelected ? 'row-selected':''}" onclick="selectShelter('${s.id}')">
+      <td class="td-name">${s.name}</td>
+      <td class="td-addr">${s.addr}</td>
+      <td class="td-beds">${s.beds}</td>
+      <td class="td-hours">${s.hours}</td>
+      <td class="td-phone">${s.phone ? `<a href="tel:${s.phone.replace(/[^0-9]/g,'')}">${s.phone}</a>` : "—"}</td>
+      <td class="td-tags"><div class="tag-wrap">${typeTag}${gTag}${feats}</div></td>
+    </tr>`;
+  }).join("");
 }
 
-function toggleDesc(id) {
-  const el = document.getElementById(id);
-  el.classList.toggle("expanded");
-  el.querySelector(".expand-btn").textContent = el.classList.contains("expanded") ? "▾ Less" : "▸ More info";
-}
-
-let selectedCard = null;
 function selectShelter(id) {
-  if (selectedCard) {
-    document.getElementById("card-"+selectedCard)?.classList.remove("active");
-  }
-  selectedCard = id;
-  document.getElementById("card-"+id)?.classList.add("active");
+  selectedId = id;
+  document.querySelectorAll(".shelter-table tbody tr").forEach(r => r.classList.remove("row-selected"));
+  const row = document.getElementById("row-"+id);
+  if (row) row.classList.add("row-selected");
   const m = markers[id];
-  if (m) {
-    map.setView(m.getLatLng(), 16, {animate:true});
-    m.openPopup();
-  }
+  if (m) { map.setView(m.getLatLng(), 16, {animate:true}); m.openPopup(); }
 }
 
-document.getElementById("search").addEventListener("input", renderCards);
+// ── EVENTS ────────────────────────────────────────────────────────────────────
+document.getElementById("search").addEventListener("input", e => {
+  searchQ = e.target.value.trim().toLowerCase();
+  renderTable();
+});
+
 document.querySelectorAll(".filter-btn").forEach(btn => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    activeFilter = btn.dataset.filter;
-    renderCards();
+    const f = btn.dataset.filter;
+    if (activeFilters.has(f)) {
+      activeFilters.delete(f);
+      btn.classList.remove("active");
+    } else {
+      activeFilters.add(f);
+      btn.classList.add("active");
+    }
+    renderTable();
   });
 });
 
-renderCards();
+renderTable();
 </script>
 </body>
 </html>

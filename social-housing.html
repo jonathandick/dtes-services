@@ -6,6 +6,8 @@
 <title>Social Housing Directory – DTES Community Tools</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 :root {
   --teal:       #1A7A6E;
@@ -27,76 +29,127 @@
   --font-body:  'DM Sans', system-ui, sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body { font-family: var(--font-body); color: var(--ink); background: var(--white); min-height: 100vh; display: flex; flex-direction: column; }
+body { font-family: var(--font-body); color: var(--ink); background: var(--white); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
+/* NAV */
+.site-nav {
+  background: var(--teal-deep); padding: 0 32px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 54px; z-index: 100;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.logo { font-family: var(--font-head); font-size: 17px; color: var(--white); display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); animation: pulse 2.2s ease-in-out infinite; flex-shrink: 0; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(232,147,10,0.6)} 50%{box-shadow:0 0 0 5px rgba(232,147,10,0)} }
+.nav-links { display: flex; gap: 4px; }
+.nav-links a { font-size: 13px; color: var(--sky); padding: 5px 12px; border-radius: 6px; transition: all 0.15s; text-decoration: none; }
+.nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.1); color: var(--white); }
 
 /* PAGE HEADER */
 .page-header {
-  background: var(--teal-deep);
-  padding: 52px 40px 44px;
-  position: relative; overflow: hidden;
+  background: var(--teal-deep); padding: 28px 40px 24px;
+  position: relative; overflow: hidden; flex-shrink: 0;
 }
 .page-header::before {
-  content: '';
-  position: absolute; inset: 0;
+  content: ''; position: absolute; inset: 0;
   background: radial-gradient(ellipse 70% 80% at 20% 50%, rgba(42,160,144,0.18) 0%, transparent 70%);
   pointer-events: none;
 }
-.page-header-inner { max-width: 1200px; margin: 0 auto; position: relative; }
+.page-header-inner { max-width: 100%; position: relative; display: flex; align-items: center; gap: 40px; flex-wrap: wrap; }
 .page-eyebrow {
   display: inline-flex; align-items: center; gap: 8px;
   font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--sky); margin-bottom: 16px;
-  border: 1px solid rgba(126,200,192,0.3); padding: 4px 14px; border-radius: 20px;
+  color: var(--sky); margin-bottom: 8px;
+  border: 1px solid rgba(126,200,192,0.3); padding: 3px 12px; border-radius: 20px;
 }
-.page-header h1 { font-family: var(--font-head); font-size: clamp(28px, 4vw, 44px); color: var(--white); line-height: 1.2; margin-bottom: 12px; }
+.page-header h1 { font-family: var(--font-head); font-size: clamp(20px, 2.5vw, 30px); color: var(--white); line-height: 1.2; margin-bottom: 4px; }
 .page-header h1 span { color: var(--sky); }
-.page-header p { font-size: 15px; color: rgba(255,255,255,0.6); max-width: 600px; line-height: 1.7; }
-.header-meta { display: flex; gap: 24px; margin-top: 20px; flex-wrap: wrap; }
-.meta-pill {
-  font-size: 12px; color: rgba(255,255,255,0.5);
-  display: flex; align-items: center; gap: 6px;
-}
-.meta-pill strong { color: var(--sky); font-size: 15px; font-weight: 600; }
+.page-header p { font-size: 13px; color: rgba(255,255,255,0.55); max-width: 480px; line-height: 1.6; }
+.header-meta { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 8px; }
+.meta-pill { font-size: 12px; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: 5px; }
+.meta-pill strong { color: var(--sky); font-size: 14px; font-weight: 600; }
 
 /* CONTROLS BAR */
 .controls-bar {
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  padding: 16px 40px;
-  position: sticky; top: 54px; z-index: 90;
-  box-shadow: 0 2px 12px rgba(7,31,27,0.06);
+  background: var(--white); border-bottom: 1px solid var(--border);
+  padding: 10px 16px; z-index: 90; flex-shrink: 0;
 }
-.controls-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-
-.search-wrap { position: relative; flex: 1; min-width: 220px; }
-.search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
-#search { width: 100%; padding: 8px 12px 8px 38px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: var(--font-body); background: var(--surface); color: var(--ink); outline: none; transition: border-color 0.15s; }
+.controls-inner { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.search-wrap { position: relative; min-width: 200px; }
+.search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+#search { width: 100%; padding: 7px 10px 7px 32px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: var(--font-body); background: var(--surface); color: var(--ink); outline: none; transition: border-color 0.15s; }
 #search:focus { border-color: var(--teal-mid); background: var(--white); }
-
-.filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-group { display: flex; gap: 5px; flex-wrap: wrap; }
 .filter-btn {
   font-size: 12px; font-weight: 500; font-family: var(--font-body);
-  padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border);
+  padding: 5px 11px; border-radius: 20px; border: 1px solid var(--border);
   background: var(--white); color: var(--muted); cursor: pointer; transition: all 0.15s;
   white-space: nowrap;
 }
 .filter-btn:hover { border-color: var(--teal-mid); color: var(--teal); }
 .filter-btn.active { background: var(--teal); border-color: var(--teal); color: var(--white); }
-.filter-btn.active-amber { background: var(--amber); border-color: var(--amber); color: var(--white); }
+.sort-select { font-size: 13px; font-family: var(--font-body); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; background: var(--surface); cursor: pointer; outline: none; }
 
-.sort-select { font-size: 13px; font-family: var(--font-body); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; background: var(--surface); cursor: pointer; outline: none; }
-.sort-select:focus { border-color: var(--teal-mid); }
+/* SPLIT LAYOUT */
+.main-wrap { flex: 1; display: flex; overflow: hidden; }
+.split-layout { display: grid; grid-template-columns: 33% 1fr; flex: 1; overflow: hidden; width: 100%; }
 
-/* LEGEND */
-.legend-bar {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 10px 40px;
+/* MAP */
+#map-container { position: relative; border-right: 1px solid var(--border); }
+#housing-map { width: 100%; height: 100%; }
+.leaflet-popup-content-wrapper { border-radius: 10px !important; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important; }
+.leaflet-popup-content { margin: 12px 14px !important; font-family: var(--font-body); font-size: 13px; }
+.popup-name { font-weight: 700; color: var(--ink); font-size: 14px; margin-bottom: 4px; }
+.popup-addr { color: var(--muted); font-size: 12px; margin-bottom: 4px; }
+
+/* TABLE SIDE */
+.table-side { display: flex; flex-direction: column; overflow: hidden; }
+.results-bar { padding: 8px 14px; font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--surface); }
+.results-bar strong { color: var(--ink); }
+.table-scroll { flex: 1; overflow-y: auto; overflow-x: auto; }
+.table-scroll::-webkit-scrollbar { width: 4px; }
+.table-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead { background: var(--teal-deep); position: sticky; top: 0; z-index: 5; }
+thead th {
+  padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 500;
+  letter-spacing: 0.7px; text-transform: uppercase; color: var(--sky);
+  border-bottom: 1px solid rgba(255,255,255,0.08); white-space: nowrap;
+  cursor: pointer; user-select: none; transition: color 0.15s;
 }
-.legend-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
-.legend-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-right: 4px; }
+thead th:hover { color: var(--white); }
+thead th.sort-asc::after { content: ' ↑'; opacity: 0.7; }
+thead th.sort-desc::after { content: ' ↓'; opacity: 0.7; }
+tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; cursor: pointer; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--teal-pale); }
+tbody tr.dev-row { background: #FAF5FF; }
+tbody tr.dev-row:hover { background: #F3E8FF; }
+tbody tr.row-selected { background: var(--teal-pale); outline: 2px solid var(--teal); outline-offset: -2px; }
+td { padding: 9px 12px; vertical-align: top; line-height: 1.4; }
+.td-name { font-weight: 500; color: var(--ink); min-width: 150px; }
+.td-name small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; margin-top: 2px; }
+.td-addr { color: var(--muted); min-width: 130px; font-size: 12px; }
+.td-rent { font-weight: 600; color: var(--teal); white-space: nowrap; }
+.td-rent.market { color: var(--amber); }
+.td-rent.dev { color: #9333EA; font-size: 11px; font-style: italic; }
+.td-units { text-align: center; font-weight: 600; color: var(--ink); }
+.td-type { min-width: 90px; }
+.td-pop { min-width: 90px; }
+.td-manager { color: var(--muted); font-size: 12px; min-width: 130px; }
+.td-contact { font-size: 12px; }
+.td-contact a { color: var(--teal); text-decoration: none; }
+.td-contact a:hover { text-decoration: underline; }
+.td-notes { font-size: 12px; color: var(--muted); min-width: 160px; max-width: 220px; }
+.td-apply { font-size: 11px; min-width: 100px; }
+.td-flags { white-space: nowrap; }
+.flag { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 11px; margin: 1px; }
+.flag-pet { background: #D1FAE5; }
+.flag-elev { background: #DBEAFE; }
+.flag-supp { background: var(--teal-pale); }
+.flag-meals { background: var(--amber-pale); }
+.flag-acc { background: #FCE7F3; }
 .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 10px; }
 .badge-shelter { background: #D4EFEA; color: #0D5C50; }
 .badge-income  { background: #E8F0FE; color: #3A56A0; }
@@ -106,113 +159,54 @@ body { font-family: var(--font-body); color: var(--ink); background: var(--white
 .badge-senior  { background: #FFF4E0; color: #854D0E; }
 .badge-indig   { background: #E8FBF0; color: #166534; }
 .badge-youth   { background: #EFF6FF; color: #1D4ED8; }
-.badge-yes     { color: var(--teal); }
-.badge-no      { color: #aaa; }
-
-/* MAIN TABLE AREA */
-.main-content { flex: 1; padding: 0 40px 60px; }
-.content-inner { max-width: 1200px; margin: 0 auto; }
-
-.results-count { padding: 18px 0 12px; font-size: 13px; color: var(--muted); }
-.results-count strong { color: var(--ink); }
-
-/* TABLE */
-.table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 2px 16px rgba(7,31,27,0.05); }
-
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-
-thead { background: var(--teal-deep); position: sticky; top: 114px; z-index: 5; }
-thead th {
-  padding: 12px 14px; text-align: left; font-size: 11px; font-weight: 500;
-  letter-spacing: 0.8px; text-transform: uppercase; color: var(--sky);
-  border-bottom: 2px solid rgba(255,255,255,0.08); white-space: nowrap;
-  cursor: pointer; user-select: none; transition: color 0.15s;
-}
-thead th:hover { color: var(--white); }
-thead th.sort-asc::after { content: ' ↑'; opacity: 0.7; }
-thead th.sort-desc::after { content: ' ↓'; opacity: 0.7; }
-
-tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
-tbody tr:last-child { border-bottom: none; }
-tbody tr:hover { background: var(--teal-pale); }
-tbody tr.dev-row { background: #FAF5FF; }
-tbody tr.dev-row:hover { background: #F3E8FF; }
-
-td { padding: 11px 14px; vertical-align: top; line-height: 1.45; }
-
-.td-name { font-weight: 500; color: var(--ink); min-width: 160px; }
-.td-name small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; margin-top: 2px; }
-.td-addr { color: var(--muted); min-width: 140px; font-size: 12px; }
-.td-rent { font-weight: 600; color: var(--teal); white-space: nowrap; min-width: 80px; }
-.td-rent.market { color: var(--amber); }
-.td-rent.dev { color: #9333EA; font-size: 11px; font-style: italic; }
-.td-units { text-align: center; font-weight: 600; color: var(--ink); }
-.td-type { min-width: 120px; }
-.td-pop { min-width: 100px; }
-.td-manager { color: var(--muted); font-size: 12px; min-width: 140px; }
-.td-contact { font-size: 12px; min-width: 110px; }
-.td-contact a { color: var(--teal); text-decoration: none; }
-.td-contact a:hover { text-decoration: underline; }
-.td-notes { font-size: 12px; color: var(--muted); min-width: 180px; max-width: 240px; }
-.td-apply { font-size: 11px; min-width: 100px; }
-.td-flags { min-width: 80px; }
-
-.flag { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 11px; margin: 1px; title: attr(title); }
-.flag-pet   { background: #D1FAE5; title: "Pets OK"; }
-.flag-elev  { background: #DBEAFE; }
-.flag-supp  { background: var(--teal-pale); }
-.flag-meals { background: var(--amber-pale); }
-.flag-acc   { background: #FCE7F3; }
-
-.tag-row { display: flex; gap: 4px; flex-wrap: wrap; }
-
-.no-results { text-align: center; padding: 80px 20px; color: var(--muted); }
-.no-results .icon { font-size: 48px; margin-bottom: 16px; }
-.no-results h3 { font-size: 18px; margin-bottom: 8px; color: var(--ink); }
-
-/* GLOSSARY */
-.glossary { background: var(--surface); border-top: 1px solid var(--border); padding: 32px 40px; margin-top: 0; }
-.glossary-inner { max-width: 1200px; margin: 0 auto; }
-.glossary h3 { font-family: var(--font-head); font-size: 18px; color: var(--ink); margin-bottom: 16px; }
-.glossary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px 24px; }
-.glossary-item { font-size: 12px; color: var(--muted); display: flex; gap: 8px; }
-.glossary-item strong { color: var(--ink); min-width: 60px; flex-shrink: 0; }
+.tag-row { display: flex; gap: 3px; flex-wrap: wrap; }
+.no-results-row td { text-align: center; padding: 60px; color: var(--muted); }
 
 /* SOURCE NOTE */
 .source-note {
   background: var(--teal-pale); border-top: 1px solid var(--teal-mist);
-  padding: 16px 40px; font-size: 12px; color: var(--muted);
+  padding: 10px 20px; font-size: 12px; color: var(--muted); flex-shrink: 0;
 }
 .source-note a { color: var(--teal); }
 
-/* FOOTER */
-footer.site-footer {
-  background: var(--teal-deep); color: rgba(255,255,255,0.4);
-  padding: 20px 40px; font-size: 12px; text-align: center;
-}
-footer.site-footer a { color: var(--sky); text-decoration: none; }
-
-@media (max-width: 768px) {
-  .controls-bar, .legend-bar, .main-content, .glossary, .source-note { padding-left: 16px; padding-right: 16px; }
-  .page-header { padding: 36px 16px 32px; }
-  .header-meta { gap: 12px; }
+@media (max-width: 900px) {
+  body { height: auto; overflow: auto; }
+  .main-wrap { overflow: visible; }
+  .split-layout { grid-template-columns: 1fr; height: auto; }
+  #map-container { height: 300px; border-right: none; border-bottom: 1px solid var(--border); }
+  .table-side { height: auto; }
+  .table-scroll { max-height: none; }
+  .site-nav { padding: 0 16px; }
+  .nav-links { display: none; }
+  .page-header { padding: 24px 16px 20px; }
 }
 </style>
+
 </head>
 <body>
 
-<script src="nav.js"></script>
+<nav class="site-nav">
+  <a href="index.html" class="logo"><span class="pulse"></span>DTES Community Tools</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="dtes-services.html">Services Map</a>
+    <a href="overdose-watch.html">OD Watch</a>
+    <a href="social-housing.html" class="active">Housing Directory</a>
+    <a href="vancouver-shelters.html">Shelters</a>
+  </div>
+</nav>
 
 <div class="page-header">
   <div class="page-header-inner">
-    <div class="page-eyebrow">🏠 Jan 2025 Update</div>
-    <h1>Downtown Eastside<br><span>Social Housing Directory</span></h1>
-    <p>A searchable directory of low-income, supportive, and social housing in the Downtown Eastside and surrounding areas. Includes publicly managed, non-profit, and select private SROs.</p>
+    <div>
+      <div class="page-eyebrow">🏠 Jan 2025 Update</div>
+      <h1>Downtown Eastside <span>Social Housing</span></h1>
+      <p>Low-income, supportive, and social housing in the DTES and surrounding areas.</p>
+    </div>
     <div class="header-meta">
       <div class="meta-pill"><strong id="total-count">—</strong> listings</div>
-      <div class="meta-pill"><strong id="shelter-count">—</strong> at shelter rate ($500)</div>
+      <div class="meta-pill"><strong id="shelter-count">—</strong> at shelter rate</div>
       <div class="meta-pill"><strong id="dev-count">—</strong> in development</div>
-      <div class="meta-pill">Source: DTEShousing@gmail.com</div>
     </div>
   </div>
 </div>
@@ -220,11 +214,10 @@ footer.site-footer a { color: var(--sky); text-decoration: none; }
 <div class="controls-bar">
   <div class="controls-inner">
     <div class="search-wrap">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
       <input type="text" id="search" placeholder="Search by name, address, manager…">
     </div>
     <div class="filter-group">
-      <button class="filter-btn active" data-filter="all">All</button>
       <button class="filter-btn" data-filter="shelter">Shelter Rate ($500)</button>
       <button class="filter-btn" data-filter="income">Income-Based</button>
       <button class="filter-btn" data-filter="women">Women</button>
@@ -243,91 +236,45 @@ footer.site-footer a { color: var(--sky); text-decoration: none; }
   </div>
 </div>
 
-<div class="legend-bar">
-  <div class="legend-inner">
-    <span class="legend-label">Rent type:</span>
-    <span class="badge badge-shelter">Shelter rate ~$500</span>
-    <span class="badge badge-income">Income-based</span>
-    <span class="badge badge-market">Below-market/Private</span>
-    <span class="badge badge-dev">In development</span>
-    <span style="margin-left:12px" class="legend-label">Population:</span>
-    <span class="badge badge-women">Women</span>
-    <span class="badge badge-senior">Seniors</span>
-    <span class="badge badge-indig">Indigenous</span>
-    <span class="badge badge-youth">Youth</span>
-    &nbsp;
-    <span title="Pets OK">🐾 Pets</span>&nbsp;
-    <span title="Elevator">🛗 Elev</span>&nbsp;
-    <span title="Meals provided">🍽 Meals</span>&nbsp;
-    <span title="Accessible units">♿ Access</span>
-  </div>
-</div>
-
-<div class="main-content">
-  <div class="content-inner">
-    <div class="results-count"><strong id="shown-count">—</strong> results shown</div>
-    <div class="table-wrap">
-      <table id="housing-table">
-        <thead>
-          <tr>
-            <th data-col="name">Name</th>
-            <th data-col="addr">Address</th>
-            <th data-col="rent">Rent</th>
-            <th data-col="units">Units</th>
-            <th data-col="type">Type</th>
-            <th data-col="population">For</th>
-            <th data-col="manager">Manager / Owner</th>
-            <th data-col="contact">Contact</th>
-            <th data-col="features">Features</th>
-            <th data-col="apply">Apply via</th>
-            <th data-col="notes">Notes</th>
-          </tr>
-        </thead>
-        <tbody id="table-body"></tbody>
-      </table>
+<div class="main-wrap">
+  <div class="split-layout">
+    <!-- MAP -->
+    <div id="map-container">
+      <div id="housing-map"></div>
     </div>
-    <div class="no-results" id="no-results" style="display:none">
-      <div class="icon">🏘️</div>
-      <h3>No listings match your search</h3>
-      <p>Try different keywords or clear your filters.</p>
-    </div>
-  </div>
-</div>
 
-<div class="glossary">
-  <div class="glossary-inner">
-    <h3>Glossary</h3>
-    <div class="glossary-grid">
-      <div class="glossary-item"><strong>SRO/SRA</strong> Single room occupancy/accommodation. One room, shared toilet and bath.</div>
-      <div class="glossary-item"><strong>Studio</strong> One room with own bath/shower and kitchen facilities.</div>
-      <div class="glossary-item"><strong>Shelter Rate</strong> BC Income Assistance shelter allowance (~$500/mo). BC Housing subsidizes the gap.</div>
-      <div class="glossary-item"><strong>Income-Based</strong> Rent set at ~30% of gross income.</div>
-      <div class="glossary-item"><strong>Below-Market</strong> Rent below average market rates. Also "affordable" or "low-end market."</div>
-      <div class="glossary-item"><strong>Supportive</strong> On-site support services and staff. Level varies.</div>
-      <div class="glossary-item"><strong>Transitional</strong> Supportive housing aiming to move residents to independent living (typically ~2 yrs).</div>
-      <div class="glossary-item"><strong>Low-Barrier</strong> Substance use and behaviour issues accepted.</div>
-      <div class="glossary-item"><strong>SHR</strong> BC Housing Supportive Housing Registry — primary referral pathway.</div>
-      <div class="glossary-item"><strong>BC Hsg Registry</strong> BC Housing Registry — for income-based and subsidized units.</div>
-      <div class="glossary-item"><strong>MHSUSH</strong> VCH Mental Health & Substance Use Supportive Housing — apply via VCH.</div>
-      <div class="glossary-item"><strong>Accessible</strong> Units designed for wheelchairs and other mobility aids.</div>
+    <!-- TABLE -->
+    <div class="table-side">
+      <div class="results-bar"><strong id="shown-count">—</strong> of <strong id="total-shown">—</strong> listings · Click row to highlight on map</div>
+      <div class="table-scroll">
+        <table id="housing-table">
+          <thead>
+            <tr>
+              <th data-col="name">Name</th>
+              <th data-col="addr">Address</th>
+              <th data-col="rent">Rent</th>
+              <th data-col="units">Units</th>
+              <th data-col="type">Type</th>
+              <th data-col="population">For</th>
+              <th data-col="manager">Manager</th>
+              <th data-col="contact">Contact</th>
+              <th data-col="features">Features</th>
+              <th data-col="apply">Apply via</th>
+              <th data-col="notes">Notes</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
 
 <div class="source-note">
-  <div style="max-width:1200px;margin:0 auto;">
-    <strong>Source:</strong> Downtown/Downtown Eastside Low-Income Housing list, updated January 2025. Compiled with support from service agencies and housing programs.
-    Corrections or updates: <a href="mailto:DTEShousing@gmail.com">DTEShousing@gmail.com</a> ·
-    For applications, always contact the managing agency directly or check their website first.
-  </div>
+  <strong>Source:</strong> Downtown/Downtown Eastside Low-Income Housing list, updated January 2025.
+  Corrections: <a href="mailto:DTEShousing@gmail.com">DTEShousing@gmail.com</a> ·
+  For applications, always contact the managing agency directly.
 </div>
-
-<footer class="site-footer">
-  Community tools for the Downtown Eastside · Vancouver, BC ·
-  Data sources: <a href="https://bchousing.org">BC Housing</a>,
-  <a href="https://www.bccdc.ca">BCCDC</a>,
-  <a href="mailto:DTEShousing@gmail.com">DTEShousing@gmail.com</a>
-</footer>
 
 <script>
 // ── DATA ─────────────────────────────────────────────────────────────────────
@@ -525,7 +472,60 @@ const HOUSING = [
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
 let sortCol = "name", sortDir = 1;
-let searchQ = "", activeFilter = "all";
+let activeFilters = new Set(); // multi-select, empty = all
+
+// Approximate DTES coordinates for geocoding by street address keyword
+function approxCoords(addr) {
+  const a = addr.toLowerCase();
+  // Main clusters
+  if (a.includes("w hastings") || a.includes("west hastings")) return [49.2808 + Math.random()*0.001-0.0005, -123.107 + Math.random()*0.002-0.001];
+  if (a.includes("e hastings") || a.includes("east hastings")) return [49.2808 + Math.random()*0.001-0.0005, -123.098 + Math.random()*0.003-0.0015];
+  if (a.includes("hastings")) return [49.2808 + Math.random()*0.001-0.0005, -123.100 + Math.random()*0.004-0.002];
+  if (a.includes("powell")) return [49.283 + Math.random()*0.002-0.001, -123.097 + Math.random()*0.004-0.002];
+  if (a.includes("cordova")) return [49.283 + Math.random()*0.002-0.001, -123.101 + Math.random()*0.004-0.002];
+  if (a.includes("alexander")) return [49.285 + Math.random()*0.001-0.0005, -123.097 + Math.random()*0.003-0.0015];
+  if (a.includes("pender")) return [49.280 + Math.random()*0.001-0.0005, -123.105 + Math.random()*0.003-0.0015];
+  if (a.includes("main")) return [49.281 + Math.random()*0.002-0.001, -123.100 + Math.random()*0.001-0.0005];
+  if (a.includes("columbia")) return [49.281 + Math.random()*0.001-0.0005, -123.102 + Math.random()*0.001-0.0005];
+  if (a.includes("carrall")) return [49.282 + Math.random()*0.001-0.0005, -123.104 + Math.random()*0.001-0.0005];
+  if (a.includes("dunlevy")) return [49.282 + Math.random()*0.001-0.0005, -123.093 + Math.random()*0.001-0.0005];
+  if (a.includes("princess")) return [49.283 + Math.random()*0.001-0.0005, -123.091 + Math.random()*0.001-0.0005];
+  if (a.includes("jackson")) return [49.284 + Math.random()*0.001-0.0005, -123.088 + Math.random()*0.001-0.0005];
+  if (a.includes("homer")) return [49.280 + Math.random()*0.001-0.0005, -123.116 + Math.random()*0.001-0.0005];
+  if (a.includes("granville")) return [49.279 + Math.random()*0.002-0.001, -123.119 + Math.random()*0.002-0.001];
+  if (a.includes("burrard")) return [49.280 + Math.random()*0.001-0.0005, -123.127 + Math.random()*0.001-0.0005];
+  if (a.includes("terminal")) return [49.274 + Math.random()*0.001-0.0005, -123.102 + Math.random()*0.001-0.0005];
+  if (a.includes("kingsway")) return [49.266 + Math.random()*0.001-0.0005, -123.080 + Math.random()*0.001-0.0005];
+  if (a.includes("vernon")) return [49.278 + Math.random()*0.001-0.0005, -123.068 + Math.random()*0.001-0.0005];
+  if (a.includes("howe")) return [49.280 + Math.random()*0.001-0.0005, -123.118 + Math.random()*0.001-0.0005];
+  if (a.includes("keefer")) return [49.279 + Math.random()*0.001-0.0005, -123.100 + Math.random()*0.001-0.0005];
+  // Default: scatter around DTES core
+  return [49.281 + Math.random()*0.006-0.003, -123.100 + Math.random()*0.008-0.004];
+}
+
+// ── MAP ───────────────────────────────────────────────────────────────────────
+const map = L.map('housing-map', {zoomControl:true}).setView([49.281, -123.100], 14);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com">CARTO</a>',
+  maxZoom:19
+}).addTo(map);
+setTimeout(() => map.invalidateSize(), 200);
+
+const rentColor = {shelter:"#1A7A6E", income:"#3A56A0", market:"#E8930A", dev:"#9333EA"};
+const housingMarkers = {};
+
+HOUSING.forEach((h, i) => {
+  const [lat, lng] = approxCoords(h.addr);
+  h._lat = lat; h._lng = lng;
+  const color = rentColor[h.rentType] || "#666";
+  const icon = L.divIcon({
+    html:`<div style="background:${color};width:10px;height:10px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>`,
+    className:'', iconSize:[10,10], iconAnchor:[5,5], popupAnchor:[0,-8]
+  });
+  const m = L.marker([lat,lng], {icon}).addTo(map);
+  m.bindPopup(`<div class="popup-name">${h.name}</div><div class="popup-addr">${h.addr}</div>${h.units ? `<div style="font-size:12px;color:#1A7A6E;font-weight:600;margin-top:4px">${h.units} units · ${h.rentLabel}</div>` : `<div style="font-size:12px;color:#9333EA;margin-top:4px">${h.rentLabel}</div>`}`);
+  housingMarkers[h.name] = m;
+});
 
 function rentOrder(r) {
   if (r.rentType === "dev") return 9999;
@@ -548,17 +548,19 @@ function sortData(arr) {
   });
 }
 
-function matchFilter(h) {
-  switch (activeFilter) {
-    case "all": return true;
-    case "shelter": return h.rentType === "shelter";
-    case "income": return h.rentType === "income";
-    case "women": return h.pop.includes("women");
-    case "seniors": return h.pop.includes("seniors");
-    case "indigenous": return h.pop.includes("indigenous");
-    case "youth": return h.pop.includes("youth");
-    case "supportive": return !!(h.features.supportive || h.features.transitional);
-    case "dev": return !!h.dev;
+function matchFilters(h) {
+  if (activeFilters.size === 0) return true;
+  for (const f of activeFilters) {
+    let match = false;
+    if (f === "shelter") match = h.rentType === "shelter";
+    else if (f === "income") match = h.rentType === "income";
+    else if (f === "women") match = h.pop.includes("women");
+    else if (f === "seniors") match = h.pop.includes("seniors");
+    else if (f === "indigenous") match = h.pop.includes("indigenous");
+    else if (f === "youth") match = h.pop.includes("youth");
+    else if (f === "supportive") match = !!(h.features.supportive || h.features.transitional);
+    else if (f === "dev") match = !!h.dev;
+    if (!match) return false;
   }
   return true;
 }
@@ -570,65 +572,70 @@ function matchSearch(h, q) {
 }
 
 function rentBadge(h) {
-  if (h.rentType === "dev") return `<span class="badge badge-dev">In development</span>`;
+  if (h.rentType === "dev") return `<span class="badge badge-dev">In dev</span>`;
   if (h.rentType === "income") return `<span class="badge badge-income">Income-based</span>`;
   if (h.rentType === "shelter") return `<span class="badge badge-shelter">${h.rentLabel}</span>`;
   return `<span class="badge badge-market">${h.rentLabel}</span>`;
 }
 
 function popBadges(h) {
-  const map = {
-    women: ["badge-women","Women"],
-    seniors: ["badge-senior","Seniors"],
-    indigenous: ["badge-indig","Indigenous"],
-    youth: ["badge-youth","Youth"],
-    families: ["badge-senior","Families"],
-    general: ["","General"],
-  };
-  return h.pop.map(p => {
-    const [cls, label] = map[p] || ["",""];
-    if (!cls) return "";
-    return `<span class="badge ${cls}">${label}</span>`;
-  }).join(" ");
+  const map = {women:["badge-women","Women"],seniors:["badge-senior","Seniors"],indigenous:["badge-indig","Indig."],youth:["badge-youth","Youth"],families:["badge-senior","Families"]};
+  return h.pop.map(p => { const [cls,label] = map[p]||[""]; return cls ? `<span class="badge ${cls}">${label}</span>` : ""; }).join(" ");
 }
 
 function featureIcons(f) {
   let out = "";
   if (f.pets)       out += `<span title="Pets OK" class="flag flag-pet">🐾</span>`;
   if (f.elev)       out += `<span title="Elevator" class="flag flag-elev">🛗</span>`;
-  if (f.meals)      out += `<span title="Meals provided" class="flag flag-meals">🍽</span>`;
-  if (f.accessible) out += `<span title="Accessible units" class="flag flag-acc">♿</span>`;
-  if (f.supportive) out += `<span title="Supportive housing" class="flag flag-supp">🤝</span>`;
-  if (f.substfree)  out += `<span title="Substance-free" class="flag">🚭</span>`;
+  if (f.meals)      out += `<span title="Meals" class="flag flag-meals">🍽</span>`;
+  if (f.accessible) out += `<span title="Accessible" class="flag flag-acc">♿</span>`;
+  if (f.supportive) out += `<span title="Supportive" class="flag flag-supp">🤝</span>`;
   if (f.lowbarrier) out += `<span title="Low-barrier" class="flag">🟢</span>`;
   if (f.transitional) out += `<span title="Transitional" class="flag">🔄</span>`;
   return out;
 }
 
+let selectedHousing = null;
+function selectHousing(name) {
+  selectedHousing = name;
+  document.querySelectorAll("#table-body tr").forEach(r => r.classList.remove("row-selected"));
+  const row = document.getElementById("hrow-"+CSS.escape(name));
+  if (row) row.classList.add("row-selected");
+  const m = housingMarkers[name];
+  if (m) { map.setView(m.getLatLng(), 16, {animate:true}); m.openPopup(); }
+}
+
 function renderTable() {
   const q = document.getElementById("search").value;
-  const filtered = sortData(HOUSING.filter(h => matchFilter(h) && matchSearch(h, q)));
+  const filtered = sortData(HOUSING.filter(h => matchFilters(h) && matchSearch(h, q)));
   const tbody = document.getElementById("table-body");
 
-  // Update counts
   document.getElementById("total-count").textContent = HOUSING.length;
   document.getElementById("shelter-count").textContent = HOUSING.filter(h=>h.rentType==="shelter").length;
   document.getElementById("dev-count").textContent = HOUSING.filter(h=>h.dev).length;
   document.getElementById("shown-count").textContent = filtered.length;
+  document.getElementById("total-shown").textContent = HOUSING.length;
+
+  // Marker visibility
+  HOUSING.forEach(h => {
+    const m = housingMarkers[h.name];
+    if (!m) return;
+    const show = filtered.some(f => f.name === h.name);
+    if (show) { if (!map.hasLayer(m)) m.addTo(map); }
+    else { if (map.hasLayer(m)) map.removeLayer(m); }
+  });
 
   if (filtered.length === 0) {
-    tbody.innerHTML = "";
-    document.getElementById("no-results").style.display = "";
+    tbody.innerHTML = `<tr class="no-results-row"><td colspan="11">🏘️ No listings match — try removing some filters.</td></tr>`;
     return;
   }
-  document.getElementById("no-results").style.display = "none";
 
   tbody.innerHTML = filtered.map(h => `
-    <tr class="${h.dev ? 'dev-row' : ''}">
+    <tr id="hrow-${h.name.replace(/[^a-zA-Z0-9]/g,'_')}" class="${h.dev ? 'dev-row' : ''}" onclick="selectHousing('${h.name.replace(/'/g,"\\'")}')">
       <td class="td-name">${h.name}${h.dev ? '<br><small style="color:#9333EA">🔨 In development</small>' : ''}</td>
       <td class="td-addr">${h.addr}</td>
       <td class="td-rent">${rentBadge(h)}</td>
-      <td class="td-units" style="text-align:center">${h.units || "—"}</td>
+      <td class="td-units">${h.units || "—"}</td>
       <td class="td-type"><span style="font-size:12px;color:var(--muted)">${h.type}</span></td>
       <td class="td-pop"><div class="tag-row">${popBadges(h)}</div></td>
       <td class="td-manager">${h.manager}</td>
@@ -645,9 +652,14 @@ document.getElementById("search").addEventListener("input", renderTable);
 
 document.querySelectorAll(".filter-btn").forEach(btn => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    activeFilter = btn.dataset.filter;
+    const f = btn.dataset.filter;
+    if (activeFilters.has(f)) {
+      activeFilters.delete(f);
+      btn.classList.remove("active");
+    } else {
+      activeFilters.add(f);
+      btn.classList.add("active");
+    }
     renderTable();
   });
 });
@@ -669,6 +681,11 @@ document.querySelectorAll("thead th[data-col]").forEach(th => {
 });
 
 renderTable();
+</script>
+</body>
+</html>
+
+
 </script>
 </body>
 </html>
