@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toxic Drug Supply – Vancouver · DTES Community Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+
+body { min-height: 100vh; display: flex; flex-direction: column; }
+.page-content { flex: 1; background: var(--surface); }
+.content-wrap { max-width: 900px; margin: 0 auto; padding: 40px 32px 80px; }
+
+/* ── Alert bar ── */
+#alert-bar {
+  background: #1a0a0a; border-bottom: 2px solid #8b1c1c;
+  padding: 10px 20px; display: flex; align-items: center; gap: 12px;
+  flex-shrink: 0;
+}
+.alert-pulse {
+  width: 10px; height: 10px; border-radius: 50%; background: #ef4444;
+  flex-shrink: 0; animation: apulse 1.5s ease-in-out infinite;
+}
+@keyframes apulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.6); }
+  50%      { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+}
+#alert-bar .alert-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+  color: #ef4444; white-space: nowrap;
+}
+#alert-bar .alert-text { font-size: 13px; color: #fca5a5; flex: 1; line-height: 1.4; }
+#alert-bar .alert-text strong { color: #fecaca; }
+#alert-bar .alert-date { font-size: 11px; color: rgba(252,165,165,0.5); white-space: nowrap; }
+
+/* ── Hero ── */
+.page-header { padding: 44px 40px 36px; }
+.page-header-inner { flex-direction: column; align-items: flex-start; gap: 20px; }
+.hero-stats { display: flex; gap: 32px; flex-wrap: wrap; margin-top: 8px; }
+.hero-stat { display: flex; flex-direction: column; gap: 2px; }
+.hero-stat-value { font-size: 24px; font-weight: 700; color: #ef4444; font-family: var(--font-head); }
+.hero-stat-value.amber { color: #fcd34d; }
+.hero-stat-value.sky { color: var(--sky); }
+.hero-stat-label { font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.7px; }
+.hero-emergency {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(139,28,28,0.3); border: 1px solid rgba(239,68,68,0.4);
+  color: #fca5a5; font-size: 12px; font-weight: 500;
+  padding: 5px 14px; border-radius: 20px; margin-top: 10px;
+}
+
+/* ── Section cards ── */
+.section-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px 32px; margin-bottom: 20px;
+}
+.section-eyebrow {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--teal-mid); margin-bottom: 8px;
+}
+.section-title {
+  font-family: var(--font-head); font-size: 22px; color: var(--ink);
+  margin-bottom: 14px; line-height: 1.25;
+}
+.section-body { font-size: 14px; color: var(--muted); line-height: 1.75; }
+.section-body p + p { margin-top: 12px; }
+.section-body strong { color: var(--ink); }
+
+/* ── Substance cards ── */
+.substances-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-top: 20px; }
+.sub-card {
+  border-radius: 10px; padding: 16px 18px;
+  border: 1px solid;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.sub-card.opioid  { background: #1a0808; border-color: #7f1d1d; }
+.sub-card.benzo   { background: #0d0d1f; border-color: #1e1b4b; }
+.sub-card.alpha2  { background: #0a1a0a; border-color: #14532d; }
+.sub-card.adulterant { background: #1a1a08; border-color: #713f12; }
+.sub-card.alert   { background: #1a0f00; border-color: #92400e; border-width: 2px; }
+
+.sub-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.sub-name { font-size: 15px; font-weight: 700; line-height: 1.2; }
+.sub-card.opioid  .sub-name { color: #fca5a5; }
+.sub-card.benzo   .sub-name { color: #a5b4fc; }
+.sub-card.alpha2  .sub-name { color: #86efac; }
+.sub-card.adulterant .sub-name { color: #fde68a; }
+.sub-card.alert   .sub-name { color: #fed7aa; }
+
+.sub-tag {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; margin-top: 2px;
+}
+.sub-card.opioid  .sub-tag { background: rgba(239,68,68,0.2); color: #fca5a5; }
+.sub-card.benzo   .sub-tag { background: rgba(99,102,241,0.2); color: #a5b4fc; }
+.sub-card.alpha2  .sub-tag { background: rgba(34,197,94,0.2); color: #86efac; }
+.sub-card.adulterant .sub-tag { background: rgba(234,179,8,0.2); color: #fde68a; }
+.sub-card.alert   .sub-tag { background: rgba(245,158,11,0.3); color: #fed7aa; }
+
+.sub-desc { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.55; }
+
+.sub-footer { display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
+.naloxone-badge {
+  font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 6px; white-space: nowrap;
+}
+.nx-yes   { background: rgba(34,197,94,0.2);  color: #86efac; }
+.nx-more  { background: rgba(251,191,36,0.2); color: #fde68a; }
+.nx-no    { background: rgba(239,68,68,0.2);  color: #fca5a5; }
+.sub-status {
+  font-size: 10px; color: rgba(255,255,255,0.35); margin-left: auto;
+}
+.sub-new-badge {
+  font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px;
+  background: rgba(245,158,11,0.3); color: #fed7aa; letter-spacing: 0.5px;
+}
+
+/* ── Risk boxes ── */
+.risk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-top: 20px; }
+.risk-card { border-radius: 10px; padding: 16px 18px; border: 1px solid; }
+.risk-card.red    { background: #fef2f2; border-color: #fecaca; }
+.risk-card.amber  { background: #fffbeb; border-color: #fde68a; }
+.risk-card.purple { background: #f5f3ff; border-color: #ddd6fe; }
+.risk-card.blue   { background: #eff6ff; border-color: #bfdbfe; }
+.risk-icon { font-size: 22px; margin-bottom: 8px; }
+.risk-title { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+.risk-desc  { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+/* ── Stats row ── */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; margin-top: 20px; }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px 18px; text-align: center;
+}
+.stat-value { font-size: 26px; font-weight: 700; font-family: var(--font-head); color: var(--teal); margin-bottom: 4px; }
+.stat-value.red { color: #dc2626; }
+.stat-label { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.stat-sub   { font-size: 10px; color: var(--muted); margin-top: 3px; opacity: 0.7; }
+
+/* ── Cheque week bar ── */
+.note-box {
+  border-radius: 8px; padding: 12px 16px; font-size: 13px; line-height: 1.6;
+  margin-top: 16px; display: flex; gap: 10px; align-items: flex-start;
+}
+.note-box.red    { background: #fef2f2; border: 1px solid #fecaca; color: #7f1d1d; }
+.note-box.amber  { background: #fffbeb; border: 1px solid #fde68a; color: #78350f; }
+.note-box.teal   { background: var(--teal-pale); border: 1px solid var(--teal-mist); color: var(--teal-dark); }
+.note-box.purple { background: #f5f3ff; border: 1px solid #ddd6fe; color: #3730a3; }
+.note-icon { flex-shrink: 0; font-size: 16px; }
+
+/* ── Drug checking sites ── */
+.checking-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.checking-item {
+  display: grid; grid-template-columns: auto 1fr auto;
+  align-items: start; gap: 12px;
+  padding: 14px 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 10px;
+}
+.checking-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--teal); flex-shrink: 0; margin-top: 4px; }
+.checking-name { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.checking-detail { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.checking-hours { font-size: 11px; font-weight: 600; color: var(--teal); white-space: nowrap; text-align: right; }
+
+/* ── Alert timeline ── */
+.alert-timeline { display: flex; flex-direction: column; gap: 0; margin-top: 16px; }
+.at-item { display: flex; gap: 14px; position: relative; }
+.at-item:not(:last-child)::before {
+  content: ''; position: absolute; left: 15px; top: 26px; bottom: -8px;
+  width: 1px; background: var(--border);
+}
+.at-dot {
+  width: 10px; height: 10px; border-radius: 50%; margin-top: 12px; margin-left: 11px; flex-shrink: 0;
+}
+.at-dot.active { background: #ef4444; border: 2px solid #fca5a5; }
+.at-dot.normal { background: var(--teal-pale); border: 2px solid var(--teal-mid); }
+.at-body { padding: 8px 0 20px; flex: 1; }
+.at-date { font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 2px; }
+.at-event { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.at-desc  { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+/* ── Harm reduction steps ── */
+.hr-steps { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.hr-step { display: flex; gap: 14px; align-items: flex-start; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; }
+.hr-num { width: 28px; height: 28px; border-radius: 50%; background: var(--teal); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.hr-title { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+.hr-desc  { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* ── Live links ── */
+.live-links { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 16px; }
+.live-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; background: var(--white); border: 1px solid var(--border);
+  border-radius: 9px; text-decoration: none; transition: all 0.15s;
+}
+.live-link:hover { border-color: var(--teal); background: var(--teal-pale); text-decoration: none; }
+.live-link-icon { font-size: 20px; flex-shrink: 0; }
+.live-link-name { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.live-link-desc { font-size: 11px; color: var(--muted); }
+
+/* ── Source note ── */
+.source-note { background: var(--teal-pale); border-top: 1px solid var(--teal-mist); padding: 12px 32px; font-size: 12px; color: var(--muted); }
+.source-note a { color: var(--teal); }
+
+/* ── Dark mode for substance grid ── */
+.dark-card-wrap { background: #0f0f0f; border: 1px solid #2a2a2a; border-radius: 14px; padding: 24px; margin-top: 0; }
+.dark-card-wrap .section-eyebrow { color: #6ee7b7; }
+.dark-card-wrap .section-title { color: #f9fafb; }
+.dark-card-wrap .section-body { color: #9ca3af; }
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .content-wrap { padding: 24px 16px 60px; }
+  .section-card { padding: 20px 18px; }
+  .hero-stats { gap: 20px; }
+  .substances-grid { grid-template-columns: 1fr; }
+  .checking-item { grid-template-columns: auto 1fr; }
+  .checking-hours { display: none; }
+}
+</style>
+</head>
+<body>
+
+<script src="nav.js"></script>
+
+<!-- ── Active Alert Bar ── -->
+<div id="alert-bar">
+  <div class="alert-pulse"></div>
+  <div class="alert-label">Active Alert</div>
+  <div class="alert-text">
+    <strong>Fentanyl + Phenazolam (novel benzo)</strong> detected in "dark green chunk" sold as down — Squamish / VCH region.
+    Naloxone will not reverse the benzodiazepine component.
+  </div>
+  <div class="alert-date">Apr 10, 2026</div>
+</div>
+
+<!-- ── Hero Header ── -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div>
+      <div class="page-eyebrow">⚠️ Public Health Emergency · Since April 14, 2016</div>
+      <h1>Vancouver's <span>Toxic Drug Supply</span></h1>
+      <p>What's in the unregulated drug supply right now — substances detected, risks, alerts, and where to get drugs tested. Updated from live sources.</p>
+      <div class="hero-emergency">
+        ⚠️ BC has been in a drug poisoning public health emergency since April 14, 2016
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-value">39,592</span>
+        <span class="hero-stat-label">OD events in BC (2025)</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value amber">108</span>
+        <span class="hero-stat-label">Paramedic calls / day</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value sky">9,537</span>
+        <span class="hero-stat-label">Events in Vancouver (2025)</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value">105%</span>
+        <span class="hero-stat-label">Increase since 2016</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Main Content ── -->
+<div class="page-content">
+<div class="content-wrap">
+
+  <!-- What's in the Supply -->
+  <div class="dark-card-wrap section-card" style="background:#0f0f0f;border-color:#2a2a2a;">
+    <div class="section-eyebrow" style="color:#6ee7b7;">What's in the Supply</div>
+    <div class="section-title" style="color:#f9fafb;">Substances currently detected in Vancouver / BC</div>
+    <div class="section-body" style="color:#9ca3af;">
+      <p>The unregulated drug supply in Vancouver is contaminated, highly variable, and deadly. Most samples contain multiple substances. Naloxone reverses opioids — but <strong style="color:#fca5a5;">not benzodiazepines, medetomidine, or xylazine</strong>, all of which are now routinely present.</p>
+    </div>
+
+    <div class="substances-grid">
+
+      <!-- Fentanyl -->
+      <div class="sub-card opioid">
+        <div class="sub-header">
+          <div class="sub-name">Fentanyl</div>
+          <div class="sub-tag">Synthetic Opioid</div>
+        </div>
+        <div class="sub-desc">Dominates the supply. Detected in the vast majority of opioid samples and increasingly found in stimulants, cocaine, and counterfeit pills. 50–100× more potent than morphine. Tiny variations in concentration cause wildly different effects batch to batch.</div>
+        <div class="sub-footer">
+          <span class="naloxone-badge nx-yes">Naloxone: Yes</span>
+          <span class="sub-status">Ubiquitous</span>
+        </div>
+      </div>
+
+      <!-- Carfentanil -->
+      <div class="sub-card opioid alert">
+        <div class="sub-header">
+          <div class="sub-name">Carfentanil</div>
+          <div class="sub-tag">Synthetic Opioid</div>
+        </div>
+        <div class="sub-desc">Returning to BC's drug supply as of August 2025. ~100× more potent than fentanyl — a microgram is enough to kill. Requires multiple doses of naloxone. Standard fentanyl test strips do not reliably detect carfentanil; FTIR spectrometer needed.</div>
+        <div class="sub-footer">
+          <span class="naloxone-badge nx-more">Naloxone: More doses</span>
+          <span class="sub-new-badge">RETURNING ⚠</span>
+        </div>
+      </div>
+
+      <!-- Nitazenes -->
+      <div class="sub-card opioid">
+        <div class="sub-header">
+          <div class="sub-name">Nitazenes</div>
+          <div class="sub-tag">Synthetic Opioid</div>
+        </div>
+        <div class="sub-desc">A family of ultra-potent synthetic opioids (metonitazene, isotonitazene, etc.) with variable potency — some are more potent than fentanyl, others less. Not detected by standard fentanyl strips. Detected in BC samples; linked to overdose clusters. FTIR required for identification.</div>
+        <div class="sub-footer">
+          <span class="naloxone-badge nx-more">Naloxone: More doses</span>
+          <span class="sub-status">Detected in BC</span>
+        </div>
+      </div>
+
+      <!-- Phenazolam -->
+      <div class="sub-card benzo alert">
+        <div class="sub-header">
+          <div class="sub-name">Phenazolam</div>
+          <div class="sub-tag">Novel Benzo</div>
+        </div>
+        <div class="sub-desc">A novel benzodiazepine analog detected April 10, 2026 in Squamish alongside fentanyl. Causes prolonged sedation lasting hours to days. Naloxone has NO effect on benzodiazepines. People may appear to wake from naloxone then re-sedate as the benzo effect continues.</div>
+        <div class="sub-footer">
+          <span class="naloxone-badge nx-no">Naloxone: No effect</span>
+          <span class="sub-new-badge">ACTIVE ALERT</span>
+        </div>
+      </div>
+
+      <!-- Bromazolam / Etizolam -->
+      <div class="sub-card benzo">
+        <div class="sub-header">
+          <div class="sub-name">Bromazolam / Etizolam</div>
+          <div class="sub-tag">Designer Benzos</div>
+        </div>
+        <div class="sub-desc">The most commonly detected benzodiazepine adulterants in BC's opioid supply. Bromazolam has become dominant in recent years. Found in the majority of opioid samples. Cause prolonged sedation (hours–days), complicate overdose response, and have no antidote.</div>
+        <div class="sub-footer">
+          <span class="naloxone-badge nx-no">Naloxone: No effect</span>
+          <span class="sub-status">Very common</span>
+        </div>
+      </div>
+
+      <!-- Medetomidine -->
+      <div class="sub-card alpha2 alert">
+        <div class="sub-header">
+          <div class="sub-name">Medetomidine</div>
+          <div class="sub-tag">Alpha-2 Agonist</div>
+        </div>
+        <div class="sub-desc">An animal sedative (like xylazine) now prevalent in BC's unregulated opioid supply as of January 2026. Causes sedation, slow heart rate, low blood pressure. No reversal agent available. Not detected by fentanyl strips. Likely used to bulk out/extend product.</div>
+        <div class="sub-footer">
+          <span class="naloxone-badge nx-no">Naloxone: No effect</span>
+          <span class="sub-new-badge">NEW — Jan 2026</span>
+        </div>
+      </div>
+
+      <!-- Xylazine -->
+      <div class="sub-card alpha2">
+        <div class="sub-header">
+          <div class="sub-name">Xylazine ("Tranq")</div>
+          <div class="sub-tag">Alpha-2 Agonist</div>
+        </div>
+        <div class="sub-desc">An animal tranquilizer increasingly detected in BC. Causes severe skin wounds and tissue necrosis at injection sites — even away from the injection point. Prolonged sedation, slow breathing, low BP. No reversal agent. Naloxone will partially help the opioid component but not the xylazine.</div>
+        <div class="sub-footer">
+          <span class="naloxone-badge nx-no">Naloxone: No effect</span>
+          <span class="sub-status">Growing presence</span>
+        </div>
+      </div>
+
+      <!-- Levamisole -->
+      <div class="sub-card adulterant">
+        <div class="sub-header">
+          <div class="sub-name">Levamisole</div>
+          <div class="sub-tag">Adulterant</div>
+        </div>
+        <div class="sub-desc">A veterinary anthelmintic (dewormer) found predominantly in cocaine. Causes agranulocytosis — a potentially fatal drop in white blood cells — with repeated exposure. People may present with severe infections that don't respond normally. Not acutely dangerous in single use but dangerous over time.</div>
+        <div class="sub-footer">
+          <span class="naloxone-badge" style="background:rgba(107,114,128,0.2);color:#9ca3af;">Not opioid-related</span>
+          <span class="sub-status">Common in cocaine</span>
+        </div>
+      </div>
+
+      <!-- Counterfeit Pills -->
+      <div class="sub-card adulterant">
+        <div class="sub-header">
+          <div class="sub-name">Counterfeit Pills</div>
+          <div class="sub-tag">Pressed Tablets</div>
+        </div>
+        <div class="sub-desc">Pills pressed to look like legitimate medications (M30 oxycodone, Dilaudid, Xanax, Adderall) containing fentanyl, benzos, and/or other substances. Extremely inconsistent — potency varies dramatically pill to pill even in the same batch ("hot spots"). Never assume a pressed pill is what it looks like.</div>
+        <div class="sub-footer">
+          <span class="naloxone-badge nx-yes">Naloxone: For opioid</span>
+          <span class="sub-status">Increasing in BC</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="note-box amber" style="margin-top:20px;background:rgba(120,80,0,0.2);border-color:rgba(245,158,11,0.3);color:#fde68a;">
+      <span class="note-icon">⚠️</span>
+      <span>Most samples contain <strong>multiple substances simultaneously</strong>. A supply contaminated with both fentanyl and a benzodiazepine is now the norm, not the exception. Naloxone reverses the opioid — the person may wake up but remain sedated by the benzo. Stay with the person.</span>
+    </div>
+  </div>
+
+  <!-- Recent Alerts & Advisories -->
+  <div class="section-card">
+    <div class="section-eyebrow">Recent Alerts &amp; Advisories</div>
+    <div class="section-title">What's changed in the supply recently</div>
+
+    <div class="alert-timeline">
+      <div class="at-item">
+        <div class="at-dot active"></div>
+        <div class="at-body">
+          <div class="at-date">April 10, 2026 — VCH Drug Alert</div>
+          <div class="at-event">Phenazolam + Fentanyl — Squamish</div>
+          <div class="at-desc">Dark green chunk sold as "down" tested positive for fentanyl and phenazolam, a novel benzodiazepine analog. Use drug checking. Naloxone will not reverse phenazolam. Source: Toward the Heart / VCH.</div>
+        </div>
+      </div>
+      <div class="at-item">
+        <div class="at-dot normal"></div>
+        <div class="at-body">
+          <div class="at-date">January 2026 — Provincial Advisory</div>
+          <div class="at-event">Medetomidine now prevalent in unregulated opioid supply</div>
+          <div class="at-desc">Medetomidine, an alpha-2 adrenergic agonist used as an animal sedative, is now being detected broadly across BC's unregulated opioid supply. It has no antidote. Overdose response: give naloxone for the opioid component and monitor. Source: Toward the Heart.</div>
+        </div>
+      </div>
+      <div class="at-item">
+        <div class="at-dot normal"></div>
+        <div class="at-body">
+          <div class="at-date">January 31, 2026</div>
+          <div class="at-event">Drug decriminalization pilot ended</div>
+          <div class="at-desc">BC's personal possession decriminalization pilot (launched Jan 2023) ended January 31, 2026. Simple possession is once again a criminal matter. This may push people further from services and increase use in isolated, higher-risk settings.</div>
+        </div>
+      </div>
+      <div class="at-item">
+        <div class="at-dot normal"></div>
+        <div class="at-body">
+          <div class="at-date">November 2025 — Peak Month</div>
+          <div class="at-event">4,177 overdose events — highest month of 2025</div>
+          <div class="at-desc">November 2025 saw the highest single-month paramedic call volume in 2025. The peak single day of 2025–2026 was January 21, 2026 with 256 overdose events province-wide. Source: BCEHS 2025 data.</div>
+        </div>
+      </div>
+      <div class="at-item">
+        <div class="at-dot normal"></div>
+        <div class="at-body">
+          <div class="at-date">September 2025 — Advisory</div>
+          <div class="at-event">Increased overdose events during cheque week</div>
+          <div class="at-desc">Overdose spikes around BC Disability Assistance and income assistance cheque dates (typically 1st and 3rd Wednesday of the month). Higher purchasing power leads to more use and more ODs. All services increase vigilance during cheque week.</div>
+        </div>
+      </div>
+      <div class="at-item">
+        <div class="at-dot normal"></div>
+        <div class="at-body">
+          <div class="at-date">August 2025 — Advisory</div>
+          <div class="at-event">Carfentanil returning to BC's drug supply</div>
+          <div class="at-desc">Carfentanil — approximately 100× more potent than fentanyl — was flagged as returning to the BC supply. Standard fentanyl immunoassay strips do not reliably detect carfentanil. FTIR spectrometry is needed. Multiple doses of naloxone may be required. Source: Toward the Heart.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note-box teal" style="margin-top:4px;">
+      <span class="note-icon">📱</span>
+      <span>Get real-time drug alerts by text: <strong>text JOIN to 253787</strong> (Toward the Heart alert service, province-wide, choose your region).</span>
+    </div>
+  </div>
+
+  <!-- Key Risks -->
+  <div class="section-card">
+    <div class="section-eyebrow">Key Risks</div>
+    <div class="section-title">What makes the current supply especially dangerous</div>
+
+    <div class="risk-grid">
+      <div class="risk-card red">
+        <div class="risk-icon">💉</div>
+        <div class="risk-title">Naloxone doesn't fix everything</div>
+        <div class="risk-desc">Naloxone reverses opioids only. Benzodiazepines (bromazolam, etizolam, phenazolam), medetomidine, and xylazine have <strong>no antidote</strong>. When both are present — which is now the norm — a person may partially respond to naloxone but remain deeply sedated. Stay with them.</div>
+      </div>
+      <div class="risk-card amber">
+        <div class="risk-icon">⚡</div>
+        <div class="risk-title">Extreme potency variation</div>
+        <div class="risk-desc">The unregulated supply is not evenly mixed. Fentanyl forms "hot spots" in batches — one portion of a supply can be many times more potent than another from the same purchase. A tolerance built on yesterday's supply does not protect against today's.</div>
+      </div>
+      <div class="risk-card purple">
+        <div class="risk-icon">🩹</div>
+        <div class="risk-title">Xylazine &amp; medetomidine wounds</div>
+        <div class="risk-desc">Xylazine causes severe necrotic skin wounds — even far from the injection site. Wounds can progress rapidly and lead to amputation if untreated. Wound care is available at most DTES health services. Do not delay treatment.</div>
+      </div>
+      <div class="risk-card blue">
+        <div class="risk-icon">🏠</div>
+        <div class="risk-title">Using alone</div>
+        <div class="risk-desc">Most fatal overdoses happen when no one else is present. In the current supply — with prolonged sedation from benzos, medetomidine, and xylazine — being found quickly is critical. Never Use Alone: <strong>1-800-484-3731</strong> (stay on phone while using).</div>
+      </div>
+      <div class="risk-card red">
+        <div class="risk-icon">💊</div>
+        <div class="risk-title">Counterfeit pills are not medicine</div>
+        <div class="risk-desc">Pills that look like M30s, Dilaudid, Xanax, or Adderall almost certainly contain fentanyl, benzos, or other unknowns. There is no safe "fake pill" — and even a single pill can be fatal if it contains a hot spot.</div>
+      </div>
+      <div class="risk-card amber">
+        <div class="risk-icon">📅</div>
+        <div class="risk-title">Cheque week spikes</div>
+        <div class="risk-desc">Overdose events increase sharply during BC Disability Assistance and income assistance cheque weeks. If you or someone you know uses more heavily around cheque dates, plan ahead: use with others, carry naloxone, use SCS/OPS.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics -->
+  <div class="section-card">
+    <div class="section-eyebrow">2025 Statistics — BC &amp; Vancouver</div>
+    <div class="section-title">The scale of the crisis</div>
+    <div class="section-body">
+      <p>Data from BC Emergency Health Services (BCEHS) paramedic call logs for 2025. Death counts from the BC Coroners Service are published separately and typically lag by several months.</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value red">39,592</div>
+        <div class="stat-label">Overdose events in BC</div>
+        <div class="stat-sub">2025 full year</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">108</div>
+        <div class="stat-label">Paramedic OD calls per day</div>
+        <div class="stat-sub">BC average, 2025</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value red">9,537</div>
+        <div class="stat-label">Events in Vancouver</div>
+        <div class="stat-sub">Highest city in BC</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">10,927</div>
+        <div class="stat-label">Events in VCH region</div>
+        <div class="stat-sub">–1.5% vs 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value red">4,177</div>
+        <div class="stat-label">Events in Nov 2025</div>
+        <div class="stat-sub">Peak month of 2025</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">256</div>
+        <div class="stat-label">Events on Jan 21, 2026</div>
+        <div class="stat-sub">Peak single day</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value red">105%</div>
+        <div class="stat-label">Increase in OD events since 2016</div>
+        <div class="stat-sub">vs year of PHE declaration</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">Apr 14, 2016</div>
+        <div class="stat-label">Public health emergency declared</div>
+        <div class="stat-sub">Still in effect</div>
+      </div>
+    </div>
+
+    <div class="note-box amber" style="margin-top:20px;">
+      <span class="note-icon">📊</span>
+      <span>BCEHS data counts paramedic responses, not deaths — one event may be one or more people. BC Coroners Service death data is published with a lag; for current death counts see the <a href="https://www2.gov.bc.ca/gov/content/life-events/death/coroners-service/statistical-reports" target="_blank" rel="noopener">BC Coroners Service dashboard</a>.</span>
+    </div>
+  </div>
+
+  <!-- Drug Checking -->
+  <div class="section-card">
+    <div class="section-eyebrow">Drug Checking — Vancouver / DTES</div>
+    <div class="section-title">Where to get your drugs tested</div>
+    <div class="section-body">
+      <p>Drug checking can identify what's in a sample — fentanyl, benzos, xylazine, medetomidine, stimulants. FTIR spectrometry gives the most complete picture. Fentanyl immunoassay strips are more accessible but <strong>do not detect carfentanil, nitazenes, benzos, xylazine, or medetomidine</strong>.</p>
+    </div>
+
+    <div class="checking-list">
+      <div class="checking-item">
+        <div class="checking-dot"></div>
+        <div>
+          <div class="checking-name">880 E Hastings — Dedicated Drug Checking Site</div>
+          <div class="checking-detail">VCH / community operated. FTIR spectrometer + immunoassay strips. Substance ID and drug alert info. Text JOIN to 253787 for alerts.</div>
+        </div>
+        <div class="checking-hours">Daily<br>Noon–8pm</div>
+      </div>
+      <div class="checking-item">
+        <div class="checking-dot"></div>
+        <div>
+          <div class="checking-name">Insite — 139 E Hastings St</div>
+          <div class="checking-detail">FTIR spectrometer available daily. Fentanyl strips always available. Drug checking alongside supervised consumption.</div>
+        </div>
+        <div class="checking-hours">Daily<br>9am–2am</div>
+      </div>
+      <div class="checking-item">
+        <div class="checking-dot"></div>
+        <div>
+          <div class="checking-name">Molson OPS (MOPS) — 166 E Hastings St</div>
+          <div class="checking-detail">FTIR spectrometer Tuesdays. Fentanyl immunoassay strips daily.</div>
+        </div>
+        <div class="checking-hours">Daily<br>7am–10:30pm</div>
+      </div>
+      <div class="checking-item">
+        <div class="checking-dot"></div>
+        <div>
+          <div class="checking-name">Other VCH drug checking locations</div>
+          <div class="checking-detail">VCH operates additional drug checking across the region. Check <a href="https://www.vch.ca/en/service/drug-checking" target="_blank" rel="noopener">vch.ca/drug-checking</a> for current locations.</div>
+        </div>
+        <div class="checking-hours">Varies</div>
+      </div>
+    </div>
+
+    <div class="note-box red" style="margin-top:16px;">
+      <span class="note-icon">🔬</span>
+      <span><strong>Fentanyl test strips have significant blind spots.</strong> A negative fentanyl strip does not mean a sample is safe — it will not detect carfentanil, nitazenes, benzodiazepines, medetomidine, or xylazine. FTIR spectrometry gives the most complete picture.</span>
+    </div>
+  </div>
+
+  <!-- Harm Reduction -->
+  <div class="section-card">
+    <div class="section-eyebrow">Harm Reduction</div>
+    <div class="section-title">Reducing risk with the current supply</div>
+
+    <div class="hr-steps">
+      <div class="hr-step">
+        <div class="hr-num">1</div>
+        <div>
+          <div class="hr-title">Get your drugs checked before using</div>
+          <div class="hr-desc">FTIR spectrometry at 880 E Hastings, Insite, or Molson OPS can identify what's in a sample. Knowing what's there changes what you watch for and how much you use.</div>
+        </div>
+      </div>
+      <div class="hr-step">
+        <div class="hr-num">2</div>
+        <div>
+          <div class="hr-title">Use fentanyl test strips — and understand their limits</div>
+          <div class="hr-desc">Strips are free at most DTES harm reduction sites. A positive is a warning. A negative does not mean safe — strips miss carfentanil, nitazenes, and all non-opioid adulterants.</div>
+        </div>
+      </div>
+      <div class="hr-step">
+        <div class="hr-num">3</div>
+        <div>
+          <div class="hr-title">Never use alone</div>
+          <div class="hr-desc">Use at an SCS/OPS if possible. If using alone, call Never Use Alone: <strong>1-800-484-3731</strong> — stay on the line while you use, they will call 911 if you stop responding.</div>
+        </div>
+      </div>
+      <div class="hr-step">
+        <div class="hr-num">4</div>
+        <div>
+          <div class="hr-title">Go slow — start low, especially with a new supply</div>
+          <div class="hr-desc">Potency varies dramatically. After a break in use (hospital, custody, detox), tolerance drops fast. Use a test dose. The supply you used last week may be nothing like today's.</div>
+        </div>
+      </div>
+      <div class="hr-step">
+        <div class="hr-num">5</div>
+        <div>
+          <div class="hr-title">Carry naloxone and know how to use it</div>
+          <div class="hr-desc">Free naloxone kits at most DTES health and harm reduction sites, pharmacies, and via Toward the Heart. With the current benzo-contaminated supply: give naloxone, do rescue breathing, stay with the person — they may re-sedate as naloxone wears off.</div>
+        </div>
+      </div>
+      <div class="hr-step">
+        <div class="hr-num">6</div>
+        <div>
+          <div class="hr-title">Watch wounds — especially if you've used in the last few months</div>
+          <div class="hr-desc">Xylazine causes necrotic wounds that can appear days to weeks after injection, even at sites other than the injection point. Get wound care early — available at most DTES health sites, no referral needed.</div>
+        </div>
+      </div>
+      <div class="hr-step">
+        <div class="hr-num">7</div>
+        <div>
+          <div class="hr-title">Plan around cheque week</div>
+          <div class="hr-desc">If you or someone you know uses more heavily around cheque dates, plan ahead. Use with others, use at an SCS/OPS, have naloxone ready. Services also increase staff during cheque week — use them.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stay Informed -->
+  <div class="section-card">
+    <div class="section-eyebrow">Stay Informed</div>
+    <div class="section-title">Live sources for current supply information</div>
+    <div class="section-body">
+      <p>Drug supply data on this page is drawn from live sources and reflects the best available information. The supply changes constantly — subscribe to alerts and check these resources regularly.</p>
+    </div>
+
+    <div class="live-links">
+      <a class="live-link" href="https://towardtheheart.com/alerts" target="_blank" rel="noopener">
+        <span class="live-link-icon">🚨</span>
+        <div>
+          <div class="live-link-name">Toward the Heart — Alerts</div>
+          <div class="live-link-desc">Active drug alerts &amp; bulletins for BC</div>
+        </div>
+      </a>
+      <a class="live-link" href="https://www.vch.ca/en/service/drug-checking" target="_blank" rel="noopener">
+        <span class="live-link-icon">🔬</span>
+        <div>
+          <div class="live-link-name">VCH Drug Checking</div>
+          <div class="live-link-desc">Locations &amp; current results</div>
+        </div>
+      </a>
+      <a class="live-link" href="https://www.bcehs.ca/about/accountability/data/overdose-drug-poisoning-data" target="_blank" rel="noopener">
+        <span class="live-link-icon">📊</span>
+        <div>
+          <div class="live-link-name">BCEHS OD Data</div>
+          <div class="live-link-desc">Paramedic response statistics</div>
+        </div>
+      </a>
+      <a class="live-link" href="https://www2.gov.bc.ca/gov/content/life-events/death/coroners-service/statistical-reports" target="_blank" rel="noopener">
+        <span class="live-link-icon">📋</span>
+        <div>
+          <div class="live-link-name">BC Coroners Service</div>
+          <div class="live-link-desc">Drug toxicity death counts</div>
+        </div>
+      </a>
+      <a class="live-link" href="https://towardtheheart.com/substance-information-sheets" target="_blank" rel="noopener">
+        <span class="live-link-icon">📄</span>
+        <div>
+          <div class="live-link-name">Substance Info Sheets</div>
+          <div class="live-link-desc">Toward the Heart factsheets</div>
+        </div>
+      </a>
+      <a class="live-link" href="sms:253787" target="_blank" rel="noopener">
+        <span class="live-link-icon">📱</span>
+        <div>
+          <div class="live-link-name">Text Alerts — 253787</div>
+          <div class="live-link-desc">Text JOIN to get live alerts by region</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</div><!-- /content-wrap -->
+</div><!-- /page-content -->
+
+<div class="source-note">
+  Data sources: <a href="https://towardtheheart.com" target="_blank" rel="noopener">Toward the Heart</a> (active alerts, April 2026) ·
+  <a href="https://www.bcehs.ca" target="_blank" rel="noopener">BC Emergency Health Services</a> (2025 OD data) ·
+  <a href="https://www2.gov.bc.ca/gov/content/life-events/death/coroners-service" target="_blank" rel="noopener">BC Coroners Service</a> ·
+  <a href="https://www.vch.ca" target="_blank" rel="noopener">Vancouver Coastal Health</a>.
+  Supply composition data retrieved April 11, 2026. Drug supply changes rapidly — verify with live sources before acting on this information.
+</div>
+
+</body>
+</html>
