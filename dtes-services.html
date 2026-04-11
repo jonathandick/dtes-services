@@ -2,516 +2,281 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>DTES Services Directory</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTES Services Directory – DTES Community Tools</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<link rel="stylesheet" href="shared.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
-:root {
-  --red:#C0392B;--orange:#D95F00;--green:#1A7A4A;--blue:#1655A2;
-  --purple:#6B3FA0;--teal:#0A7A6B;--amber:#9A6F00;--slate:#4A5568;
-  --pink:#A0306B;--navy:#1A2B6B;--fire:#CC3300;--police:#003087;--ems:#006633;
-  --bg:#F5F4F1;--surface:#FFFFFF;--surface2:#EFEDE8;--border:#E0DCD5;
-  --border2:#CBC5BD;--text:#18160F;--text2:#6A6259;--text3:#9D9489;
-  --radius:10px;--radius-sm:6px;--radius-lg:14px;
-  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md:0 4px 16px rgba(0,0,0,0.10),0 2px 6px rgba(0,0,0,0.06);
-  --shadow-lg:0 12px 40px rgba(0,0,0,0.14),0 4px 12px rgba(0,0,0,0.08);
-  --header-h:52px;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;}
-button{font-family:inherit;cursor:pointer;border:none;background:none;}
-input,textarea,select{font-family:inherit;}
-a{color:var(--blue);text-decoration:none;}
-a:hover{text-decoration:underline;}
+body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-/* ── Layout ── */
-#app{display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
-
-
-/* ── Topbar ── */
-#topbar{
-  background:var(--surface);border-bottom:1px solid var(--border);
-  padding:0 14px;display:flex;align-items:center;gap:10px;
-  height:var(--header-h);flex-shrink:0;z-index:200;
+/* ── Alert bar ── */
+#alert-bar {
+  background: #FFF8E0; border-bottom: 1px solid #F0C040;
+  padding: 7px 16px; font-size: 12px; color: #7a5a00;
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
 }
-#logo{display:flex;align-items:center;gap:9px;flex-shrink:0;text-decoration:none;}
-#logo-mark{
-  width:28px;height:28px;border-radius:7px;background:var(--red);
-  display:flex;align-items:center;justify-content:center;
-  color:#fff;font-size:11px;font-weight:700;letter-spacing:-0.5px;flex-shrink:0;
-}
-#logo-text{display:flex;flex-direction:column;line-height:1.15;}
-#logo-text strong{font-size:13px;font-weight:600;color:var(--text);}
-#logo-text small{font-size:10px;color:var(--text3);font-weight:400;}
-#search-wrap{flex:1;position:relative;max-width:280px;}
-#search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;width:14px;height:14px;}
-#search{
-  width:100%;height:32px;border:1px solid var(--border);border-radius:20px;
-  padding:0 10px 0 30px;font-size:13px;background:var(--surface2);color:var(--text);outline:none;
-  transition:border-color 0.15s,background 0.15s;
-}
-#search:focus{border-color:var(--blue);background:var(--surface);}
-.tb-btn{
-  height:32px;padding:0 11px;border:1px solid var(--border);border-radius:20px;
-  background:var(--surface);font-size:12px;font-weight:500;color:var(--text2);
-  cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;
-  transition:all 0.15s;flex-shrink:0;
-}
-.tb-btn:hover{border-color:var(--border2);color:var(--text);}
-.tb-btn.danger{background:var(--red);color:#fff;border-color:var(--red);}
-.tb-btn.danger:hover{background:#a82e22;}
-#org-count{font-size:11px;color:var(--text3);white-space:nowrap;flex-shrink:0;font-variant-numeric:tabular-nums;}
-
-/* ── Alert banner ── */
-#alert-bar{
-  display:none;background:#fff3cd;border-bottom:1px solid #f0c040;
-  padding:7px 14px;font-size:12px;color:#7a5a00;align-items:center;gap:8px;
-  flex-shrink:0;cursor:pointer;
-}
-#alert-bar.show{display:flex;}
-#alert-bar strong{font-weight:600;}
-#alert-bar a{color:#7a5a00;text-decoration:underline;}
-
-/* ── Filter sidebar (vertical, left of map) ── */
-#filter-sidebar{
-  width:184px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;overflow-y:auto;z-index:10;
-}
-#filter-sidebar::-webkit-scrollbar{width:3px;}
-#filter-sidebar::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
-#filter-sidebar-inner{padding:10px 8px 16px;}
-.fs-section-label{
-  font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;
-  color:var(--text3);padding:0 4px;margin:12px 0 5px;
-}
-.fs-section-label:first-child{margin-top:0;}
-.fchip{
-  display:flex;align-items:center;gap:7px;width:100%;
-  padding:6px 8px;border-radius:var(--radius-sm);border:1px solid transparent;
-  background:transparent;font-size:12px;font-weight:500;color:var(--text2);
-  cursor:pointer;transition:all 0.15s;text-align:left;margin-bottom:2px;
-}
-.fchip:hover{background:var(--surface2);color:var(--text);}
-.fchip.active{background:var(--text);color:#fff;border-color:var(--text);}
-.fchip .cdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.fs-divider{height:1px;background:var(--border);margin:10px 4px;}
-.fchip.flag-chip{font-size:11px;}
-.fchip.flag-chip.active{background:var(--blue);border-color:var(--blue);}
-#filter-count{font-size:11px;color:var(--text3);padding:8px 12px;border-top:1px solid var(--border);flex-shrink:0;text-align:center;}
-#filter-clear-btn{
-  width:calc(100% - 16px);margin:6px 8px 0;height:28px;border-radius:var(--radius-sm);
-  border:1px solid var(--border);background:var(--surface2);font-size:11px;
-  color:var(--text2);cursor:pointer;transition:all 0.15s;display:none;
-}
-#filter-clear-btn.show{display:block;}
-#filter-clear-btn:hover{border-color:var(--border2);color:var(--text);}
-
-/* ── Body ── */
-#body{display:flex;flex:1;overflow:hidden;}
+#alert-bar a { color: #7a5a00; text-decoration: underline; }
 
 /* ── Map ── */
-#map-wrap{flex:1;position:relative;min-width:0;}
-#map{width:100%;height:100%;}
-.leaflet-popup-content-wrapper{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius);box-shadow:var(--shadow-md);padding:0;
-  font-family:'DM Sans',sans-serif;min-width:240px;
-}
-.leaflet-popup-content{margin:0!important;padding:0!important;}
-.leaflet-popup-tip{background:var(--surface);}
-.popup-inner{padding:13px 14px;}
-.popup-cat-label{font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px;opacity:0.85;}
-.popup-name{font-size:14px;font-weight:600;line-height:1.3;color:var(--text);margin-bottom:4px;}
-.popup-addr{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.4;}
-.popup-badges{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:10px;}
-.pb{font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;line-height:1.5;}
-.pb-yes{background:#dcf5e8;color:#0e5c30;}
-.pb-no{background:#f0ece8;color:#8a8278;}
-.pb-ref{background:#fff3dc;color:#7a5a00;}
-.pb-ems{background:#e8f0ff;color:#1a3a8a;}
-.popup-detail-btn{
-  width:100%;padding:7px;border-radius:var(--radius-sm);
-  background:var(--text);color:#fff;font-size:12px;font-weight:500;
-  cursor:pointer;transition:background 0.15s;border:none;
-}
-.popup-detail-btn:hover{background:#333;}
+#services-map { width: 100%; height: 100%; }
 
-/* ── Panel ── */
-#panel{
-  width:360px;flex-shrink:0;background:var(--bg);border-left:1px solid var(--border);
-  display:flex;flex-direction:column;overflow:hidden;
-  transition:transform 0.25s ease;
-}
-#panel-header{
-  padding:10px 12px 8px;border-bottom:1px solid var(--border);
-  background:var(--surface);flex-shrink:0;
-}
-#panel-tabs{display:flex;gap:2px;background:var(--surface2);border-radius:8px;padding:3px;}
-.ptab{
-  flex:1;height:26px;border:none;border-radius:5px;background:transparent;
-  font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.15s;
-}
-.ptab.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow);}
-#panel-list{flex:1;overflow-y:auto;padding:8px;}
-#panel-list::-webkit-scrollbar{width:3px;}
-#panel-list::-webkit-scrollbar-track{background:transparent;}
-#panel-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+/* ── Table columns ── */
+.td-name  { font-weight: 500; color: var(--ink); min-width: 160px; }
+.td-name small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; margin-top: 2px; }
+.td-cat   { min-width: 120px; }
+.td-addr  { font-size: 12px; color: var(--muted); min-width: 140px; }
+.td-phone { font-size: 12px; white-space: nowrap; }
+.td-phone a { color: var(--teal); text-decoration: none; }
+.td-phone a:hover { text-decoration: underline; }
+.td-hours { font-size: 12px; color: var(--muted); min-width: 120px; }
 
-/* ── Cards ── */
-.org-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-  margin-bottom:7px;cursor:pointer;transition:all 0.15s;overflow:hidden;
+/* ── Category pill (cat-specific colors) ── */
+.tcat-pill {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: 10px; font-weight: 600; white-space: nowrap;
 }
-.org-card:hover{border-color:var(--border2);box-shadow:var(--shadow);}
-.org-card.selected{border-color:var(--blue);box-shadow:0 0 0 2px rgba(22,85,162,0.12);}
-.org-card.expanded .card-body{display:block;}
-.card-top{padding:10px 11px 8px;display:flex;align-items:flex-start;gap:9px;}
-.card-icon{
-  width:32px;height:32px;border-radius:7px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:15px;
-}
-.card-info{flex:1;min-width:0;}
-.card-cat{font-size:10px;font-weight:600;letter-spacing:0.4px;text-transform:uppercase;margin-bottom:1px;}
-.card-name{font-size:12.5px;font-weight:600;line-height:1.3;color:var(--text);}
-.card-inst{font-size:10.5px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.card-chevron{color:var(--text3);flex-shrink:0;transition:transform 0.2s;font-size:12px;margin-top:2px;}
-.org-card.expanded .card-chevron{transform:rotate(180deg);}
-.card-body{
-  display:none;padding:0 11px 10px;border-top:1px solid var(--border);
-}
-.card-row{
-  display:flex;align-items:flex-start;gap:6px;
-  padding:5px 0;border-bottom:1px solid var(--border);font-size:11.5px;
-}
-.card-row:last-child{border-bottom:none;}
-.card-label{color:var(--text3);width:58px;flex-shrink:0;font-size:10.5px;padding-top:1px;}
-.card-val{color:var(--text);flex:1;line-height:1.45;}
-.card-badges{display:flex;flex-wrap:wrap;gap:3px;padding-top:2px;}
-.cbadge{font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;line-height:1.5;}
-.cbadge-yes{background:#dcf5e8;color:#0e5c30;}
-.cbadge-no{background:#f0ece8;color:#8a8278;}
-.cbadge-ref{background:#fff3dc;color:#7a5a00;}
-.card-actions{display:flex;gap:6px;padding-top:8px;}
-.card-action-btn{
-  flex:1;height:28px;border-radius:var(--radius-sm);font-size:11px;font-weight:500;
-  cursor:pointer;transition:all 0.15s;border:1px solid var(--border);
-  background:var(--surface2);color:var(--text2);
-}
-.card-action-btn:hover{border-color:var(--border2);color:var(--text);}
-.card-action-btn.primary{background:var(--text);color:#fff;border-color:var(--text);}
-.card-action-btn.primary:hover{background:#333;}
+.tbadge-yes { background: #dcf5e8; color: #0e5c30; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+.tbadge-no  { background: #f0ece8; color: #8a8278; padding: 2px 7px; border-radius: 4px; font-size: 11px; white-space: nowrap; }
+.tbadge-ref { background: #fff3dc; color: #7a5a00; padding: 2px 7px; border-radius: 4px; font-size: 11px; white-space: nowrap; }
 
-/* ── Detail pane ── */
-#detail-pane{
-  display:none;flex-direction:column;flex:1;overflow:hidden;
-  background:var(--surface);
+/* ── Detail panel ── */
+#detail-panel { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+#detail-panel.show { display: flex; }
+#detail-back {
+  display: flex; align-items: center; gap: 6px; padding: 10px 14px;
+  border-bottom: 1px solid var(--border); background: var(--surface);
+  font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; flex-shrink: 0;
 }
-#detail-pane.show{display:flex;}
-#detail-back{
-  display:flex;align-items:center;gap:6px;padding:10px 12px;
-  border-bottom:1px solid var(--border);background:var(--surface);
-  font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;flex-shrink:0;
+#detail-back:hover { color: var(--ink); }
+#detail-scroll { flex: 1; overflow-y: auto; padding: 16px; }
+#detail-scroll::-webkit-scrollbar { width: 3px; }
+#detail-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.detail-icon-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.detail-icon { width: 40px; height: 40px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.detail-cat  { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px; }
+.detail-name { font-size: 16px; font-weight: 700; line-height: 1.25; color: var(--ink); }
+.detail-inst { font-size: 12px; color: var(--muted); margin-top: 3px; margin-bottom: 10px; }
+.detail-section-title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border); margin-top: 14px; }
+.detail-row { display: flex; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+.detail-row:last-child { border-bottom: none; }
+.detail-label { color: var(--muted); width: 80px; flex-shrink: 0; font-size: 11px; padding-top: 1px; }
+.detail-val { color: var(--ink); flex: 1; line-height: 1.5; }
+.detail-val a { color: var(--teal); }
+.detail-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
+.dbadge { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 5px; line-height: 1.5; }
+.dbadge-yes { background: #dcf5e8; color: #0e5c30; }
+.dbadge-no  { background: #f0ece8; color: #8a8278; }
+.dbadge-ref { background: #fff3dc; color: #7a5a00; }
+.detail-desc { font-size: 12px; color: var(--muted); line-height: 1.6; padding: 10px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border); margin-top: 4px; }
+.detail-note { font-size: 11.5px; color: #8a5a00; line-height: 1.5; padding: 8px 10px; background: #fff9e8; border-radius: 8px; border: 1px solid #f0c040; margin-top: 8px; }
+.detail-cta { display: flex; gap: 8px; margin-top: 14px; }
+.detail-cta-btn {
+  flex: 1; height: 34px; border-radius: 8px; font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s; border: 1px solid var(--border);
+  background: var(--surface); color: var(--muted); font-family: var(--font-body);
 }
-#detail-back:hover{color:var(--text);}
-#detail-scroll{flex:1;overflow-y:auto;padding:14px;}
-#detail-scroll::-webkit-scrollbar{width:3px;}
-#detail-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
-.detail-hero{margin-bottom:14px;}
-.detail-icon-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-.detail-icon{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-.detail-cat{font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px;}
-.detail-name{font-size:16px;font-weight:700;line-height:1.25;color:var(--text);}
-.detail-inst{font-size:12px;color:var(--text3);margin-top:3px;}
-.detail-section{margin-bottom:14px;}
-.detail-section-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border);}
-.detail-row{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
-.detail-row:last-child{border-bottom:none;}
-.detail-label{color:var(--text3);width:80px;flex-shrink:0;font-size:11px;padding-top:1px;}
-.detail-val{color:var(--text);flex:1;line-height:1.5;}
-.detail-badges{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;}
-.dbadge{font-size:11px;font-weight:500;padding:3px 9px;border-radius:5px;line-height:1.5;}
-.dbadge-yes{background:#dcf5e8;color:#0e5c30;}
-.dbadge-no{background:#f0ece8;color:#8a8278;}
-.dbadge-ref{background:#fff3dc;color:#7a5a00;}
-.detail-desc{font-size:12px;color:var(--text2);line-height:1.6;padding:10px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);}
-.detail-note{font-size:11.5px;color:#8a5a00;line-height:1.5;padding:8px 10px;background:#fff9e8;border-radius:var(--radius-sm);border:1px solid #f0c040;margin-top:8px;}
-.detail-cta{display:flex;gap:8px;margin-top:12px;}
-.detail-cta-btn{
-  flex:1;height:34px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;
-  cursor:pointer;transition:all 0.15s;border:1px solid var(--border);
-  background:var(--surface2);color:var(--text2);
-}
-.detail-cta-btn:hover{border-color:var(--border2);color:var(--text);}
-.detail-cta-btn.primary{background:var(--text);color:#fff;border-color:var(--text);}
-.detail-cta-btn.primary:hover{background:#333;}
+.detail-cta-btn:hover { border-color: var(--teal-mid); color: var(--teal); }
+.detail-cta-btn.primary { background: var(--teal); color: white; border-color: var(--teal); }
+.detail-cta-btn.primary:hover { background: var(--teal-dark); }
 
-/* ── Edit modal ── */
-#modal-overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);
-  z-index:500;align-items:center;justify-content:center;padding:16px;
+/* ── Popup overrides (services-specific) ── */
+.leaflet-popup-content-wrapper { min-width: 240px; }
+.popup-inner { padding: 12px 14px; }
+.popup-cat-label { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 3px; opacity: 0.85; }
+.popup-badges { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 10px; }
+.pb { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 4px; line-height: 1.5; }
+.pb-yes { background: #dcf5e8; color: #0e5c30; }
+.pb-ref { background: #fff3dc; color: #7a5a00; }
+.popup-detail-btn {
+  width: 100%; padding: 7px; border-radius: 6px;
+  background: var(--teal-deep); color: #fff; font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: background 0.15s; border: none; font-family: var(--font-body);
 }
-#modal-overlay.show{display:flex;}
-#modal{
-  background:var(--surface);border-radius:var(--radius-lg);
-  box-shadow:var(--shadow-lg);width:100%;max-width:520px;max-height:90dvh;
-  overflow-y:auto;padding:20px;
-}
-#modal h2{font-size:15px;font-weight:600;margin-bottom:14px;color:var(--text);}
-.form-row{margin-bottom:12px;}
-.form-row label{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.4px;}
-.form-row input,.form-row select,.form-row textarea{
-  width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);
-  padding:8px 10px;font-size:13px;color:var(--text);background:var(--surface);
-  outline:none;transition:border-color 0.15s;
-}
-.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--blue);}
-.form-row textarea{resize:vertical;min-height:80px;line-height:1.5;}
-.form-row select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239D9489' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
-.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.modal-actions{display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);}
-.modal-btn{
-  height:36px;padding:0 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;
-  cursor:pointer;transition:all 0.15s;border:1px solid var(--border);
-  background:var(--surface2);color:var(--text2);
-}
-.modal-btn:hover{border-color:var(--border2);color:var(--text);}
-.modal-btn.primary{background:var(--text);color:#fff;border-color:var(--text);margin-left:auto;}
-.modal-btn.primary:hover{background:#333;}
-.modal-btn.danger{background:var(--red);color:#fff;border-color:var(--red);}
-.modal-btn.danger:hover{background:#a82e22;}
+.popup-detail-btn:hover { background: var(--teal); }
 
-/* ── Handout print ── */
-#handout-overlay{
-  display:none;position:fixed;inset:0;background:#fff;
-  z-index:600;overflow:auto;padding:20px;
+/* ── Results bar action buttons ── */
+.action-btn {
+  height: 24px; padding: 0 9px; border-radius: 6px; font-size: 11px; font-weight: 500;
+  cursor: pointer; border: 1px solid var(--border); background: var(--white);
+  color: var(--muted); font-family: var(--font-body); transition: all 0.15s;
+  display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
 }
-#handout-overlay.show{display:block;}
-#handout-toolbar{display:flex;gap:8px;margin-bottom:16px;align-items:center;}
-#handout-content{max-width:700px;margin:0 auto;}
-.handout-title{font-size:18px;font-weight:700;margin-bottom:4px;}
-.handout-sub{font-size:12px;color:#666;margin-bottom:16px;}
-.handout-section{margin-bottom:14px;}
-.handout-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#444;border-bottom:1px solid #ddd;padding-bottom:4px;margin-bottom:8px;}
-.handout-item{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid #f0f0f0;font-size:12px;}
-.handout-item:last-child{border:none;}
-.handout-item-name{font-weight:600;color:#111;width:180px;flex-shrink:0;}
-.handout-item-addr{color:#555;flex:1;}
-.handout-item-phone{color:#1655A2;width:120px;flex-shrink:0;text-align:right;}
-@media print{
-  #handout-toolbar{display:none;}
-  #handout-overlay{padding:0;}
-}
+.action-btn:hover { border-color: var(--teal-mid); color: var(--teal); }
+.action-btn.primary { background: var(--teal); color: white; border-color: var(--teal); }
+.action-btn.primary:hover { background: var(--teal-dark); }
 
-/* ── Table view ── */
-#table-overlay{
-  display:none;position:fixed;inset:0;background:var(--bg);
-  z-index:600;flex-direction:column;
+/* ── Modal ── */
+#modal-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  z-index: 500; align-items: center; justify-content: center; padding: 16px;
 }
-#table-overlay.show{display:flex;}
-#table-toolbar{
-  display:flex;gap:8px;padding:12px 16px;align-items:center;
-  background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;
+#modal-overlay.show { display: flex; }
+#modal {
+  background: var(--white); border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+  width: 100%; max-width: 520px; max-height: 90dvh; overflow-y: auto; padding: 20px;
 }
-#table-toolbar h2{font-size:14px;font-weight:600;margin-right:4px;}
-#table-search-wrap{position:relative;flex:1;max-width:260px;}
-#table-search-wrap svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;}
-#table-search{width:100%;height:32px;border:1px solid var(--border);border-radius:20px;padding:0 10px 0 30px;font-size:13px;background:var(--surface2);color:var(--text);outline:none;}
-#table-search:focus{border-color:var(--blue);}
-#table-cat-filter{height:32px;border:1px solid var(--border);border-radius:20px;padding:0 28px 0 12px;font-size:12px;background:var(--surface);color:var(--text2);outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239D9489' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
-#table-count{font-size:11px;color:var(--text3);white-space:nowrap;}
-#table-wrap{flex:1;overflow:auto;}
-#table-wrap::-webkit-scrollbar{width:6px;height:6px;}
-#table-wrap::-webkit-scrollbar-track{background:transparent;}
-#table-wrap::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
-#org-table{width:100%;border-collapse:collapse;font-size:12px;}
-#org-table thead{position:sticky;top:0;z-index:10;background:var(--surface);box-shadow:0 1px 0 var(--border);}
-#org-table th{
-  padding:9px 12px;text-align:left;font-size:10.5px;font-weight:600;
-  color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;
-  white-space:nowrap;cursor:pointer;user-select:none;border-bottom:1px solid var(--border);
+#modal h2 { font-size: 15px; font-weight: 600; margin-bottom: 14px; color: var(--ink); }
+.form-row { margin-bottom: 12px; }
+.form-row label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
+.form-row input, .form-row select, .form-row textarea {
+  width: 100%; border: 1px solid var(--border); border-radius: 6px;
+  padding: 8px 10px; font-size: 13px; color: var(--ink); background: var(--white);
+  outline: none; transition: border-color 0.15s;
 }
-#org-table th:hover{color:var(--text);}
-#org-table th .sort-arrow{opacity:0.3;margin-left:3px;font-size:9px;}
-#org-table th.sorted .sort-arrow{opacity:1;color:var(--blue);}
-#org-table td{
-  padding:9px 12px;vertical-align:top;border-bottom:1px solid var(--border);
-  color:var(--text);line-height:1.45;
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--teal-mid); }
+.form-row textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+.form-row select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239D9489' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.modal-actions { display: flex; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+.modal-btn {
+  height: 36px; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s; border: 1px solid var(--border);
+  background: var(--surface); color: var(--muted); font-family: var(--font-body);
 }
-#org-table tr:hover td{background:var(--surface2);}
-#org-table tr.table-selected td{background:#e8f0ff;}
-.tcat-pill{
-  display:inline-block;padding:2px 8px;border-radius:4px;
-  font-size:10px;font-weight:600;white-space:nowrap;
-}
-.tbadge-yes{background:#dcf5e8;color:#0e5c30;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:500;white-space:nowrap;}
-.tbadge-no{background:#f0ece8;color:#8a8278;padding:1px 6px;border-radius:3px;font-size:10px;white-space:nowrap;}
-.tbadge-ref{background:#fff3dc;color:#7a5a00;padding:1px 6px;border-radius:3px;font-size:10px;white-space:nowrap;}
-.t-link{color:var(--blue);font-size:11px;}
-.t-note{font-size:10.5px;color:#8a5a00;font-style:italic;}
-.col-name{min-width:180px;max-width:220px;font-weight:600;}
-.col-cat{min-width:140px;}
-.col-inst{min-width:160px;max-width:200px;color:var(--text2);}
-.col-addr{min-width:160px;max-width:200px;}
-.col-phone{min-width:130px;white-space:nowrap;}
-.col-hours{min-width:150px;max-width:180px;}
-.col-oat{min-width:90px;}
-.col-scs{min-width:120px;}
-.col-walkin{min-width:120px;}
-.col-web{min-width:130px;}
-.col-desc{min-width:220px;max-width:320px;color:var(--text2);font-size:11.5px;}
-.col-actions{min-width:80px;}
-.t-action-btn{
-  height:26px;padding:0 10px;border-radius:var(--radius-sm);
-  font-size:11px;font-weight:500;cursor:pointer;
-  border:1px solid var(--border);background:var(--surface2);color:var(--text2);
-  transition:all 0.15s;
-}
-.t-action-btn:hover{border-color:var(--border2);color:var(--text);}
-@media print{
-  #table-toolbar{display:none;}
-  #table-overlay{position:static;}
-  #org-table th{background:#f0f0f0;}
-  #org-table tr:hover td{background:none;}
-}
+.modal-btn:hover { border-color: var(--teal-mid); color: var(--teal); }
+.modal-btn.primary { background: var(--teal); color: #fff; border-color: var(--teal); margin-left: auto; }
+.modal-btn.primary:hover { background: var(--teal-dark); }
+.modal-btn.danger { background: #C0392B; color: #fff; border-color: #C0392B; }
+.modal-btn.danger:hover { background: #a82e22; }
 
-/* ── Mobile ── */
-@media(max-width:700px){
-  #filter-sidebar{
-    display:none;
-  }
-  #panel{
-    position:fixed;bottom:0;left:0;right:0;width:100%;height:60dvh;
-    border-left:none;border-top:1px solid var(--border);
-    border-radius:14px 14px 0 0;z-index:150;
-    transform:translateY(calc(100% - 50px));
-  }
-  #panel.open{transform:translateY(0);}
-  #panel-handle{
-    width:36px;height:4px;background:var(--border2);border-radius:4px;
-    margin:8px auto 4px;cursor:pointer;
-  }
-  #map-wrap{height:calc(100dvh - var(--header-h) - var(--sitenav-h) - 50px);}
-  #body{flex-direction:column;}
-  .tb-btn span{display:none;}
+/* ── Handout overlay ── */
+#handout-overlay {
+  display: none; position: fixed; inset: 0; background: #fff;
+  z-index: 600; overflow: auto; padding: 20px;
 }
-@media(min-width:701px){#panel-handle{display:none;}}
-
-/* ── Empty state ── */
-#empty-state{
-  display:none;flex-direction:column;align-items:center;justify-content:center;
-  padding:40px 20px;text-align:center;color:var(--text3);
+#handout-overlay.show { display: block; }
+#handout-toolbar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
+#handout-content { max-width: 700px; margin: 0 auto; }
+.handout-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.handout-sub { font-size: 12px; color: #666; margin-bottom: 16px; }
+.handout-section { margin-bottom: 14px; }
+.handout-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #444; border-bottom: 1px solid #ddd; padding-bottom: 4px; margin-bottom: 8px; }
+.handout-item { display: flex; gap: 8px; padding: 5px 0; border-bottom: 1px solid #f0f0f0; font-size: 12px; }
+.handout-item:last-child { border: none; }
+.handout-item-name { font-weight: 600; color: #111; width: 180px; flex-shrink: 0; }
+.handout-item-addr { color: #555; flex: 1; }
+.handout-item-phone { color: #1655A2; width: 120px; flex-shrink: 0; text-align: right; }
+@media print {
+  #handout-toolbar { display: none; }
+  #handout-overlay { padding: 0; }
 }
-#empty-state.show{display:flex;}
-#empty-state svg{margin-bottom:12px;opacity:0.4;}
-#empty-state p{font-size:13px;}
 </style>
 </head>
 <body>
-<div id="app">
 
-<!-- Topbar -->
 <script src="nav.js"></script>
 
-<div id="topbar">
-  <a href="#" id="logo">
-    <div id="logo-mark">HR</div>
-    <div id="logo-text">
-      <strong>DTES Services</strong>
-      <small>Harm Reduction &amp; Addiction Directory</small>
+<div class="page-header">
+  <div class="page-header-inner">
+    <div>
+      <div class="page-eyebrow">🩺 Downtown Eastside · Vancouver</div>
+      <h1>DTES <span>Services Directory</span></h1>
+      <p>Harm reduction, addiction medicine, peer services, and community supports in the Downtown Eastside.</p>
     </div>
-  </a>
-  <div id="search-wrap">
-    <svg id="search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10.5 10.5l3 3"/></svg>
-    <input type="text" id="search" placeholder="Search organizations…" autocomplete="off">
+    <div class="header-meta">
+      <div class="meta-pill"><strong id="total-count">—</strong> organizations</div>
+      <div class="meta-pill"><strong id="shown-count-header">—</strong> shown</div>
+    </div>
   </div>
-  <button class="tb-btn" id="btn-add-org">
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6.5 2v9M2 6.5h9"/></svg>
-    <span>Add</span>
-  </button>
-  <button class="tb-btn" id="btn-handout">
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10h9M4 7l2.5 3L9 7M6.5 1v9"/></svg>
-    <span>Handout</span>
-  </button>
-  <button class="tb-btn" id="btn-table">
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="11" height="11" rx="1.5"/><path d="M1 4.5h11M1 8h11M4.5 4.5v7"/></svg>
-    <span>Table</span>
-  </button>
-  <span id="org-count"></span>
 </div>
 
-<!-- Alert bar -->
 <div id="alert-bar">
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 2l5.5 9.5H1.5L7 2z"/><path d="M7 6v3M7 10.5v.5"/></svg>
-  <span id="alert-text"><strong>VCH Drug Alert:</strong> Loading…</span>
-  <a href="https://towardtheheart.com/alerts" target="_blank" style="margin-left:auto;font-size:11px;">View all alerts →</a>
+  <strong>Drug alerts:</strong>
+  Check <a href="https://towardtheheart.com/alerts" target="_blank">towardtheheart.com/alerts</a>
+  or text JOIN to 253787 for VCH drug alerts
 </div>
 
-<!-- Body -->
-<div id="body">
-  <!-- Filter sidebar -->
-  <div id="filter-sidebar">
-    <div id="filter-sidebar-inner">
-      <div class="fs-section-label">Category</div>
-      <button class="fchip active" data-filter="all">All categories</button>
-      <button class="fchip" data-filter="SCS / OPS"><span class="cdot" style="background:#C0392B"></span>Consumption Sites</button>
-      <button class="fchip" data-filter="Primary Care / OAT"><span class="cdot" style="background:#1A7A4A"></span>Primary Care / OAT</button>
-      <button class="fchip" data-filter="Harm Reduction"><span class="cdot" style="background:#D4AC0D"></span>Harm Reduction</button>
-      <button class="fchip" data-filter="Detox / WDM"><span class="cdot" style="background:#D95F00"></span>Detox / WDM</button>
-      <button class="fchip" data-filter="Peer / Indigenous"><span class="cdot" style="background:#1655A2"></span>Peer / Indigenous</button>
-      <button class="fchip" data-filter="Women / Sex Workers"><span class="cdot" style="background:#A0306B"></span>Women / Sex Workers</button>
-      <button class="fchip" data-filter="Supportive Housing"><span class="cdot" style="background:#4A5568"></span>Supportive Housing</button>
-      <button class="fchip" data-filter="Shelter / Recovery"><span class="cdot" style="background:#6B3FA0"></span>Shelter / Recovery</button>
-      <button class="fchip" data-filter="Community / Drop-in"><span class="cdot" style="background:#0A7A6B"></span>Community / Drop-in</button>
-      <button class="fchip" data-filter="Emergency Services"><span class="cdot" style="background:#CC3300"></span>Emergency Services</button>
-      <button class="fchip" data-filter="Transitional / Acute Care"><span class="cdot" style="background:#2D3A8C"></span>Transitional Care</button>
-      <button class="fchip" data-filter="System Navigation"><span class="cdot" style="background:#1A2B6B"></span>System Navigation</button>
-
-      <div class="fs-divider"></div>
-      <div class="fs-section-label">Quick Filters</div>
-      <button class="fchip flag-chip" data-flag="oat">OAT available</button>
-      <button class="fchip flag-chip" data-flag="scs">SCS / OPS on-site</button>
-      <button class="fchip flag-chip" data-flag="walkin">Walk-in access</button>
-      <button class="fchip flag-chip" data-flag="24hr">Open 24 hours</button>
-      <button class="fchip flag-chip" data-flag="women">Women-only</button>
-      <button class="fchip flag-chip" data-flag="indigenous">Indigenous-specific</button>
+<div class="controls-bar">
+  <div class="controls-inner">
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="search" class="search-input" placeholder="Search organizations, services, addresses…">
     </div>
-    <button id="filter-clear-btn" onclick="clearFilters()">Clear all filters</button>
-    <div id="filter-count"></div>
-  </div>
-
-  <div id="map-wrap">
-    <div id="map"></div>
-  </div>
-
-  <div id="panel">
-    <div id="panel-handle" onclick="togglePanel()"></div>
-    <div id="panel-header">
-      <div id="panel-tabs">
-        <button class="ptab active" data-tab="list">List</button>
-        <button class="ptab" data-tab="detail">Detail</button>
-      </div>
+    <div class="filter-group">
+      <button class="filter-btn" data-cat="SCS / OPS">💉 SCS / OPS</button>
+      <button class="filter-btn" data-cat="Primary Care / OAT">🩺 Primary Care</button>
+      <button class="filter-btn" data-cat="Harm Reduction">🧴 Harm Reduction</button>
+      <button class="filter-btn" data-cat="Detox / WDM">🏥 Detox / WDM</button>
+      <button class="filter-btn" data-cat="Peer / Indigenous">🤝 Peer / Indigenous</button>
+      <button class="filter-btn" data-cat="Women / Sex Workers">♀ Women</button>
+      <button class="filter-btn" data-cat="Supportive Housing">🏠 Housing</button>
+      <button class="filter-btn" data-cat="Shelter / Recovery">🛡 Shelter</button>
+      <button class="filter-btn" data-cat="Community / Drop-in">🏢 Drop-in</button>
+      <button class="filter-btn" data-cat="Emergency Services">🚨 Emergency</button>
+      <button class="filter-btn" data-cat="Transitional / Acute Care">🏨 Acute Care</button>
+      <button class="filter-btn" data-cat="System Navigation">🔬 Navigation</button>
     </div>
-    <div id="panel-list">
-      <div id="empty-state">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="14" cy="14" r="10"/><path d="M22 22l6 6"/><path d="M10 14h8M14 10v8"/></svg>
-        <p>No organizations match your filters.</p>
-      </div>
-    </div>
-    <div id="detail-pane">
-      <div id="detail-back" onclick="showList()">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2L4 7l5 5"/></svg>
-        Back to list
-      </div>
-      <div id="detail-scroll"></div>
+    <div class="filter-group">
+      <button class="filter-btn" data-flag="oat">OAT</button>
+      <button class="filter-btn" data-flag="scs">SCS on-site</button>
+      <button class="filter-btn" data-flag="walkin">Walk-in</button>
+      <button class="filter-btn" data-flag="24hr">24hr</button>
+      <button class="filter-btn" data-flag="women">Women-only</button>
+      <button class="filter-btn" data-flag="indigenous">Indigenous</button>
     </div>
   </div>
 </div>
 
-<!-- Edit/Add Modal -->
+<div class="main-wrap">
+  <div class="split-layout">
+    <div id="map-container">
+      <div id="services-map"></div>
+    </div>
+    <div class="table-side">
+
+      <!-- List panel (default) -->
+      <div id="list-panel" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+        <div class="results-bar">
+          <strong id="shown-count">—</strong> of <strong id="total-shown">—</strong> organizations · Click row for details
+          <span style="float:right;display:flex;gap:5px;align-items:center;">
+            <button class="action-btn primary" onclick="openModal(null)">+ Add</button>
+            <button class="action-btn" onclick="openHandout()">🖨 Handout</button>
+            <button class="action-btn" onclick="exportCSV()">⬇ CSV</button>
+          </span>
+        </div>
+        <div class="table-scroll">
+          <table id="services-table">
+            <thead>
+              <tr>
+                <th data-col="name">Organization</th>
+                <th data-col="cat">Category</th>
+                <th data-col="addr">Address</th>
+                <th data-col="phone">Phone</th>
+                <th data-col="hours">Hours</th>
+                <th data-col="oat">OAT</th>
+                <th data-col="scs">SCS / OPS</th>
+                <th data-col="walkin">Walk-in</th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Detail panel (shown on row click) -->
+      <div id="detail-panel">
+        <div id="detail-back" onclick="showList()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2L4 7l5 5"/></svg>
+          Back to list
+        </div>
+        <div id="detail-scroll"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="source-note">
+  Data from VCH, PHS, BC-CfE, VANDU, Lookout, Atira, Union Gospel Mission, and DTES organizations.
+  Always verify hours and services directly with the organization. ·
+  Drug alerts: <a href="https://towardtheheart.com/alerts" target="_blank">towardtheheart.com/alerts</a>
+</div>
+
+<!-- Edit / Add Modal -->
 <div id="modal-overlay">
   <div id="modal">
     <h2 id="modal-title">Add Organization</h2>
@@ -592,7 +357,7 @@ a:hover{text-decoration:underline;}
         </select>
       </div>
       <div class="form-row" style="margin:0">
-        <label>Hours Type</label>
+        <label>Special Access</label>
         <select id="f-hrs-type">
           <option value="">—</option>
           <option value="24hr">24 hours</option>
@@ -628,60 +393,9 @@ a:hover{text-decoration:underline;}
   <div id="handout-toolbar">
     <button class="modal-btn" onclick="closeHandout()">← Close</button>
     <button class="modal-btn primary" onclick="window.print()">🖨 Print / Save PDF</button>
-    <span style="font-size:12px;color:var(--text3);margin-left:8px;">Shows currently filtered organizations</span>
+    <span style="font-size:12px;color:#888;margin-left:8px;">Shows currently filtered organizations</span>
   </div>
   <div id="handout-content"></div>
-</div>
-
-<!-- Table overlay -->
-<div id="table-overlay">
-  <div id="table-toolbar">
-    <button class="modal-btn" onclick="closeTable()">← Back to Map</button>
-    <h2>Organizations</h2>
-    <div id="table-search-wrap">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10.5 10.5l3 3"/></svg>
-      <input type="text" id="table-search" placeholder="Search…" oninput="renderTable()">
-    </div>
-    <select id="table-cat-filter" onchange="renderTable()">
-      <option value="">All categories</option>
-      <option>SCS / OPS</option>
-      <option>Primary Care / OAT</option>
-      <option>Harm Reduction</option>
-      <option>Detox / WDM</option>
-      <option>Peer / Indigenous</option>
-      <option>Women / Sex Workers</option>
-      <option>Supportive Housing</option>
-      <option>Shelter / Recovery</option>
-      <option>Community / Drop-in</option>
-      <option>Emergency Services</option>
-      <option>Transitional / Acute Care</option>
-      <option>System Navigation</option>
-    </select>
-    <button class="modal-btn" onclick="exportTableCSV()">⬇ Export CSV</button>
-    <button class="modal-btn primary" onclick="window.print()">🖨 Print</button>
-    <span id="table-count"></span>
-  </div>
-  <div id="table-wrap">
-    <table id="org-table">
-      <thead>
-        <tr>
-          <th class="col-name" onclick="sortTable('name')">Organization <span class="sort-arrow">▴</span></th>
-          <th class="col-cat" onclick="sortTable('cat')">Category <span class="sort-arrow">▴</span></th>
-          <th class="col-inst" onclick="sortTable('inst')">Institution <span class="sort-arrow">▴</span></th>
-          <th class="col-addr" onclick="sortTable('addr')">Address <span class="sort-arrow">▴</span></th>
-          <th class="col-phone">Phone</th>
-          <th class="col-hours">Hours</th>
-          <th class="col-oat" onclick="sortTable('oat')">OAT <span class="sort-arrow">▴</span></th>
-          <th class="col-scs">SCS / OPS</th>
-          <th class="col-walkin">Walk-in</th>
-          <th class="col-web">Website</th>
-          <th class="col-desc">Key Services / Notes</th>
-          <th class="col-actions"></th>
-        </tr>
-      </thead>
-      <tbody id="table-body"></tbody>
-    </table>
-  </div>
 </div>
 
 <script src="data/services.js"></script>
@@ -690,33 +404,31 @@ a:hover{text-decoration:underline;}
 // DATA
 // ═══════════════════════════════════════════════════════════
 const CAT_META = {
-  "SCS / OPS":           {color:"#C0392B", icon:"💉"},
-  "Primary Care / OAT":  {color:"#1A7A4A", icon:"🩺"},
-  "Harm Reduction":      {color:"#D4AC0D", icon:"🧴"},
-  "Detox / WDM":         {color:"#D95F00", icon:"🏥"},
-  "Peer / Indigenous":   {color:"#1655A2", icon:"🤝"},
-  "Women / Sex Workers": {color:"#A0306B", icon:"♀"},
-  "Supportive Housing":  {color:"#4A5568", icon:"🏠"},
-  "Shelter / Recovery":  {color:"#6B3FA0", icon:"🛡"},
-  "Community / Drop-in": {color:"#0A7A6B", icon:"🏢"},
-  "Emergency Services":  {color:"#CC3300", icon:"🚨"},
-  "Transitional / Acute Care":{color:"#2D3A8C", icon:"🏨"},
-  "System Navigation":   {color:"#1A2B6B", icon:"🔬"},
+  "SCS / OPS":                  {color:"#C0392B", icon:"💉"},
+  "Primary Care / OAT":         {color:"#1A7A4A", icon:"🩺"},
+  "Harm Reduction":             {color:"#D4AC0D", icon:"🧴"},
+  "Detox / WDM":                {color:"#D95F00", icon:"🏥"},
+  "Peer / Indigenous":          {color:"#1655A2", icon:"🤝"},
+  "Women / Sex Workers":        {color:"#A0306B", icon:"♀"},
+  "Supportive Housing":         {color:"#4A5568", icon:"🏠"},
+  "Shelter / Recovery":         {color:"#6B3FA0", icon:"🛡"},
+  "Community / Drop-in":        {color:"#0A7A6B", icon:"🏢"},
+  "Emergency Services":         {color:"#CC3300", icon:"🚨"},
+  "Transitional / Acute Care":  {color:"#2D3A8C", icon:"🏨"},
+  "System Navigation":          {color:"#1A2B6B", icon:"🔬"},
 };
-
-
 
 // ═══════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════
 let orgs = [];
-let activeFilter = "all";
+let activeCategories = new Set();
 let activeFlags = new Set();
 let searchQuery = "";
 let selectedId = null;
 let editingId = null;
-let panelOpen = false;
-let map, markers = {}, markerLayers = {};
+let sortCol = "name", sortDir = 1;
+let map, markers = {};
 
 // ═══════════════════════════════════════════════════════════
 // STORAGE
@@ -724,46 +436,51 @@ let map, markers = {}, markerLayers = {};
 function loadOrgs() {
   try {
     const saved = localStorage.getItem("dtes_orgs_v3");
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      orgs = parsed;
-    } else {
-      orgs = JSON.parse(JSON.stringify(BASE_ORGS));
-    }
+    orgs = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(BASE_ORGS));
   } catch(e) { orgs = JSON.parse(JSON.stringify(BASE_ORGS)); }
 }
-
 function saveOrgs() {
   try { localStorage.setItem("dtes_orgs_v3", JSON.stringify(orgs)); } catch(e) {}
-}
-
-function resetToDefaults() {
-  if (confirm("Reset all data to defaults? Your custom additions will be lost.")) {
-    orgs = JSON.parse(JSON.stringify(BASE_ORGS));
-    saveOrgs();
-    renderAll();
-  }
 }
 
 // ═══════════════════════════════════════════════════════════
 // MAP
 // ═══════════════════════════════════════════════════════════
 function initMap() {
-  map = L.map("map", {zoomControl:true}).setView([49.2815, -123.099], 15);
+  map = L.map("services-map", {zoomControl:true}).setView([49.2815, -123.099], 15);
   L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
     attribution:"© OpenStreetMap contributors © CARTO", maxZoom:19
   }).addTo(map);
-  map.on("click", () => { if(window.innerWidth <= 700) closePanel(); });
+  setTimeout(() => map.invalidateSize(), 200);
 }
 
 function makeIcon(org) {
   const meta = CAT_META[org.cat] || {color:"#666", icon:"●"};
   const isSelected = org.id === selectedId;
-  const ring = isSelected ? `box-shadow:0 0 0 2px white,0 0 0 4px ${meta.color},0 4px 12px rgba(0,0,0,0.3);` : "";
+  const ring = isSelected
+    ? `box-shadow:0 0 0 2px white,0 0 0 4px ${meta.color},0 4px 12px rgba(0,0,0,0.3);transform:scale(1.15);`
+    : "";
   return L.divIcon({
-    html:`<div style="background:${meta.color};width:30px;height:30px;border-radius:50%;border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;font-size:13px;${ring}cursor:pointer;transition:transform 0.1s;">${meta.icon}</div>`,
-    className:"", iconSize:[30,30], iconAnchor:[15,15], popupAnchor:[0,-18]
+    html:`<div style="background:${meta.color};width:28px;height:28px;border-radius:50%;border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;font-size:12px;${ring}cursor:pointer;transition:transform 0.1s;">${meta.icon}</div>`,
+    className:"", iconSize:[28,28], iconAnchor:[14,14], popupAnchor:[0,-16]
   });
+}
+
+function buildPopup(org) {
+  const meta = CAT_META[org.cat] || {color:"#666"};
+  const oatBadge = org.oat && org.oat.startsWith("Yes") ? `<span class="pb pb-yes">OAT ✓</span>` : "";
+  const scsBadge = org.scs && org.scs.startsWith("Yes") && !org.scs.startsWith("No") ? `<span class="pb pb-yes">SCS/OPS ✓</span>` : "";
+  const wiBadge  = org.walkin && (org.walkin.includes("drop-in") || org.walkin.startsWith("Yes")) ? `<span class="pb pb-yes">Walk-in ✓</span>` : "";
+  const div = document.createElement("div");
+  div.className = "popup-inner";
+  div.innerHTML = `
+    <div class="popup-cat-label" style="color:${meta.color}">${org.cat}</div>
+    <div class="popup-name">${org.name}</div>
+    <div class="popup-addr">📍 ${org.addr}${org.phone ? `<br>📞 ${org.phone}` : ""}</div>
+    <div class="popup-badges">${oatBadge}${scsBadge}${wiBadge}</div>
+    <button class="popup-detail-btn" onclick="showDetail('${org.id}')">View full details →</button>
+  `;
+  return div;
 }
 
 function renderMarkers() {
@@ -772,32 +489,16 @@ function renderMarkers() {
   orgs.forEach(org => {
     if (!org.lat || !org.lng) return;
     const marker = L.marker([org.lat, org.lng], {icon: makeIcon(org)});
-    const meta = CAT_META[org.cat] || {color:"#666"};
-    marker.bindPopup(buildPopup(org, meta), {maxWidth:280, className:""});
-    marker.on("click", () => { selectOrg(org.id); });
+    marker.bindPopup(buildPopup(org), {maxWidth:280, className:""});
+    marker.on("click", () => selectOrg(org.id));
     marker.addTo(map);
     markers[org.id] = marker;
   });
 }
 
-function buildPopup(org, meta) {
-  const oatBadge = org.oat && org.oat.startsWith("Yes") ? `<span class="pb pb-yes">OAT ✓</span>` : "";
-  const scsBadge = org.scs && (org.scs.startsWith("Yes") || org.scs.includes("OPS")) && !org.scs.startsWith("No") ? `<span class="pb pb-yes">SCS/OPS ✓</span>` : "";
-  const wiBadge = org.walkin && (org.walkin.includes("drop-in") || org.walkin.startsWith("Yes")) ? `<span class="pb pb-yes">Walk-in ✓</span>` : "";
-  const div = document.createElement("div");
-  div.className = "popup-inner";
-  div.innerHTML = `
-    <div class="popup-cat-label" style="color:${meta.color}">${org.cat}</div>
-    <div class="popup-name">${org.name}</div>
-    <div class="popup-addr">📍 ${org.addr}${org.phone ? `<br>📞 ${org.phone}` : ""}</div>
-    <div class="popup-badges">${oatBadge}${scsBadge}${wiBadge}</div>
-    <button class="popup-detail-btn" onclick="selectOrg('${org.id}');showDetail('${org.id}');">View full details →</button>
-  `;
-  return div;
-}
-
 function updateMarkerIcon(id) {
-  if (markers[id]) markers[id].setIcon(makeIcon(orgs.find(o=>o.id===id)));
+  const org = orgs.find(o=>o.id===id);
+  if (org && markers[id]) markers[id].setIcon(makeIcon(org));
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -805,182 +506,143 @@ function updateMarkerIcon(id) {
 // ═══════════════════════════════════════════════════════════
 function getVisible() {
   return orgs.filter(org => {
-    const catMatch = activeFilter === "all" || org.cat === activeFilter;
+    const catMatch  = activeCategories.size === 0 || activeCategories.has(org.cat);
     const flagMatch = [...activeFlags].every(f => org.flags && org.flags[f]);
     const q = searchQuery.toLowerCase();
-    const textMatch = !q || org.name.toLowerCase().includes(q)
+    const textMatch = !q
+      || (org.name||"").toLowerCase().includes(q)
       || (org.addr||"").toLowerCase().includes(q)
       || (org.inst||"").toLowerCase().includes(q)
       || (org.desc||"").toLowerCase().includes(q)
-      || org.cat.toLowerCase().includes(q);
+      || (org.cat||"").toLowerCase().includes(q);
     return catMatch && flagMatch && textMatch;
   });
 }
 
 function updateMapVisibility() {
-  const visible = new Set(getVisible().map(o=>o.id));
+  const visibleIds = new Set(getVisible().map(o=>o.id));
   orgs.forEach(org => {
     const m = markers[org.id];
     if (!m) return;
-    if (visible.has(org.id)) { if (!map.hasLayer(m)) m.addTo(map); }
-    else { if (map.hasLayer(m)) m.remove(); }
+    if (visibleIds.has(org.id)) { if (!map.hasLayer(m)) m.addTo(map); }
+    else                        { if (map.hasLayer(m))  m.remove(); }
   });
 }
 
 // ═══════════════════════════════════════════════════════════
-// RENDER
+// RENDER TABLE
 // ═══════════════════════════════════════════════════════════
-function renderList() {
-  const list = document.getElementById("panel-list");
-  const empty = document.getElementById("empty-state");
-  const visible = getVisible();
-  document.getElementById("filter-count").textContent = `${visible.length} of ${orgs.length} shown`;
-  document.getElementById("org-count").textContent = `${orgs.length} orgs`;
-
-  const cards = list.querySelectorAll(".org-card");
-  cards.forEach(c => c.remove());
-
-  if (visible.length === 0) { empty.classList.add("show"); return; }
-  empty.classList.remove("show");
-
-  const frag = document.createDocumentFragment();
-  visible.forEach(org => {
-    const meta = CAT_META[org.cat] || {color:"#666", icon:"●"};
-    const card = document.createElement("div");
-    card.className = "org-card" + (org.id === selectedId ? " selected" : "");
-    card.dataset.id = org.id;
-    card.innerHTML = `
-      <div class="card-top">
-        <div class="card-icon" style="background:${meta.color}22">${meta.icon}</div>
-        <div class="card-info">
-          <div class="card-cat" style="color:${meta.color}">${org.cat}</div>
-          <div class="card-name">${org.name}</div>
-          <div class="card-inst">${org.inst || ""}</div>
-        </div>
-        <div class="card-chevron">▾</div>
-      </div>
-      <div class="card-body">
-        <div class="card-row"><span class="card-label">Address</span><span class="card-val">${org.addr || "—"}</span></div>
-        <div class="card-row"><span class="card-label">Phone</span><span class="card-val">${org.phone || "—"}</span></div>
-        <div class="card-row"><span class="card-label">Hours</span><span class="card-val">${org.hours || "—"}</span></div>
-        <div class="card-row"><span class="card-label">Access</span><span class="card-val">
-          <div class="card-badges">
-            <span class="cbadge ${org.oat&&org.oat.startsWith('Yes')?'cbadge-yes':'cbadge-no'}">OAT: ${org.oat||"No"}</span>
-            <span class="cbadge ${org.scs&&(org.scs.startsWith('Yes')||org.scs.includes('OPS'))&&!org.scs.startsWith('No')?'cbadge-yes':'cbadge-no'}">SCS: ${org.scs||"No"}</span>
-            <span class="cbadge ${org.walkin&&(org.walkin.includes('drop-in')||org.walkin.startsWith('Yes'))?'cbadge-yes':'cbadge-ref'}">${org.walkin||"—"}</span>
-          </div>
-        </span></div>
-        <div class="card-actions">
-          <button class="card-action-btn" onclick="event.stopPropagation();editOrg('${org.id}')">Edit</button>
-          <button class="card-action-btn primary" onclick="event.stopPropagation();showDetail('${org.id}')">Details →</button>
-        </div>
-      </div>
-    `;
-    card.addEventListener("click", e => {
-      if(e.target.tagName==="BUTTON") return;
-      const wasExpanded = card.classList.contains("expanded");
-      document.querySelectorAll(".org-card.expanded").forEach(c=>c.classList.remove("expanded"));
-      if (!wasExpanded) { card.classList.add("expanded"); selectOrg(org.id); }
-    });
-    frag.appendChild(card);
+function sortedVisible() {
+  return [...getVisible()].sort((a, b) => {
+    const av = (a[sortCol]||"").toLowerCase();
+    const bv = (b[sortCol]||"").toLowerCase();
+    return av < bv ? -sortDir : av > bv ? sortDir : 0;
   });
-  list.appendChild(frag);
 }
 
-function clearFilters() {
-  activeFilter = "all";
-  activeFlags = new Set();
-  document.querySelectorAll(".fchip[data-filter]").forEach(c => c.classList.remove("active"));
-  document.querySelector('.fchip[data-filter="all"]').classList.add("active");
-  document.querySelectorAll(".fchip[data-flag]").forEach(c => c.classList.remove("active"));
-  updateClearBtn();
-  renderAll();
-}
+function renderTable() {
+  const data = sortedVisible();
+  const tbody = document.getElementById("table-body");
 
-function updateClearBtn() {
-  const hasFilters = activeFilter !== "all" || activeFlags.size > 0;
-  document.getElementById("filter-clear-btn").classList.toggle("show", hasFilters);
-}
+  document.getElementById("total-count").textContent        = orgs.length;
+  document.getElementById("shown-count-header").textContent = data.length;
+  document.getElementById("shown-count").textContent        = data.length;
+  document.getElementById("total-shown").textContent        = orgs.length;
 
-function renderAll() {
-  renderList();
   updateMapVisibility();
+
+  if (data.length === 0) {
+    tbody.innerHTML = `<tr class="no-results-row"><td colspan="8">No organizations match — try removing some filters.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.map(org => {
+    const meta = CAT_META[org.cat] || {color:"#666"};
+    const oatClass = org.oat && org.oat.startsWith("Yes") ? "tbadge-yes" : "tbadge-no";
+    const scsClass = org.scs && org.scs.startsWith("Yes") && !org.scs.startsWith("No") ? "tbadge-yes" : "tbadge-no";
+    const wiClass  = org.walkin && (org.walkin.includes("drop-in") || org.walkin.startsWith("Yes")) ? "tbadge-yes" : "tbadge-ref";
+    return `
+      <tr id="row-${org.id}" class="${org.id === selectedId ? 'row-selected' : ''}" onclick="selectAndDetail('${org.id}')">
+        <td class="td-name">${org.name}<small>${org.inst||""}</small></td>
+        <td class="td-cat"><span class="tcat-pill" style="background:${meta.color}22;color:${meta.color}">${org.cat}</span></td>
+        <td class="td-addr">${org.addr||"—"}</td>
+        <td class="td-phone">${org.phone ? `<a href="tel:${org.phone}">${org.phone}</a>` : "—"}</td>
+        <td class="td-hours">${org.hours||"—"}</td>
+        <td><span class="${oatClass}">${org.oat||"No"}</span></td>
+        <td><span class="${scsClass}">${org.scs||"No"}</span></td>
+        <td><span class="${wiClass}">${org.walkin||"—"}</span></td>
+      </tr>
+    `;
+  }).join("");
 }
 
+function renderAll() { renderTable(); }
+
+// ═══════════════════════════════════════════════════════════
+// SELECT + DETAIL
+// ═══════════════════════════════════════════════════════════
 function selectOrg(id) {
   const prev = selectedId;
   selectedId = id;
   if (prev) updateMarkerIcon(prev);
   updateMarkerIcon(id);
-  document.querySelectorAll(".org-card").forEach(c => {
-    c.classList.toggle("selected", c.dataset.id === id);
-  });
+  document.querySelectorAll("#table-body tr").forEach(r =>
+    r.classList.toggle("row-selected", r.id === "row-"+id)
+  );
   const org = orgs.find(o=>o.id===id);
   if (org && org.lat && org.lng) {
     map.setView([org.lat, org.lng], Math.max(map.getZoom(), 16), {animate:true});
     if (markers[id]) markers[id].openPopup();
   }
-  if(window.innerWidth <= 700) openPanel();
 }
 
-// ═══════════════════════════════════════════════════════════
-// DETAIL PANE
-// ═══════════════════════════════════════════════════════════
+function selectAndDetail(id) {
+  selectOrg(id);
+  showDetail(id);
+}
+
 function showDetail(id) {
   const org = orgs.find(o=>o.id===id);
   if (!org) return;
+  selectOrg(id);
   const meta = CAT_META[org.cat] || {color:"#666", icon:"●"};
-  selectedId = id;
-
-  const scroll = document.getElementById("detail-scroll");
   const oatBadge = `<span class="dbadge ${org.oat&&org.oat.startsWith('Yes')?'dbadge-yes':'dbadge-no'}">OAT: ${org.oat||"No"}</span>`;
-  const scsBadge = `<span class="dbadge ${org.scs&&(org.scs.startsWith('Yes')||org.scs.includes('OPS'))&&!org.scs.startsWith('No')?'dbadge-yes':'dbadge-no'}">SCS/OPS: ${org.scs||"No"}</span>`;
-  const wiBadge = `<span class="dbadge ${org.walkin&&(org.walkin.includes('drop-in')||org.walkin.startsWith('Yes'))?'dbadge-yes':'dbadge-ref'}">Access: ${org.walkin||"—"}</span>`;
+  const scsBadge = `<span class="dbadge ${org.scs&&org.scs.startsWith('Yes')&&!org.scs.startsWith('No')?'dbadge-yes':'dbadge-no'}">SCS/OPS: ${org.scs||"No"}</span>`;
+  const wiBadge  = `<span class="dbadge ${org.walkin&&(org.walkin.includes('drop-in')||org.walkin.startsWith('Yes'))?'dbadge-yes':'dbadge-ref'}">Access: ${org.walkin||"—"}</span>`;
   const noteHtml = org.note ? `<div class="detail-note">⚠️ ${org.note}</div>` : "";
-  const websiteHtml = org.web ? `<div class="card-row"><span class="detail-label">Website</span><span class="detail-val"><a href="https://${org.web}" target="_blank">${org.web}</a></span></div>` : "";
+  const webHtml  = org.web ? `<div class="detail-row"><span class="detail-label">Website</span><span class="detail-val"><a href="https://${org.web}" target="_blank">${org.web}</a></span></div>` : "";
 
-  scroll.innerHTML = `
-    <div class="detail-hero">
-      <div class="detail-icon-row">
-        <div class="detail-icon" style="background:${meta.color}22">${meta.icon}</div>
-        <div>
-          <div class="detail-cat" style="color:${meta.color}">${org.cat}</div>
-          <div class="detail-name">${org.name}</div>
-        </div>
+  document.getElementById("detail-scroll").innerHTML = `
+    <div class="detail-icon-row">
+      <div class="detail-icon" style="background:${meta.color}22">${meta.icon}</div>
+      <div>
+        <div class="detail-cat" style="color:${meta.color}">${org.cat}</div>
+        <div class="detail-name">${org.name}</div>
       </div>
-      <div class="detail-inst">${org.inst || ""}</div>
-      <div class="detail-badges">${oatBadge}${scsBadge}${wiBadge}</div>
     </div>
-    <div class="detail-section">
-      <div class="detail-section-title">Contact & Access</div>
-      <div class="card-row"><span class="detail-label">Address</span><span class="detail-val">${org.addr || "—"}</span></div>
-      <div class="card-row"><span class="detail-label">Phone</span><span class="detail-val">${org.phone ? `<a href="tel:${org.phone}">${org.phone}</a>` : "—"}</span></div>
-      <div class="card-row"><span class="detail-label">Hours</span><span class="detail-val">${org.hours || "—"}</span></div>
-      ${websiteHtml}
-    </div>
-    <div class="detail-section">
-      <div class="detail-section-title">Services</div>
-      <div class="detail-desc">${org.desc || "No description available."}</div>
-      ${noteHtml}
-    </div>
+    <div class="detail-inst">${org.inst||""}</div>
+    <div class="detail-badges">${oatBadge}${scsBadge}${wiBadge}</div>
+    <div class="detail-section-title">Contact &amp; Access</div>
+    <div class="detail-row"><span class="detail-label">Address</span><span class="detail-val">${org.addr||"—"}</span></div>
+    <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-val">${org.phone ? `<a href="tel:${org.phone}">${org.phone}</a>` : "—"}</span></div>
+    <div class="detail-row"><span class="detail-label">Hours</span><span class="detail-val">${org.hours||"—"}</span></div>
+    ${webHtml}
+    <div class="detail-section-title">Services</div>
+    <div class="detail-desc">${org.desc||"No description available."}</div>
+    ${noteHtml}
     <div class="detail-cta">
-      <button class="detail-cta-btn" onclick="editOrg('${org.id}')">Edit</button>
-      ${org.lat&&org.lng?`<button class="detail-cta-btn" onclick="selectOrg('${org.id}');showList()">Show on map</button>`:""}
-      ${org.phone?`<button class="detail-cta-btn primary" onclick="window.location='tel:${org.phone}'">Call</button>`:""}
+      <button class="detail-cta-btn" onclick="openModal('${org.id}')">Edit</button>
+      ${org.phone ? `<button class="detail-cta-btn primary" onclick="window.location='tel:${org.phone}'">Call</button>` : ""}
     </div>
   `;
 
-  document.querySelector('[data-tab="list"]').classList.remove("active");
-  document.querySelector('[data-tab="detail"]').classList.add("active");
-  document.getElementById("panel-list").style.display = "none";
-  document.getElementById("detail-pane").classList.add("show");
+  document.getElementById("list-panel").style.display = "none";
+  document.getElementById("detail-panel").classList.add("show");
 }
 
 function showList() {
-  document.querySelector('[data-tab="list"]').classList.add("active");
-  document.querySelector('[data-tab="detail"]').classList.remove("active");
-  document.getElementById("panel-list").style.display = "";
-  document.getElementById("detail-pane").classList.remove("show");
+  document.getElementById("list-panel").style.display = "";
+  document.getElementById("detail-panel").classList.remove("show");
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -991,53 +653,55 @@ function openModal(id) {
   const org = id ? orgs.find(o=>o.id===id) : null;
   document.getElementById("modal-title").textContent = id ? "Edit Organization" : "Add Organization";
   document.getElementById("btn-delete").style.display = id ? "inline-flex" : "none";
-  document.getElementById("f-name").value = org?.name || "";
-  document.getElementById("f-cat").value = org?.cat || "Primary Care / OAT";
-  document.getElementById("f-inst").value = org?.inst || "";
-  document.getElementById("f-addr").value = org?.addr || "";
+  document.getElementById("f-name").value  = org?.name  || "";
+  document.getElementById("f-cat").value   = org?.cat   || "Primary Care / OAT";
+  document.getElementById("f-inst").value  = org?.inst  || "";
+  document.getElementById("f-addr").value  = org?.addr  || "";
   document.getElementById("f-phone").value = org?.phone || "";
-  document.getElementById("f-web").value = org?.web || "";
+  document.getElementById("f-web").value   = org?.web   || "";
   document.getElementById("f-hours").value = org?.hours || "";
-  document.getElementById("f-oat").value = org?.oat || "No";
-  document.getElementById("f-scs").value = org?.scs || "No";
-  document.getElementById("f-walkin").value = org?.walkin || "No – referral only";
+  document.getElementById("f-oat").value   = org?.oat   || "No";
+  document.getElementById("f-scs").value   = org?.scs   || "No";
+  document.getElementById("f-walkin").value= org?.walkin|| "No – referral only";
   document.getElementById("f-hrs-type").value = "";
   if (org?.flags) {
-    if(org.flags["24hr"]) document.getElementById("f-hrs-type").value = "24hr";
-    else if(org.flags.women) document.getElementById("f-hrs-type").value = "women";
-    else if(org.flags.indigenous) document.getElementById("f-hrs-type").value = "indigenous";
+    if (org.flags["24hr"])      document.getElementById("f-hrs-type").value = "24hr";
+    else if (org.flags.women)   document.getElementById("f-hrs-type").value = "women";
+    else if (org.flags.indigenous) document.getElementById("f-hrs-type").value = "indigenous";
   }
   document.getElementById("f-desc").value = org?.desc || "";
-  document.getElementById("f-lat").value = org?.lat || "";
-  document.getElementById("f-lng").value = org?.lng || "";
+  document.getElementById("f-lat").value  = org?.lat  || "";
+  document.getElementById("f-lng").value  = org?.lng  || "";
   document.getElementById("modal-overlay").classList.add("show");
 }
 
-function editOrg(id) { openModal(id); }
-function closeModal() { document.getElementById("modal-overlay").classList.remove("show"); editingId = null; }
+function closeModal() {
+  document.getElementById("modal-overlay").classList.remove("show");
+  editingId = null;
+}
 
 function saveOrg() {
   const name = document.getElementById("f-name").value.trim();
   if (!name) { alert("Name is required."); return; }
   const hrsType = document.getElementById("f-hrs-type").value;
-  const oatVal = document.getElementById("f-oat").value;
-  const scsVal = document.getElementById("f-scs").value;
-  const wiVal = document.getElementById("f-walkin").value;
+  const oatVal  = document.getElementById("f-oat").value;
+  const scsVal  = document.getElementById("f-scs").value;
+  const wiVal   = document.getElementById("f-walkin").value;
   const flags = {
-    oat: oatVal.startsWith("Yes"),
-    scs: scsVal.startsWith("Yes") || scsVal.includes("OPS"),
-    walkin: wiVal.includes("drop-in") || wiVal.startsWith("Yes"),
-    "24hr": hrsType === "24hr",
-    women: hrsType === "women",
+    oat:        oatVal.startsWith("Yes"),
+    scs:        scsVal.startsWith("Yes") || scsVal.includes("OPS"),
+    walkin:     wiVal.includes("drop-in") || wiVal.startsWith("Yes"),
+    "24hr":     hrsType === "24hr",
+    women:      hrsType === "women",
     indigenous: hrsType === "indigenous",
   };
   const newOrg = {
     id: editingId || "custom_" + Date.now(),
     name, cat: document.getElementById("f-cat").value,
-    inst: document.getElementById("f-inst").value.trim(),
-    addr: document.getElementById("f-addr").value.trim(),
+    inst:  document.getElementById("f-inst").value.trim(),
+    addr:  document.getElementById("f-addr").value.trim(),
     phone: document.getElementById("f-phone").value.trim(),
-    web: document.getElementById("f-web").value.trim(),
+    web:   document.getElementById("f-web").value.trim(),
     hours: document.getElementById("f-hours").value.trim(),
     oat: oatVal, scs: scsVal, walkin: wiVal, flags,
     desc: document.getElementById("f-desc").value.trim(),
@@ -1046,8 +710,8 @@ function saveOrg() {
   };
   if (editingId) {
     const idx = orgs.findIndex(o=>o.id===editingId);
-    if(idx >= 0) orgs[idx] = newOrg;
-    if(markers[editingId]) markers[editingId].remove();
+    if (idx >= 0) orgs[idx] = newOrg;
+    if (markers[editingId]) markers[editingId].remove();
     delete markers[editingId];
   } else {
     orgs.push(newOrg);
@@ -1055,12 +719,13 @@ function saveOrg() {
   saveOrgs();
   if (newOrg.lat && newOrg.lng) {
     const marker = L.marker([newOrg.lat, newOrg.lng], {icon: makeIcon(newOrg)});
-    marker.bindPopup(buildPopup(newOrg, CAT_META[newOrg.cat]||{color:"#666"}), {maxWidth:280});
-    marker.on("click", () => { selectOrg(newOrg.id); });
+    marker.bindPopup(buildPopup(newOrg), {maxWidth:280});
+    marker.on("click", () => selectOrg(newOrg.id));
     marker.addTo(map);
     markers[newOrg.id] = marker;
   }
   closeModal();
+  showList();
   renderAll();
 }
 
@@ -1068,11 +733,12 @@ function deleteOrg() {
   if (!editingId) return;
   if (!confirm("Delete this organization?")) return;
   orgs = orgs.filter(o=>o.id!==editingId);
-  if(markers[editingId]) markers[editingId].remove();
+  if (markers[editingId]) markers[editingId].remove();
   delete markers[editingId];
   saveOrgs();
+  if (selectedId === editingId) selectedId = null;
   closeModal();
-  if(selectedId===editingId) selectedId=null;
+  showList();
   renderAll();
 }
 
@@ -1089,9 +755,9 @@ function openHandout() {
   const now = new Date().toLocaleDateString("en-CA", {year:"numeric",month:"long",day:"numeric"});
   let html = `<div class="handout-title">DTES Harm Reduction & Addiction Services</div>
     <div class="handout-sub">Downtown Eastside Vancouver · ${visible.length} organizations · Generated ${now} · Verify all information before use</div>`;
-  Object.entries(byCat).forEach(([cat, orgs]) => {
+  Object.entries(byCat).forEach(([cat, list]) => {
     html += `<div class="handout-section"><div class="handout-section-title">${cat}</div>`;
-    orgs.forEach(org => {
+    list.forEach(org => {
       html += `<div class="handout-item">
         <div class="handout-item-name">${org.name}</div>
         <div class="handout-item-addr">${org.addr||""}${org.hours?` · ${org.hours}`:""}</div>
@@ -1106,186 +772,67 @@ function openHandout() {
 function closeHandout() { document.getElementById("handout-overlay").classList.remove("show"); }
 
 // ═══════════════════════════════════════════════════════════
-// TABLE VIEW
+// CSV EXPORT
 // ═══════════════════════════════════════════════════════════
-let tableSortCol = "name";
-let tableSortDir = 1;
-
-function openTable() {
-  document.getElementById("table-search").value = "";
-  document.getElementById("table-cat-filter").value = "";
-  renderTable();
-  document.getElementById("table-overlay").classList.add("show");
-}
-function closeTable() { document.getElementById("table-overlay").classList.remove("show"); }
-
-function sortTable(col) {
-  if (tableSortCol === col) tableSortDir *= -1;
-  else { tableSortCol = col; tableSortDir = 1; }
-  document.querySelectorAll("#org-table th").forEach(th => th.classList.remove("sorted"));
-  const ths = document.querySelectorAll("#org-table th");
-  const colMap = ["name","cat","inst","addr",null,null,"oat",null,null,null,null,null];
-  ths.forEach((th,i) => { if(colMap[i]===col) th.classList.add("sorted"); });
-  renderTable();
-}
-
-function renderTable() {
-  const q = (document.getElementById("table-search").value || "").toLowerCase();
-  const catFilter = document.getElementById("table-cat-filter").value;
-
-  let data = orgs.filter(org => {
-    const catMatch = !catFilter || org.cat === catFilter;
-    const textMatch = !q ||
-      (org.name||"").toLowerCase().includes(q) ||
-      (org.cat||"").toLowerCase().includes(q) ||
-      (org.inst||"").toLowerCase().includes(q) ||
-      (org.addr||"").toLowerCase().includes(q) ||
-      (org.phone||"").toLowerCase().includes(q) ||
-      (org.desc||"").toLowerCase().includes(q) ||
-      (org.oat||"").toLowerCase().includes(q) ||
-      (org.walkin||"").toLowerCase().includes(q);
-    return catMatch && textMatch;
-  });
-
-  data.sort((a,b) => {
-    const av = (a[tableSortCol]||"").toLowerCase();
-    const bv = (b[tableSortCol]||"").toLowerCase();
-    return av < bv ? -tableSortDir : av > bv ? tableSortDir : 0;
-  });
-
-  document.getElementById("table-count").textContent = `${data.length} of ${orgs.length} organizations`;
-
-  const tbody = document.getElementById("table-body");
-  tbody.innerHTML = "";
-  data.forEach(org => {
-    const meta = CAT_META[org.cat] || {color:"#666"};
-    const oatClass = org.oat && org.oat.startsWith("Yes") ? "tbadge-yes" : "tbadge-no";
-    const scsClass = org.scs && (org.scs.startsWith("Yes")||org.scs.includes("OPS")) && !org.scs.startsWith("No") ? "tbadge-yes" : "tbadge-no";
-    const wiClass = org.walkin && (org.walkin.includes("drop-in")||org.walkin.startsWith("Yes")) ? "tbadge-yes" : "tbadge-ref";
-    const noteHtml = org.note ? `<div class="t-note" style="margin-top:4px">⚠️ ${org.note}</div>` : "";
-    const tr = document.createElement("tr");
-    if (org.id === selectedId) tr.classList.add("table-selected");
-    tr.innerHTML = `
-      <td class="col-name">${org.name}</td>
-      <td class="col-cat"><span class="tcat-pill" style="background:${meta.color}22;color:${meta.color}">${org.cat}</span></td>
-      <td class="col-inst">${org.inst||"—"}</td>
-      <td class="col-addr">${org.addr||"—"}</td>
-      <td class="col-phone">${org.phone ? `<a class="t-link" href="tel:${org.phone}">${org.phone}</a>` : "—"}</td>
-      <td class="col-hours">${org.hours||"—"}</td>
-      <td class="col-oat"><span class="${oatClass}">${org.oat||"No"}</span></td>
-      <td class="col-scs"><span class="${scsClass}">${org.scs||"No"}</span></td>
-      <td class="col-walkin"><span class="${wiClass}">${org.walkin||"—"}</span></td>
-      <td class="col-web">${org.web ? `<a class="t-link" href="https://${org.web}" target="_blank">${org.web}</a>` : "—"}</td>
-      <td class="col-desc">${org.desc||"—"}${noteHtml}</td>
-      <td class="col-actions"><button class="t-action-btn" onclick="editOrg('${org.id}');closeTable()">Edit</button></td>
-    `;
-    tr.addEventListener("click", e => {
-      if (e.target.tagName === "A" || e.target.tagName === "BUTTON") return;
-      closeTable();
-      selectOrg(org.id);
-      showDetail(org.id);
-    });
-    tbody.appendChild(tr);
-  });
-}
-
-function exportTableCSV() {
-  const q = (document.getElementById("table-search").value || "").toLowerCase();
-  const catFilter = document.getElementById("table-cat-filter").value;
-  const data = orgs.filter(org => {
-    const catMatch = !catFilter || org.cat === catFilter;
-    const textMatch = !q || (org.name||"").toLowerCase().includes(q) || (org.cat||"").toLowerCase().includes(q) || (org.inst||"").toLowerCase().includes(q) || (org.addr||"").toLowerCase().includes(q) || (org.desc||"").toLowerCase().includes(q);
-    return catMatch && textMatch;
-  });
-  const cols = ["name","cat","inst","addr","phone","hours","oat","scs","walkin","web","desc","note"];
+function exportCSV() {
+  const data = getVisible();
+  const cols    = ["name","cat","inst","addr","phone","hours","oat","scs","walkin","web","desc","note"];
   const headers = ["Organization","Category","Institution","Address","Phone","Hours","OAT","SCS/OPS","Walk-in","Website","Description","Notes"];
   const esc = v => `"${(v||"").replace(/"/g,'""')}"`;
   const csv = [headers.map(esc).join(","), ...data.map(o => cols.map(c => esc(o[c])).join(","))].join("\n");
   const blob = new Blob([csv], {type:"text/csv"});
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url; a.download = "DTES_Services.csv"; a.click();
+  const a = document.createElement("a"); a.href = url; a.download = "DTES_Services.csv"; a.click();
   URL.revokeObjectURL(url);
 }
 
 // ═══════════════════════════════════════════════════════════
-// DRUG ALERTS
-// ═══════════════════════════════════════════════════════════
-async function fetchAlerts() {
-  try {
-    const r = await fetch("https://towardtheheart.com/alerts", {mode:"no-cors"});
-    // Can't read no-cors response – show static helpful message instead
-    throw new Error("no-cors");
-  } catch(e) {
-    document.getElementById("alert-text").innerHTML =
-      `<strong>Drug alerts:</strong> Check <a href="https://towardtheheart.com/alerts" target="_blank">towardtheheart.com/alerts</a> or text JOIN to 253787 for VCH alerts`;
-    document.getElementById("alert-bar").classList.add("show");
-  }
-}
-
-// ═══════════════════════════════════════════════════════════
-// MOBILE PANEL
-// ═══════════════════════════════════════════════════════════
-function togglePanel() {
-  panelOpen = !panelOpen;
-  document.getElementById("panel").classList.toggle("open", panelOpen);
-}
-function openPanel() { panelOpen = true; document.getElementById("panel").classList.add("open"); }
-function closePanel() { panelOpen = false; document.getElementById("panel").classList.remove("false"); }
-
-// ═══════════════════════════════════════════════════════════
-// EVENT LISTENERS
+// EVENTS
 // ═══════════════════════════════════════════════════════════
 function initEvents() {
-  // Search
   document.getElementById("search").addEventListener("input", e => {
     searchQuery = e.target.value;
     renderAll();
   });
 
-  // Category filters
-  document.querySelectorAll(".fchip[data-filter]").forEach(chip => {
-    chip.addEventListener("click", () => {
-      document.querySelectorAll(".fchip[data-filter]").forEach(c=>c.classList.remove("active"));
-      chip.classList.add("active");
-      activeFilter = chip.dataset.filter;
-      updateClearBtn();
+  // Category filters (multi-select OR)
+  document.querySelectorAll(".filter-btn[data-cat]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const cat = btn.dataset.cat;
+      if (activeCategories.has(cat)) { activeCategories.delete(cat); btn.classList.remove("active"); }
+      else                            { activeCategories.add(cat);    btn.classList.add("active"); }
       renderAll();
     });
   });
 
-  // Flag filters
-  document.querySelectorAll(".fchip[data-flag]").forEach(chip => {
-    chip.addEventListener("click", () => {
-      const flag = chip.dataset.flag;
-      if (activeFlags.has(flag)) { activeFlags.delete(flag); chip.classList.remove("active"); }
-      else { activeFlags.add(flag); chip.classList.add("active"); }
-      updateClearBtn();
+  // Flag filters (multi-select AND)
+  document.querySelectorAll(".filter-btn[data-flag]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const flag = btn.dataset.flag;
+      if (activeFlags.has(flag)) { activeFlags.delete(flag); btn.classList.remove("active"); }
+      else                        { activeFlags.add(flag);    btn.classList.add("active"); }
       renderAll();
     });
   });
 
-  // Tabs
-  document.querySelectorAll(".ptab").forEach(tab => {
-    tab.addEventListener("click", () => {
-      if (tab.dataset.tab === "list") showList();
-      else if (selectedId) showDetail(selectedId);
+  // Sortable column headers
+  document.querySelectorAll("thead th[data-col]").forEach(th => {
+    th.addEventListener("click", () => {
+      const col = th.dataset.col;
+      if (sortCol === col) sortDir *= -1;
+      else { sortCol = col; sortDir = 1; }
+      document.querySelectorAll("thead th").forEach(t => t.classList.remove("sort-asc","sort-desc"));
+      th.classList.add(sortDir === 1 ? "sort-asc" : "sort-desc");
+      renderAll();
     });
   });
 
-  // Topbar buttons
-  document.getElementById("btn-add-org").addEventListener("click", () => openModal(null));
-  document.getElementById("btn-handout").addEventListener("click", openHandout);
-  document.getElementById("btn-table").addEventListener("click", openTable);
-
-  // Modal close on overlay click
   document.getElementById("modal-overlay").addEventListener("click", e => {
-    if(e.target === document.getElementById("modal-overlay")) closeModal();
+    if (e.target === document.getElementById("modal-overlay")) closeModal();
   });
 
-  // Keyboard
   document.addEventListener("keydown", e => {
-    if (e.key === "Escape") { closeModal(); closeHandout(); closeTable(); }
+    if (e.key === "Escape") { closeModal(); closeHandout(); }
   });
 }
 
@@ -1298,9 +845,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderMarkers();
   renderAll();
   initEvents();
-  fetchAlerts();
-  // Force Leaflet to recalculate container offset after full layout renders
-  setTimeout(() => { if (map) map.invalidateSize(); }, 100);
+  setTimeout(() => { if (map) map.invalidateSize(); }, 200);
 });
 </script>
 </body>
