@@ -133,6 +133,29 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
 .co-located-title { font-size: 14px; font-weight: 700; color: var(--teal-dark); margin-bottom: 6px; }
 .co-located-desc  { font-size: 13px; color: var(--teal-dark); line-height: 1.6; }
 
+/* ── Eligibility criteria ── */
+.elig-group { margin-top: 20px; }
+.elig-group-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px;
+  padding: 5px 10px; border-radius: 6px; margin-bottom: 8px; display: inline-block;
+}
+.elig-include { background: #e8f7f0; color: #0e5c30; }
+.elig-exclude { background: #fde8e8; color: #8b1c1c; }
+.elig-list { display: flex; flex-direction: column; gap: 6px; }
+.elig-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 12px; border-radius: 8px; font-size: 13px; line-height: 1.55;
+}
+.elig-item-include { background: #f0faf4; border: 1px solid #c3e6d3; color: var(--ink); }
+.elig-item-exclude { background: #fff5f5; border: 1px solid #fbc8c8; color: var(--ink); }
+.elig-icon {
+  font-size: 13px; font-weight: 700; flex-shrink: 0;
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: #dcf5e8; color: #0e5c30; margin-top: 1px;
+}
+.elig-icon.elig-x { background: #fde8e8; color: #8b1c1c; }
+
 /* ── Source strip ── */
 .source-note { background: var(--teal-pale); border-top: 1px solid var(--teal-mist); padding: 12px 32px; font-size: 12px; color: var(--muted); }
 .source-note a { color: var(--teal); }
@@ -156,7 +179,7 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
 <div class="page-header">
   <div class="page-header-inner">
     <div>
-      <div class="page-eyebrow">🏥 Pennsylvania Hotel · 401 E Hastings St</div>
+      <div class="page-eyebrow">🏥 Pennsylvania Hotel · 412 Carrall St</div>
       <h1>Community Transitional <span>Care Team</span></h1>
       <p>Residential acute care for people who use drugs — bridging hospital discharge to stable housing in the Downtown Eastside.</p>
 
@@ -223,7 +246,7 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
         <div class="tl-body">
           <div class="tl-year">1991</div>
           <div class="tl-event">Pennsylvania Hotel — PHS founding project</div>
-          <div class="tl-desc">PHS Community Services Society opens the Pennsylvania Hotel at 401 E Hastings St as its first project, providing 44 units of supportive housing in the DTES. The building becomes the anchor of PHS's low-barrier care model.</div>
+          <div class="tl-desc">PHS Community Services Society opens the Pennsylvania Hotel at 412 Carrall St as its first project, providing 44 units of supportive housing in the DTES. The building becomes the anchor of PHS's low-barrier care model.</div>
         </div>
       </div>
       <div class="tl-item">
@@ -383,6 +406,120 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
     </div>
   </div>
 
+  <!-- Eligibility Criteria -->
+  <div class="section-card">
+    <div class="section-eyebrow">HaH-CTCT Eligibility Criteria</div>
+    <div class="section-title">Who qualifies — inclusion &amp; exclusion</div>
+    <div class="section-body">
+      <p>The following criteria apply to the formal HaH-CTCT pathway (effective <strong>3 March 2026</strong>). Eligibility is assessed by the referring clinician at St. Paul's or VGH. Source: PHC / VCH Quick Reference Guide.</p>
+    </div>
+
+    <!-- General Requirements -->
+    <div class="elig-group">
+      <div class="elig-group-title elig-include">General Requirements</div>
+      <div class="elig-list">
+        <div class="elig-item elig-item-include">
+          <span class="elig-icon">✓</span>
+          <div><strong>Verbal consent</strong> — client must provide consent for referral.</div>
+        </div>
+        <div class="elig-item elig-item-include">
+          <span class="elig-icon">✓</span>
+          <div><strong>Age</strong> — 19 years or older.</div>
+        </div>
+        <div class="elig-item elig-item-include">
+          <span class="elig-icon">✓</span>
+          <div><strong>Residency</strong> — resides in Vancouver or spends most of their time in Vancouver's inner city.</div>
+        </div>
+        <div class="elig-item elig-item-include">
+          <span class="elig-icon">✓</span>
+          <div><strong>Housing status</strong> — precariously housed, unhoused, or unable to safely receive treatment in their current home environment.</div>
+        </div>
+        <div class="elig-item elig-item-include">
+          <span class="elig-icon">✓</span>
+          <div><strong>Length of stay</strong> — requires acute-level care for a minimum of <strong>7 days</strong>.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Functional & Mobility -->
+    <div class="elig-group">
+      <div class="elig-group-title elig-include">Functional &amp; Mobility Criteria</div>
+      <div class="elig-list">
+        <div class="elig-item elig-item-include">
+          <span class="elig-icon">✓</span>
+          <div><strong>ADLs</strong> — client must be independent in activities of daily living.</div>
+        </div>
+        <div class="elig-item elig-item-include">
+          <span class="elig-icon">✓</span>
+          <div><strong>Mobility</strong> — ambulates independently or with assistive devices; must be independent with transfers and toileting.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clinical Criteria -->
+    <div class="elig-group">
+      <div class="elig-group-title elig-include">Clinical Criteria — Stability at Referral</div>
+      <div class="elig-list">
+        <div class="elig-item elig-item-include">
+          <span class="elig-icon">✓</span>
+          <div>Requires daily nursing assessments and/or interventions.</div>
+        </div>
+        <div class="elig-item elig-item-include">
+          <span class="elig-icon">✓</span>
+          <div>May or may not be on a maintenance OAT dose — AMCT physicians can support reasonable titration.</div>
+        </div>
+        <div class="elig-item elig-item-include">
+          <span class="elig-icon">✓</span>
+          <div>Transitioned from SC/IV narcotics to oral administration <em>(exception: clients already connected to community iOAT such as Crosstown Clinic)</em>.</div>
+        </div>
+        <div class="elig-item elig-item-include">
+          <span class="elig-icon">✓</span>
+          <div>On PO or IV antibiotics — if IV, frequency no greater than <strong>q8h</strong>.</div>
+        </div>
+        <div class="elig-item elig-item-include">
+          <span class="elig-icon">✓</span>
+          <div>May be on home oxygen therapy.</div>
+        </div>
+        <div class="elig-item elig-item-include">
+          <span class="elig-icon">✓</span>
+          <div>Must have a <strong>defined treatment plan</strong>.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exclusion -->
+    <div class="elig-group">
+      <div class="elig-group-title elig-exclude">Exclusionary Criteria — Not Eligible If:</div>
+      <div class="elig-list">
+        <div class="elig-item elig-item-exclude">
+          <span class="elig-icon elig-x">✕</span>
+          <div>Significant self-neglect.</div>
+        </div>
+        <div class="elig-item elig-item-exclude">
+          <span class="elig-icon elig-x">✕</span>
+          <div>High-intensity nursing needs — frequent wound care, complex dressing changes (including VACs), or IV therapies requiring <strong>4+ daily administrations</strong>.</div>
+        </div>
+        <div class="elig-item elig-item-exclude">
+          <span class="elig-icon elig-x">✕</span>
+          <div>Medication regimens requiring close monitoring (e.g. chemotherapy or infusions).</div>
+        </div>
+        <div class="elig-item elig-item-exclude">
+          <span class="elig-icon elig-x">✕</span>
+          <div>Acute stroke, acute psychiatric disorder, or acute withdrawal.</div>
+        </div>
+        <div class="elig-item elig-item-exclude">
+          <span class="elig-icon elig-x">✕</span>
+          <div>Requires <em>acute</em> oxygen therapy.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note-box amber" style="margin-top:20px;">
+      <span class="note-icon">📄</span>
+      <span>Source: <em>Hospital at Home – Community Transitional Care Team (HaH-CTCT) Patient Eligibility Criteria</em>, PHC / VCH Quick Reference Guide, effective 3 March 2026. For current criteria always verify with the referring team.</span>
+    </div>
+  </div>
+
   <!-- Partners -->
   <div class="section-card">
     <div class="section-eyebrow">Organisational Partners</div>
@@ -418,7 +555,7 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
   <!-- Location -->
   <div class="section-card">
     <div class="section-eyebrow">Location</div>
-    <div class="section-title">Pennsylvania Hotel — 401 E Hastings St</div>
+    <div class="section-title">Pennsylvania Hotel — 412 Carrall St</div>
     <div class="section-body">
       <p>CTCT occupies the second floor of the Pennsylvania Hotel, a 44-unit supportive housing building operated by PHS Community Services Society since 1991 — PHS's founding project and a cornerstone of low-barrier care in the DTES.</p>
     </div>
@@ -426,7 +563,7 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
     <div class="info-grid" style="margin-top:16px;">
       <div class="info-item">
         <span class="info-label">Address</span>
-        <span class="info-value">401 E Hastings St, Vancouver</span>
+        <span class="info-value">412 Carrall St, Vancouver</span>
       </div>
       <div class="info-item">
         <span class="info-label">Floor</span>
@@ -474,7 +611,7 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
 
 <script>
 // ── Leaflet map for PA Hotel ──
-const map = L.map('ctct-map', { zoomControl: true, scrollWheelZoom: false }).setView([49.2808, -123.0940], 16);
+const map = L.map('ctct-map', { zoomControl: true, scrollWheelZoom: false }).setView([49.2829, -123.1043], 16);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
   attribution: '© OpenStreetMap contributors © CARTO',
   subdomains: 'abcd', maxZoom: 20
@@ -486,12 +623,12 @@ const icon = L.divIcon({
   iconSize: [38, 38], iconAnchor: [19, 19]
 });
 
-L.marker([49.2808, -123.0940], { icon })
+L.marker([49.2829, -123.1043], { icon })
   .addTo(map)
   .bindPopup(`
     <div style="font-family:'DM Sans',sans-serif;padding:4px 2px;">
       <div style="font-weight:700;font-size:14px;margin-bottom:3px;">Pennsylvania Hotel</div>
-      <div style="font-size:12px;color:#5A6E6C;margin-bottom:6px;">401 E Hastings St · 2nd Floor</div>
+      <div style="font-size:12px;color:#5A6E6C;margin-bottom:6px;">412 Carrall St · 2nd Floor</div>
       <div style="font-size:11px;font-weight:600;color:#1A7A6E;">CTCT + PSS</div>
     </div>
   `, { maxWidth: 220 })
