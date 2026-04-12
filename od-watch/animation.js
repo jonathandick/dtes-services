@@ -59,7 +59,7 @@ function animSetBounds() {
 }
 
 function animPlay() {
-  if (!ANIM.active) {
+  if (!ANIM.active || ANIM.simTime >= ANIM.winEnd) {
     animSetBounds();
     ANIM.simTime = ANIM.winStart;
   }
