@@ -29,6 +29,7 @@
       children: [
         { href: "overdose-watch.html",          label: "OD Watch" },
         { href: "public-health-dashboard.html", label: "PH Dashboard" },
+        { href: "pilot-plan.html",              label: "Pilot Plan" },
       ],
     },
   ];

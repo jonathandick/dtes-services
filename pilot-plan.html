@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pilot Plan · DTES OD Watch · DTES Community Tools</title>
+<!-- weight=600 not in shared font import -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+/* Extra tokens not in shared.css */
+:root {
+  --amber-dark: #B56D04;
+  --red-pale:   #FDEAEA;
+  --green-pale: #E8F7EF;
+}
+
+/* Body needs flex for sticky footer */
+body { display: flex; flex-direction: column; min-height: 100vh; }
+main { flex: 1; }
+
+/* ── Doc bar ── */
+.doc-bar {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 10px 32px; display: flex; align-items: center;
+  justify-content: space-between; gap: 12px; flex-wrap: wrap;
+}
+.doc-bar .doc-title { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.doc-bar .doc-title strong { color: var(--ink); }
+.doc-acts { display: flex; gap: 8px; }
+/* btn/btn-teal/btn-outline come from shared.css */
+.btn svg { width: 14px; height: 14px; }
+.btn-white { background: var(--white); color: var(--teal-dark); border-color: var(--white); }
+.btn-ghost { background: transparent; color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.25); }
+.btn-ghost:hover { background: rgba(255,255,255,0.1); color: var(--white); text-decoration: none; }
+
+/* ── Hero ── */
+.doc-hero { background: var(--teal-deep); padding: 52px 32px 44px; position: relative; overflow: hidden; }
+.doc-hero::after { content:''; position:absolute; right:-80px; top:-80px; width:450px; height:450px; border-radius:50%; background:rgba(26,122,110,0.12); pointer-events:none; }
+.doc-hero .eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:1.2px; color:var(--sky); margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+.doc-hero .eyebrow::before { content:''; width:20px; height:1px; background:var(--sky); }
+.doc-hero h1 { font-family:var(--font-head); font-size:clamp(28px,4vw,44px); color:var(--white); line-height:1.12; margin-bottom:14px; position:relative; z-index:1; }
+.doc-hero .subtitle { font-size:15px; color:rgba(255,255,255,0.6); max-width:640px; line-height:1.7; position:relative; z-index:1; }
+.doc-hero .meta-row { display:flex; flex-wrap:wrap; gap:20px; margin-top:24px; position:relative; z-index:1; }
+.meta-item { font-size:12px; color:rgba(255,255,255,0.45); display:flex; flex-direction:column; gap:3px; }
+.meta-item strong { color:rgba(255,255,255,0.85); font-size:13px; font-weight:500; }
+
+/* ── Stat band ── */
+.stat-band { background: var(--teal); padding: 24px 32px; display: grid; grid-template-columns: repeat(5,1fr); }
+.stat-item { padding: 0 20px; border-right: 1px solid rgba(255,255,255,0.15); }
+.stat-item:first-child { padding-left: 0; }
+.stat-item:last-child { border-right: none; }
+.stat-item .n { font-family: var(--font-head); font-size: 28px; color: var(--white); line-height: 1; }
+.stat-item .l { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 4px; line-height: 1.4; }
+
+/* ── Content ── */
+.content { max-width: 860px; margin: 0 auto; padding: 60px 32px 80px; }
+
+/* ── TOC ── */
+.toc { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin-bottom: 52px; }
+.toc-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); font-weight: 600; margin-bottom: 14px; }
+.toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 32px; }
+.toc-item { display: flex; align-items: baseline; gap: 8px; padding: 5px 0; font-size: 13px; text-decoration: none; color: var(--teal); border-bottom: 1px solid transparent; transition: border-color 0.12s; }
+.toc-item:hover { border-bottom-color: var(--teal-mist); text-decoration: none; }
+.toc-num { font-size: 10px; color: var(--muted); flex-shrink: 0; min-width: 20px; }
+
+/* ── Section headers ── */
+.section-marker { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; margin-top: 60px; }
+.section-marker:first-of-type { margin-top: 0; }
+.section-num-badge { font-family: var(--font-head); font-size: 12px; color: var(--teal); border: 1px solid var(--teal-mist); border-radius: 20px; padding: 2px 12px; flex-shrink: 0; }
+.section-line { flex: 1; height: 1px; background: var(--border); }
+.section-marker h2 { font-family: var(--font-head); font-size: 25px; color: var(--ink); white-space: nowrap; }
+
+/* ── Body typography ── */
+p { font-size: 15px; line-height: 1.8; color: var(--ink); margin-bottom: 16px; }
+p a { color: var(--teal); }
+p strong { font-weight: 600; }
+h3 { font-family: var(--font-head); font-size: 19px; color: var(--ink); margin: 32px 0 12px; }
+h4 { font-size: 13px; font-weight: 600; color: var(--ink); margin: 20px 0 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ── Callouts ── */
+.callout { border-radius: 10px; padding: 18px 22px; margin: 24px 0; }
+.callout.teal  { background: var(--teal-pale);  border-left: 4px solid var(--teal); }
+.callout.amber { background: var(--amber-pale); border-left: 4px solid var(--amber); }
+.callout.red   { background: var(--red-pale);   border-left: 4px solid var(--red); }
+.callout.green { background: var(--green-pale); border-left: 4px solid var(--green); }
+.callout-title { font-size: 13px; font-weight: 600; margin-bottom: 7px; }
+.callout.teal  .callout-title { color: var(--teal-dark); }
+.callout.amber .callout-title { color: var(--amber-dark); }
+.callout.red   .callout-title { color: #992020; }
+.callout.green .callout-title { color: #1A6B45; }
+.callout p { font-size: 14px; line-height: 1.65; margin: 0; }
+.callout.teal  p { color: #0D3D35; }
+.callout.amber p { color: #7A5200; }
+.callout.red   p { color: #6B1414; }
+.callout.green p { color: #1A6B45; }
+
+/* ── Partner cards ── */
+.partner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 24px 0; }
+.partner-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+.partner-role { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); font-weight: 600; margin-bottom: 8px; }
+.partner-name { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+.partner-body { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.partner-tag { display: inline-block; background: var(--teal-pale); color: var(--teal-dark); font-size: 10px; font-weight: 600; border-radius: 4px; padding: 2px 8px; margin-top: 10px; }
+
+/* ── Research questions ── */
+.rq-list { list-style: none; margin: 20px 0; }
+.rq-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.rq-item:last-child { border-bottom: none; }
+.rq-num  { font-family: var(--font-head); font-size: 22px; color: var(--teal-mist); flex-shrink: 0; width: 28px; }
+.rq-body { flex: 1; }
+.rq-q    { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 4px; line-height: 1.5; }
+.rq-method { font-size: 12px; color: var(--muted); }
+.rq-type   { display: inline-block; font-size: 10px; font-weight: 600; border-radius: 4px; padding: 1px 7px; margin-left: 6px; }
+.rq-quant  { background: var(--teal-pale);  color: var(--teal-dark); }
+.rq-qual   { background: var(--amber-pale); color: var(--amber-dark); }
+
+/* ── Roles table ── */
+.roles-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+.roles-table th { padding: 10px 14px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+.roles-table td { padding: 12px 14px; border: 1px solid var(--border); vertical-align: top; line-height: 1.55; }
+.roles-table tr:nth-child(even) td { background: rgba(244,250,249,0.5); }
+
+/* ── KPI table ── */
+.kpi-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+.kpi-table th { padding: 10px 14px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600; background: var(--teal-deep); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.12); }
+.kpi-table td { padding: 11px 14px; border: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+.kpi-table tr:nth-child(even) td { background: rgba(244,250,249,0.5); }
+.kpi-primary { color: var(--teal-dark); font-weight: 500; }
+.target-badge { display:inline-block; background: var(--teal-pale); color: var(--teal-dark); font-size: 11px; font-weight: 600; border-radius: 4px; padding: 2px 8px; }
+.target-badge.amber { background: var(--amber-pale); color: var(--amber-dark); }
+.target-badge.red   { background: var(--red-pale);   color: #992020; }
+
+/* ── Timeline ── */
+.timeline { margin: 24px 0 8px; position: relative; }
+.timeline::before { content:''; position:absolute; left:22px; top:0; bottom:0; width:1px; background:var(--border); }
+.tl-item { display: flex; gap: 20px; padding-bottom: 32px; }
+.tl-item:last-child { padding-bottom: 0; }
+.tl-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.tl-dot { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; font-family:var(--font-body); flex-shrink:0; position:relative; z-index:1; border:2px solid var(--white); }
+.tl-dot.p0 { background: var(--surface);    color: var(--muted);    border-color: var(--border); }
+.tl-dot.p1 { background: var(--teal-pale);  color: var(--teal); }
+.tl-dot.p2 { background: var(--amber-pale); color: var(--amber-dark); }
+.tl-dot.p3 { background: var(--green-pale); color: #1A6B45; }
+.tl-dot.p4 { background: var(--teal-dark);  color: var(--white); }
+.tl-content { padding-top: 8px; flex: 1; }
+.tl-phase    { font-size:10px; text-transform:uppercase; letter-spacing:0.8px; font-weight:700; color:var(--muted); margin-bottom:3px; }
+.tl-title    { font-size:15px; font-weight:600; color:var(--ink); margin-bottom:6px; }
+.tl-duration { font-size:11px; color:var(--sky); font-weight:500; margin-bottom:8px; }
+.tl-tasks    { list-style: none; }
+.tl-tasks li { font-size:13px; color:var(--muted); line-height:1.5; padding:3px 0; display:flex; gap:8px; }
+.tl-tasks li::before { content:'→'; color:var(--teal-mist); flex-shrink:0; }
+
+/* ── Budget table ── */
+.budget-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+.budget-table th { padding:10px 14px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.6px; font-weight:600; background:var(--surface); border-bottom:2px solid var(--border); color:var(--muted); }
+.budget-table th:last-child { text-align: right; }
+.budget-table td { padding:11px 14px; border-bottom:1px solid var(--border); vertical-align:top; line-height:1.5; }
+.budget-table td:last-child { text-align:right; font-weight:500; font-family:var(--font-head); font-size:16px; color:var(--ink); }
+.budget-table tr:last-child td { border-bottom:none; font-weight:700; background:var(--surface); }
+.budget-table tr:last-child td:last-child { color:var(--teal-dark); font-size:18px; }
+.budget-cat  { font-weight: 500; color: var(--ink); }
+.budget-note { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+/* ── Risk table ── */
+.risk-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+.risk-table th { padding:10px 14px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.6px; font-weight:600; background:var(--surface); border:1px solid var(--border); color:var(--muted); }
+.risk-table td { padding:11px 14px; border:1px solid var(--border); vertical-align:top; line-height:1.5; }
+.risk-table tr:nth-child(even) td { background: rgba(244,250,249,0.5); }
+.sev-high { display:inline-block; background:var(--red-pale);   color:#992020;           font-size:10px; font-weight:700; border-radius:4px; padding:2px 7px; }
+.sev-med  { display:inline-block; background:var(--amber-pale); color:var(--amber-dark); font-size:10px; font-weight:700; border-radius:4px; padding:2px 7px; }
+.sev-low  { display:inline-block; background:var(--green-pale); color:#1A6B45;           font-size:10px; font-weight:700; border-radius:4px; padding:2px 7px; }
+
+/* ── Go / no-go ── */
+.gng-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 24px 0; }
+.gng-card { border-radius: 10px; padding: 20px 22px; }
+.gng-card.go   { background: var(--green-pale); border: 1px solid #A5D9BE; }
+.gng-card.nogo { background: var(--red-pale);   border: 1px solid #F5B8B8; }
+.gng-title { font-size: 13px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.gng-card.go   .gng-title { color: #1A6B45; }
+.gng-card.nogo .gng-title { color: #992020; }
+.gng-list { list-style: none; }
+.gng-list li { font-size: 13px; line-height: 1.55; padding: 5px 0; border-bottom: 1px solid rgba(0,0,0,0.06); display: flex; gap: 8px; }
+.gng-list li:last-child { border-bottom: none; }
+.gng-card.go   .gng-list li { color: #1A6B45; }
+.gng-card.nogo .gng-list li { color: #6B1414; }
+.gng-list li::before { font-weight: 700; flex-shrink: 0; }
+.gng-card.go   .gng-list li::before { content: '✓'; }
+.gng-card.nogo .gng-list li::before { content: '✗'; }
+
+/* ── Ethics grid ── */
+.ethics-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin: 20px 0; }
+.ethics-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+.ethics-icon  { font-size: 20px; margin-bottom: 10px; }
+.ethics-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+.ethics-body  { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* ── CTA box ── */
+.cta-box { background: var(--teal-deep); border-radius: 14px; padding: 36px 32px; margin-top: 52px; text-align: center; }
+.cta-box h3 { font-family: var(--font-head); font-size: 26px; color: var(--white); margin-bottom: 10px; }
+.cta-box p  { font-size: 15px; color: rgba(255,255,255,0.6); margin-bottom: 24px; max-width: 560px; margin-left: auto; margin-right: auto; }
+.cta-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+/* ── Footer ── */
+footer { background: var(--teal-deep); padding: 20px 32px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.3); margin-top: auto; }
+
+/* ── Responsive ── */
+@media (max-width: 700px) {
+  .stat-band { grid-template-columns: 1fr 1fr; gap: 20px; }
+  .partner-grid, .gng-grid, .ethics-grid { grid-template-columns: 1fr; }
+  .toc-grid { grid-template-columns: 1fr; }
+  .content { padding: 40px 20px 60px; }
+  .doc-bar { padding: 10px 16px; }
+  .doc-hero { padding: 36px 20px 32px; }
+}
+</style>
+</head>
+<body>
+
+<script src="nav.js"></script>
+
+<div class="doc-bar">
+  <div class="doc-title">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <strong>Pilot Plan v1.0</strong> — DTES Overdose Watch · 6-Month Community Pilot
+  </div>
+  <div class="doc-acts">
+    <a href="overdose-watch.html" class="btn btn-teal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      Open OD Watch
+    </a>
+  </div>
+</div>
+
+<div class="doc-hero">
+  <div class="eyebrow">DTES Overdose Watch · Pilot Plan</div>
+  <h1>6-Month Community Pilot:<br>Design, Governance &amp; Evaluation</h1>
+  <p class="subtitle">A comprehensive operational plan for piloting OD Watch in the Downtown Eastside — covering research design, partner roles, data governance, success metrics, budget, risk management, and go/no-go criteria for scaling.</p>
+  <div class="meta-row">
+    <div class="meta-item"><span>Pilot duration</span><strong>6 months</strong></div>
+    <div class="meta-item"><span>Target geography</span><strong>DTES core (approx. 1km²)</strong></div>
+    <div class="meta-item"><span>Lead organisation</span><strong>Anchor harm reduction partner (TBD)</strong></div>
+    <div class="meta-item"><span>Health authority partner</span><strong>Vancouver Coastal Health</strong></div>
+    <div class="meta-item"><span>Version</span><strong>v1.0 — Draft for partner review</strong></div>
+  </div>
+</div>
+
+<div class="stat-band">
+  <div class="stat-item"><div class="n">6</div><div class="l">Month pilot duration</div></div>
+  <div class="stat-item"><div class="n">3</div><div class="l">Partner organisations (minimum)</div></div>
+  <div class="stat-item"><div class="n">~20</div><div class="l">Frontline loggers trained</div></div>
+  <div class="stat-item"><div class="n">5</div><div class="l">Primary research questions</div></div>
+  <div class="stat-item"><div class="n">$94k</div><div class="l">Estimated pilot budget (CAD)</div></div>
+</div>
+
+<main>
+<div class="content">
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <div class="toc-grid">
+      <a href="#s1"  class="toc-item"><span class="toc-num">01</span>Executive summary</a>
+      <a href="#s6"  class="toc-item"><span class="toc-num">06</span>Success metrics &amp; KPIs</a>
+      <a href="#s2"  class="toc-item"><span class="toc-num">02</span>Pilot design &amp; scope</a>
+      <a href="#s7"  class="toc-item"><span class="toc-num">07</span>Evaluation framework</a>
+      <a href="#s3"  class="toc-item"><span class="toc-num">03</span>Partner organisations &amp; roles</a>
+      <a href="#s8"  class="toc-item"><span class="toc-num">08</span>Risk management</a>
+      <a href="#s4"  class="toc-item"><span class="toc-num">04</span>Research questions</a>
+      <a href="#s9"  class="toc-item"><span class="toc-num">09</span>Budget</a>
+      <a href="#s5"  class="toc-item"><span class="toc-num">05</span>Timeline &amp; milestones</a>
+      <a href="#s10" class="toc-item"><span class="toc-num">10</span>Go / no-go criteria</a>
+    </div>
+  </div>
+
+  <!-- 01 -->
+  <div id="s1" class="section-marker">
+    <span class="section-num-badge">01</span>
+    <div class="section-line"></div>
+    <h2>Executive summary</h2>
+  </div>
+
+  <p>This document describes a six-month pilot of the DTES Overdose Watch platform — a mobile-first tool enabling frontline workers and peer responders to log overdose events in real time, producing a live heatmap of activity across the Downtown Eastside.</p>
+  <p>The pilot has two primary objectives. First, to determine whether community-based real-time logging is operationally feasible in the DTES context — whether frontline workers will actually use it, and whether the data it produces is reliable enough to act on. Second, to generate preliminary evidence of impact: does access to this data change how outreach teams position themselves, how EMS is deployed, and how quickly contaminated supply events are detected?</p>
+  <p>The pilot is designed to be <strong>low-risk and reversible</strong>. No clinical decisions depend on it. No patient data is collected. It adds a new capability to existing outreach operations without displacing any existing practice. If the pilot fails — if logging rates are too low, data quality is poor, or community trust breaks down — it can be discontinued without harm.</p>
+
+  <div class="callout teal">
+    <div class="callout-title">What this pilot is not</div>
+    <p>This is not a randomized controlled trial. It is not designed to produce definitive causal evidence of lives saved. It is a feasibility and early-impact pilot — designed to answer whether the tool works in practice and whether the signals it produces are worth acting on. Rigorous outcome evaluation would be the work of a subsequent, fully-funded 24-month study.</p>
+  </div>
+
+  <!-- 02 -->
+  <div id="s2" class="section-marker">
+    <span class="section-num-badge">02</span>
+    <div class="section-line"></div>
+    <h2>Pilot design &amp; scope</h2>
+  </div>
+
+  <h3>Geography</h3>
+  <p>The pilot covers the DTES core: bounded roughly by Carrall Street to the west, Clark Drive to the east, Prior Street to the south, and Hastings Street as the central axis. This represents the highest-density overdose geography in Vancouver and the area where existing harm reduction infrastructure — Insite, the Carnegie Centre, VANDU — is already concentrated.</p>
+  <p>Coverage will not be uniform across this area at the outset. The pilot begins where existing partner organizations already operate and expands outward as logging behavior establishes itself.</p>
+
+  <h3>Duration</h3>
+  <p>Six months, structured in three two-month phases. Month one includes a two-week pre-pilot ramp (training, onboarding, technical setup) before the data collection clock starts. The full timeline is described in Section 05.</p>
+
+  <h3>Logging model</h3>
+  <p>OD Watch uses a <strong>passive logging model</strong>: workers log events they encounter in the course of their existing shifts — they do not change their routes or behaviors to generate data. This is critical for two reasons. It means the logging burden is minimal (a 30-second tap sequence, not a separate workflow), and it means the data reflects real-world patterns rather than tool-driven ones.</p>
+  <p>Workers log: location (GPS auto-detect), substance if known, and outcome (naloxone administered, revived without EMS, EMS called, fatal). No information about the person who overdosed is ever collected. No names, no dates of birth, no health card numbers, no photos. The record contains only time, place, substance, and outcome.</p>
+
+  <h3>Data access tiers</h3>
+  <p>Three tiers of data access are established for the pilot, each with different levels of granularity and different authorization requirements:</p>
+  <table class="roles-table" style="margin:16px 0;">
+    <thead>
+      <tr><th>Tier</th><th>Who has access</th><th>What they see</th><th>Authorized by</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Community</strong></td>
+        <td>All logged-in responders</td>
+        <td>Aggregate density heatmap, last 24h. No individual event markers.</td>
+        <td>Default — no additional authorization</td>
+      </tr>
+      <tr>
+        <td><strong>Operational</strong></td>
+        <td>Outreach team leads, shift supervisors</td>
+        <td>Individual event markers with timestamp, substance, outcome. Last 7 days.</td>
+        <td>Anchor organisation data steward</td>
+      </tr>
+      <tr>
+        <td><strong>Research</strong></td>
+        <td>VCH analyst, BCCDC liaison (read-only)</td>
+        <td>Full timestamped, geolocated dataset. Export for analysis.</td>
+        <td>Pilot steering committee + data sharing agreement</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout amber">
+    <div class="callout-title">No law enforcement access — at any tier</div>
+    <p>Vancouver Police Department, RCMP, and all law enforcement bodies are explicitly excluded from all three tiers, including under court order to the extent legally permissible. The anchor organization's legal counsel will advise on how to structure the data governance agreement to maximize protection. This is a hard design constraint, not a preference.</p>
+  </div>
+
+  <!-- 03 -->
+  <div id="s3" class="section-marker">
+    <span class="section-num-badge">03</span>
+    <div class="section-line"></div>
+    <h2>Partner organisations &amp; roles</h2>
+  </div>
+
+  <p>The pilot requires a minimum of three partner organisations: an anchor harm reduction body that owns the data and leads community engagement; a health authority partner with observer access; and a technical lead for platform support. Ideal and contingency partners for each role are described below.</p>
+
+  <div class="partner-grid">
+    <div class="partner-card">
+      <div class="partner-role">Anchor Organisation (required)</div>
+      <div class="partner-name">Lead harm reduction partner</div>
+      <div class="partner-body">Owns the data, governs access, trains frontline workers, and serves as the community face of the tool. Must have existing trusted relationships with DTES residents and peer workers, and an established supervised consumption or harm reduction program. Candidates: VANDU, PHS Community Services, Balmoral Community.</div>
+      <span class="partner-tag">Data owner · Community governance</span>
+    </div>
+    <div class="partner-card">
+      <div class="partner-role">Health Authority Partner (required)</div>
+      <div class="partner-name">Vancouver Coastal Health</div>
+      <div class="partner-body">Observer and operational partner. Receives read-only Research tier access. Assigns a named analyst to review data weekly and a public health liaison to participate in monthly steering committee meetings. Does not control the data or the tool — participation is as a beneficiary and co-evaluator, not an administrator.</div>
+      <span class="partner-tag">Observer · Evaluation partner</span>
+    </div>
+    <div class="partner-card">
+      <div class="partner-role">Technical Support (required)</div>
+      <div class="partner-name">Platform development team</div>
+      <div class="partner-body">Maintains uptime, responds to bugs within 24 hours, and implements any minor feature changes agreed by the steering committee. Provides weekly data integrity reports. Does not have access to event data beyond what is needed for technical support.</div>
+      <span class="partner-tag">Platform · Infrastructure</span>
+    </div>
+    <div class="partner-card">
+      <div class="partner-role">Research Partner (optional but recommended)</div>
+      <div class="partner-name">BC Centre for Disease Control or UBC SPH</div>
+      <div class="partner-body">Provides independent evaluation support — helps design the assessment framework, conducts qualitative interviews with frontline workers at month 3 and month 6, and authors the final evaluation report. Having an arm's-length evaluator strengthens the credibility of the findings for funders and health authority leadership.</div>
+      <span class="partner-tag">Evaluation · Independence</span>
+    </div>
+    <div class="partner-card">
+      <div class="partner-role">EMS Partner (optional — Phase 2)</div>
+      <div class="partner-name">BC Emergency Health Services</div>
+      <div class="partner-body">Joins in Phase 2 (months 3–6) to receive hotspot alert notifications and participate in the contamination alert protocol. BCEHS supervisor dashboard integration is scoped for Phase 2, not Phase 1. Their participation is contingent on data sharing agreement approval through their legal team.</div>
+      <span class="partner-tag">EMS dispatch · Phase 2 only</span>
+    </div>
+    <div class="partner-card">
+      <div class="partner-role">Community Advisory Body (required)</div>
+      <div class="partner-name">DTES Resident / Peer Advisory Group</div>
+      <div class="partner-body">A standing group of 5–8 DTES residents with lived experience of drug use, convened quarterly throughout the pilot. Reviews tool design decisions, data access policies, and evaluation findings. Has the authority to recommend suspension of the pilot if community harm is identified. Compensated for participation at peer worker rates.</div>
+      <span class="partner-tag">Governance · Community voice</span>
+    </div>
+  </div>
+
+  <!-- 04 -->
+  <div id="s4" class="section-marker">
+    <span class="section-num-badge">04</span>
+    <div class="section-line"></div>
+    <h2>Research questions</h2>
+  </div>
+
+  <p>The pilot is designed to answer five primary research questions. Each question has a defined measurement approach and a minimum data threshold required for a meaningful answer.</p>
+
+  <ul class="rq-list">
+    <li class="rq-item">
+      <div class="rq-num">01</div>
+      <div class="rq-body">
+        <div class="rq-q">Is community-based real-time logging operationally feasible? Do frontline workers log events consistently enough to produce usable data? <span class="rq-type rq-quant">Quantitative</span></div>
+        <div class="rq-method">Measured by: logging rate (events logged per worker per shift), event completeness (% with substance and outcome recorded), and temporal consistency (no multi-day gaps from active workers). Threshold for feasibility: ≥70% of events observed by trained workers are logged within 5 minutes.</div>
+      </div>
+    </li>
+    <li class="rq-item">
+      <div class="rq-num">02</div>
+      <div class="rq-body">
+        <div class="rq-q">Does real-time data change how outreach teams make deployment decisions? <span class="rq-type rq-qual">Qualitative</span> <span class="rq-type rq-quant">Quantitative</span></div>
+        <div class="rq-method">Measured by: shift debrief logs (did teams check the map before or during their shift? did they redirect based on it?), outreach team interviews at month 3 and 6, and GPS tracking of outreach van routes versus event cluster locations (with van operator consent).</div>
+      </div>
+    </li>
+    <li class="rq-item">
+      <div class="rq-num">03</div>
+      <div class="rq-body">
+        <div class="rq-q">Can the tool reliably detect contaminated supply events before other data pipelines? <span class="rq-type rq-quant">Quantitative</span></div>
+        <div class="rq-method">Measured by: time from first cluster event to alert trigger versus time to first BCEHS call log or coroner report for the same event cluster. Requires post-hoc cross-referencing with BCEHS and BCCDC data at pilot end.</div>
+      </div>
+    </li>
+    <li class="rq-item">
+      <div class="rq-num">04</div>
+      <div class="rq-body">
+        <div class="rq-q">What proportion of overdose events are captured by the tool that are invisible to existing surveillance systems? <span class="rq-type rq-quant">Quantitative</span></div>
+        <div class="rq-method">Measured by: cross-referencing OD Watch events (timestamped, geolocated) against BCEHS dispatch logs for the same time and location. Events with no corresponding BCEHS record represent the "dark matter" of the crisis — peer-resolved events that currently go entirely uncounted.</div>
+      </div>
+    </li>
+    <li class="rq-item">
+      <div class="rq-num">05</div>
+      <div class="rq-body">
+        <div class="rq-q">Does the tool maintain community trust and not create harm through its use? <span class="rq-type rq-qual">Qualitative</span></div>
+        <div class="rq-method">Measured by: quarterly peer advisory group assessment, incident log (any reports of the tool being used contrary to its principles), and structured interviews with DTES residents (non-workers) who are aware of the tool. The peer advisory group has standing authority to flag harm and escalate to the steering committee.</div>
+      </div>
+    </li>
+  </ul>
+
+  <!-- 05 -->
+  <div id="s5" class="section-marker">
+    <span class="section-num-badge">05</span>
+    <div class="section-line"></div>
+    <h2>Timeline &amp; milestones</h2>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot p0">Pre</div></div>
+      <div class="tl-content">
+        <div class="tl-phase">Pre-pilot</div>
+        <div class="tl-title">Setup &amp; onboarding</div>
+        <div class="tl-duration">Weeks −4 to 0 (approx. 4 weeks before launch)</div>
+        <ul class="tl-tasks">
+          <li>Finalize anchor organisation partnership agreement and data governance MOU</li>
+          <li>Establish steering committee (anchor org lead, VCH liaison, research partner, peer advisory rep)</li>
+          <li>Convene first peer advisory group meeting — review tool design and pilot plan</li>
+          <li>Conduct training sessions for frontline workers and peer responders (2–3 sessions, ~10 participants each)</li>
+          <li>Technical setup: production environment, anonymized responder accounts, access tier configuration</li>
+          <li>Establish baseline data: pull 3-month BCEHS dispatch logs and BCCDC event data for comparison zone</li>
+          <li>Legal review: data sharing agreement with VCH; advice on law enforcement protection</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot p1">P1</div></div>
+      <div class="tl-content">
+        <div class="tl-phase">Phase 1</div>
+        <div class="tl-title">Community logging — establish data quality</div>
+        <div class="tl-duration">Months 1–2</div>
+        <ul class="tl-tasks">
+          <li>Frontline workers logging events; support team on-call for UX issues</li>
+          <li>Weekly data quality review by anchor org data steward — flag gaps, anomalies, incomplete records</li>
+          <li>VCH analyst begins reviewing aggregate data (Research tier) — establishing patterns</li>
+          <li>Month 1 check-in: logging rate assessment — if below 50%, convene emergency review</li>
+          <li>Month 2 steering committee: Phase 1 go/no-go assessment before proceeding to Phase 2</li>
+          <li>Qualitative: informal check-ins with 3–5 frontline workers about tool usability</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot p2">P2</div></div>
+      <div class="tl-content">
+        <div class="tl-phase">Phase 2</div>
+        <div class="tl-title">Operational integration — connect to response systems</div>
+        <div class="tl-duration">Months 3–4</div>
+        <ul class="tl-tasks">
+          <li>Activate contamination alert protocol: cluster threshold triggers notification to outreach team leads and VCH liaison</li>
+          <li>Introduce BCEHS supervisor dashboard access (pending data sharing agreement)</li>
+          <li>Outreach teams begin using live map for pre-shift positioning decisions — document in shift debrief logs</li>
+          <li>First formal qualitative interviews with frontline workers (Research partner leads)</li>
+          <li>Peer advisory group meeting 2: review any community concerns; assess trust signals</li>
+          <li>Cross-reference first 2 months of OD Watch data with BCEHS dispatch logs to quantify invisible event volume</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot p3">P3</div></div>
+      <div class="tl-content">
+        <div class="tl-phase">Phase 3</div>
+        <div class="tl-title">Evaluation &amp; synthesis — build the evidence base</div>
+        <div class="tl-duration">Months 5–6</div>
+        <ul class="tl-tasks">
+          <li>Continue logging and operational use; focus shifts to evidence collection</li>
+          <li>Final qualitative interviews with frontline workers, outreach leads, and VCH/BCEHS contacts</li>
+          <li>DTES resident interviews (non-workers) about awareness and community trust (peer advisory leads recruitment)</li>
+          <li>Full data cross-reference: OD Watch events vs. BCEHS dispatch logs vs. BCCDC dashboard for entire pilot period</li>
+          <li>Contamination alert analysis: compile all triggered alerts, assess accuracy and response time vs. baseline</li>
+          <li>Month 6 peer advisory group: final community assessment of the tool</li>
+          <li>Research partner drafts evaluation report; steering committee reviews before publication</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot p4">✓</div></div>
+      <div class="tl-content">
+        <div class="tl-phase">Post-pilot</div>
+        <div class="tl-title">Decision point &amp; next steps</div>
+        <div class="tl-duration">Month 7 (30-day window)</div>
+        <ul class="tl-tasks">
+          <li>Steering committee meets to assess against go/no-go criteria (see Section 10)</li>
+          <li>Evaluation report published and shared with VCH, BCEHS, BCCDC, City of Vancouver</li>
+          <li>If go: develop 18-month scale-up plan with full institutional partnerships and funding ask</li>
+          <li>If no-go: document findings, publish lessons learned, discontinue tool or redesign based on findings</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 -->
+  <div id="s6" class="section-marker">
+    <span class="section-num-badge">06</span>
+    <div class="section-line"></div>
+    <h2>Success metrics &amp; KPIs</h2>
+  </div>
+
+  <p>The following metrics are tracked throughout the pilot. Primary metrics determine the go/no-go decision. Secondary metrics provide context and inform the scale-up design.</p>
+
+  <table class="kpi-table">
+    <thead>
+      <tr><th>Metric</th><th>Type</th><th>Target</th><th>Measurement frequency</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="kpi-primary">Logging completeness rate</td><td>Primary</td>
+        <td><span class="target-badge">≥70% of events logged</span></td><td>Weekly</td>
+      </tr>
+      <tr>
+        <td class="kpi-primary">Event record completeness</td><td>Primary</td>
+        <td><span class="target-badge">≥85% include substance + outcome</span></td><td>Weekly</td>
+      </tr>
+      <tr>
+        <td class="kpi-primary">Contamination alert speed</td><td>Primary</td>
+        <td><span class="target-badge">≥2 hrs earlier than BCEHS/coroner</span></td><td>Per incident</td>
+      </tr>
+      <tr>
+        <td class="kpi-primary">Community trust — no harm incidents</td><td>Primary</td>
+        <td><span class="target-badge">0 confirmed incidents</span></td><td>Ongoing / quarterly review</td>
+      </tr>
+      <tr>
+        <td>Invisible event volume (peer-resolved, no EMS)</td><td>Secondary</td>
+        <td><span class="target-badge amber">Baseline only — document % vs. BCEHS</span></td><td>Monthly</td>
+      </tr>
+      <tr>
+        <td>Outreach positioning changes driven by map</td><td>Secondary</td>
+        <td><span class="target-badge amber">≥1 documented redirect per week by month 4</span></td><td>Monthly (shift logs)</td>
+      </tr>
+      <tr>
+        <td>Active logger retention</td><td>Secondary</td>
+        <td><span class="target-badge amber">≥75% of trained workers still logging at month 6</span></td><td>Monthly</td>
+      </tr>
+      <tr>
+        <td>Coverage zone expansion</td><td>Secondary</td>
+        <td><span class="target-badge amber">Events logged from ≥5 distinct DTES zones by month 4</span></td><td>Monthly</td>
+      </tr>
+      <tr>
+        <td>System uptime</td><td>Technical</td>
+        <td><span class="target-badge">≥99.5% during active shift hours</span></td><td>Continuous</td>
+      </tr>
+      <tr>
+        <td>Worker-reported usability score</td><td>Qualitative</td>
+        <td><span class="target-badge amber">≥7/10 avg at month 3 + 6 interviews</span></td><td>Month 3, Month 6</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 07 -->
+  <div id="s7" class="section-marker">
+    <span class="section-num-badge">07</span>
+    <div class="section-line"></div>
+    <h2>Evaluation framework</h2>
+  </div>
+
+  <p>The pilot uses a mixed-methods evaluation design. Quantitative data from the platform is triangulated with qualitative evidence from frontline workers, outreach leads, and DTES residents. Neither strand is sufficient alone: the numbers tell us what happened, the interviews tell us why and whether the tool genuinely served community needs.</p>
+
+  <h3>Quantitative strand</h3>
+  <p>Platform data is exported monthly and reviewed by the anchor organisation data steward and the research partner. Key analyses include: event volume trends over time, logging rate by worker and by zone, substance mix weekly trends, EMS-required rate by zone and time of day, and cross-referencing against BCEHS dispatch data and BCCDC dashboard outputs.</p>
+  <p>A quasi-experimental comparison is conducted where possible: comparing overdose outcomes in the DTES core (pilot area) against a comparable Vancouver neighbourhood without OD Watch coverage, using existing BCCDC and coroner data. This comparison is indicative, not causal — confounders are documented but not controlled for.</p>
+
+  <h3>Qualitative strand</h3>
+  <p>Semi-structured interviews are conducted at three points: informal check-ins with frontline workers at month 2, formal interviews at month 3 (10–15 participants: workers, outreach leads, VCH and BCEHS contacts), and final interviews at month 6 (same cohort plus 5–8 DTES residents with no direct involvement in logging). Interview guides are developed with peer advisory input to ensure questions are grounded in community-relevant concerns.</p>
+  <p>Key qualitative questions include: Does the tool feel safe to use? Has it changed how you work? Do you trust the data it produces? Has it created any unintended consequences you are aware of?</p>
+
+  <h3>Community advisory assessment</h3>
+  <p>The peer advisory group produces a written assessment at the end of the pilot, independent of the research partner's report. This assessment is included verbatim in the final evaluation package presented to funders and health authority leadership — it is not edited, summarized, or filtered by the anchor organisation or the research partner.</p>
+
+  <div class="callout green">
+    <div class="callout-title">Publication commitment</div>
+    <p>The full evaluation report — including findings that are unflattering or mixed — is published publicly regardless of outcome. This commitment is made in advance to funders and partner organisations. A pilot that fails to demonstrate feasibility is still valuable if the failure is documented clearly and honestly. Selective publication of positive findings only would undermine the scientific and community value of the work.</p>
+  </div>
+
+  <!-- 08 -->
+  <div id="s8" class="section-marker">
+    <span class="section-num-badge">08</span>
+    <div class="section-line"></div>
+    <h2>Risk management</h2>
+  </div>
+
+  <table class="risk-table">
+    <thead>
+      <tr><th>Risk</th><th>Severity</th><th>Likelihood</th><th>Mitigation</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Law enforcement access to data</strong> — via subpoena, data breach, or partner organisation compromise</td>
+        <td><span class="sev-high">HIGH</span></td><td>Low–medium</td>
+        <td>Legal advice on data minimization and jurisdiction. Data stored in Canada (BC). Anchor org legal counsel to advise on resistance to subpoenas. No data retained beyond 24 months. Encryption at rest and in transit.</td>
+      </tr>
+      <tr>
+        <td><strong>Low logging adoption</strong> — workers don't use the tool consistently, data is sparse or unreliable</td>
+        <td><span class="sev-high">HIGH</span></td><td>Medium</td>
+        <td>Month 1 intensive support from technical team. Peer champion identified at each partner org. Logging made as frictionless as possible (30-second max). Month 1 check-in with hard threshold — if below 50%, redesign before continuing.</td>
+      </tr>
+      <tr>
+        <td><strong>Community trust breakdown</strong> — perception that data is being used against community interests</td>
+        <td><span class="sev-high">HIGH</span></td><td>Low</td>
+        <td>Peer advisory group with suspension authority. Radical transparency about data governance. No law enforcement access (hard commitment). Ongoing community communication through anchor org channels.</td>
+      </tr>
+      <tr>
+        <td><strong>Data quality too low to be actionable</strong> — incomplete records, inaccurate locations, inconsistent substance reporting</td>
+        <td><span class="sev-med">MED</span></td><td>Medium</td>
+        <td>GPS auto-detect reduces location error. Substance field optional (outcome required). Weekly quality audits. Worker feedback loops to identify systematic errors. Re-training at month 2 if quality is poor.</td>
+      </tr>
+      <tr>
+        <td><strong>Platform downtime during high-volume events</strong> — tool unavailable when most needed</td>
+        <td><span class="sev-med">MED</span></td><td>Low</td>
+        <td>99.5% uptime SLA with technical team. Offline logging mode (events sync when connectivity restored). 24-hour on-call support during pilot. Manual backup logging protocol for extended outages.</td>
+      </tr>
+      <tr>
+        <td><strong>Worker safety</strong> — logging exposes workers to risk (phone visible in dangerous environments)</td>
+        <td><span class="sev-med">MED</span></td><td>Low–medium</td>
+        <td>Logging can be deferred — workers log after they are in a safe location, not during a live event. App designed for discretion. Covered explicitly in training: safety first, logging second, always.</td>
+      </tr>
+      <tr>
+        <td><strong>Partner organisation withdrawal</strong> — anchor org or VCH withdraws mid-pilot</td>
+        <td><span class="sev-med">MED</span></td><td>Low</td>
+        <td>Partnership agreements include exit protocols and data ownership terms. Contingency anchor org identified before launch. VCH withdrawal would limit evaluation quality but not operational continuity.</td>
+      </tr>
+      <tr>
+        <td><strong>Scope creep</strong> — institutional partners pressure tool to serve law enforcement or regulatory functions</td>
+        <td><span class="sev-low">LOW</span></td><td>Low</td>
+        <td>Hard no-law-enforcement design constraint embedded in data architecture, not just policy. Steering committee composition (anchor org + peer advisory majority) provides governance firewall. VCH access is read-only and limited by agreement.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 09 -->
+  <div id="s9" class="section-marker">
+    <span class="section-num-badge">09</span>
+    <div class="section-line"></div>
+    <h2>Budget</h2>
+  </div>
+
+  <p>The following budget covers the full six-month pilot including pre-pilot setup, peer compensation, technical infrastructure, evaluation, and a contingency reserve. Figures are in Canadian dollars.</p>
+
+  <table class="budget-table">
+    <thead>
+      <tr><th>Category</th><th>Description</th><th>Amount (CAD)</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="budget-cat">Peer advisory &amp; community</div>
+          <div class="budget-note">Compensation at peer worker rates · 8 members × 4 meetings × 3 hours · plus recruitment</div>
+        </td>
+        <td>Quarterly meetings, individual interviews, lived experience advisory</td>
+        <td>$8,400</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="budget-cat">Anchor organisation coordination</div>
+          <div class="budget-note">0.3 FTE coordinator for 6 months · data stewardship, training, community liaison</div>
+        </td>
+        <td>Staff time (partial backfill)</td>
+        <td>$19,500</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="budget-cat">Frontline worker training</div>
+          <div class="budget-note">3 sessions × 10 workers · 2 hrs each · compensated at peer worker rates · plus refresher at month 3</div>
+        </td>
+        <td>Training time compensation + materials</td>
+        <td>$4,200</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="budget-cat">Technical infrastructure</div>
+          <div class="budget-note">Hosting, database, security, backups, monitoring · BC-based cloud provider</div>
+        </td>
+        <td>6-month operational costs</td>
+        <td>$6,000</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="budget-cat">Technical support</div>
+          <div class="budget-note">On-call developer support · estimated 2 hrs/week · bug fixes, minor feature requests</div>
+        </td>
+        <td>Developer time (part-time)</td>
+        <td>$12,000</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="budget-cat">Research &amp; evaluation</div>
+          <div class="budget-note">Research partner fees · interview facilitation, qualitative analysis, report writing · 30 days estimated</div>
+        </td>
+        <td>Independent evaluation</td>
+        <td>$24,000</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="budget-cat">Legal review</div>
+          <div class="budget-note">Data governance MOU, law enforcement protection advice, data sharing agreements with VCH and BCEHS</div>
+        </td>
+        <td>Legal counsel (one-time)</td>
+        <td>$6,500</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="budget-cat">Steering committee &amp; administration</div>
+          <div class="budget-note">Monthly meetings, document preparation, reporting to funders</div>
+        </td>
+        <td>Administrative overhead</td>
+        <td>$3,600</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="budget-cat">Contingency (10%)</div>
+          <div class="budget-note">Unplanned costs: additional training, scope changes, technical incidents</div>
+        </td>
+        <td>Reserve</td>
+        <td>$8,420</td>
+      </tr>
+      <tr>
+        <td><strong>Total</strong></td>
+        <td><strong>6-month pilot — all inclusive</strong></td>
+        <td>$92,620</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout teal">
+    <div class="callout-title">Potential funding sources</div>
+    <p>The pilot budget is well within range of a single VCH Operational Innovation grant, a CIHR Planning &amp; Dissemination grant, or a City of Vancouver Social Purpose Real Estate or Community Services grant. The BC Ministry of Mental Health and Addictions has also funded comparable harm reduction technology pilots through its response fund. A joint application from the anchor organisation and a university research partner would strengthen eligibility for CIHR funding.</p>
+  </div>
+
+  <!-- 10 -->
+  <div id="s10" class="section-marker">
+    <span class="section-num-badge">10</span>
+    <div class="section-line"></div>
+    <h2>Go / no-go criteria</h2>
+  </div>
+
+  <p>At the conclusion of the pilot, the steering committee assesses findings against the criteria below. A "go" decision leads directly into a funded 18-month scale-up plan with full institutional integration. A "no-go" decision leads to a documented decision about whether to redesign, pause, or discontinue — not necessarily the end of the work.</p>
+
+  <div class="gng-grid">
+    <div class="gng-card go">
+      <div class="gng-title">GO — proceed to scale-up</div>
+      <ul class="gng-list">
+        <li>Logging completeness rate ≥70% sustained for at least 3 months</li>
+        <li>Zero confirmed community harm or trust incidents</li>
+        <li>At least 1 contamination cluster detected earlier than institutional pipelines</li>
+        <li>At least 1 documented outreach deployment decision informed by live data</li>
+        <li>Peer advisory group assessment: tool is safe, community-controlled, and worth continuing</li>
+        <li>Data quality sufficient for BCCDC to consider formal integration discussions</li>
+        <li>VCH or BCEHS expresses written interest in operational integration</li>
+      </ul>
+    </div>
+    <div class="gng-card nogo">
+      <div class="gng-title">NO-GO — redesign or discontinue</div>
+      <ul class="gng-list">
+        <li>Logging rate below 50% despite retraining — tool not being used in practice</li>
+        <li>Any confirmed incident of law enforcement using or attempting to access data</li>
+        <li>Peer advisory group votes to recommend suspension (majority)</li>
+        <li>Evidence that logging creates safety risk for workers or community members</li>
+        <li>Data quality too low to produce actionable signals — too many incomplete records or location errors</li>
+        <li>No evidence that data influenced any deployment or response decision across 6 months</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout amber">
+    <div class="callout-title">The "redesign" path</div>
+    <p>A no-go decision on the current design does not necessarily mean the concept is wrong. If logging rates are low because the UX is too cumbersome, that is a design problem — fix the UX and re-pilot. If trust broke down over a specific policy concern, address the policy. The pilot is designed to generate learning, and learning sometimes means changing direction. The commitment is to honest evaluation, not to any particular outcome.</p>
+  </div>
+
+  <h3>Ethics &amp; community accountability</h3>
+
+  <div class="ethics-grid">
+    <div class="ethics-card">
+      <div class="ethics-icon">🔒</div>
+      <div class="ethics-title">Privacy by design</div>
+      <div class="ethics-body">No personal data ever collected. Data minimization principles applied at the architecture level — not just in policy. Regular privacy audits by the anchor org data steward.</div>
+    </div>
+    <div class="ethics-card">
+      <div class="ethics-icon">🤝</div>
+      <div class="ethics-title">Community control</div>
+      <div class="ethics-body">The anchor organisation owns the data. The peer advisory group has suspension authority. No decision about the tool's future is made without community voice at the table.</div>
+    </div>
+    <div class="ethics-card">
+      <div class="ethics-icon">📢</div>
+      <div class="ethics-title">Transparency</div>
+      <div class="ethics-body">Full evaluation report published regardless of outcome. Findings shared with community before being shared with funders. No selective reporting.</div>
+    </div>
+    <div class="ethics-card">
+      <div class="ethics-icon">⚖️</div>
+      <div class="ethics-title">Good Samaritan alignment</div>
+      <div class="ethics-body">Tool reinforces BC's Good Samaritan Drug Overdose Act. Logging must never create legal risk for workers or bystanders. Legal review confirms this before launch.</div>
+    </div>
+    <div class="ethics-card">
+      <div class="ethics-icon">🚫</div>
+      <div class="ethics-title">No law enforcement</div>
+      <div class="ethics-body">Hard architectural constraint — not a policy preference. Designed to be resistant to court orders to the extent legally permissible. Non-negotiable and irrevocable.</div>
+    </div>
+    <div class="ethics-card">
+      <div class="ethics-icon">💰</div>
+      <div class="ethics-title">Fair compensation</div>
+      <div class="ethics-body">All peer and community participants compensated at peer worker rates. Lived experience is not free labour. Budget reflects this as a core cost, not an optional line item.</div>
+    </div>
+  </div>
+
+  <div class="cta-box">
+    <h3>Ready to build this together?</h3>
+    <p>This plan is a starting point, not a finished document. The right anchor organisation and community partners will reshape it significantly — and should. We are looking for organisations who want to co-design the pilot, not just implement a plan that arrived ready-made.</p>
+    <div class="cta-actions">
+      <a href="overdose-watch.html" class="btn btn-white">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        See the prototype
+      </a>
+      <a href="onepager.html" class="btn btn-ghost">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+        Project overview
+      </a>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<footer>
+  DTES Community Tools · Vancouver, BC · Community-controlled · Privacy-first · Open-source
+</footer>
+
+</body>
+</html>
