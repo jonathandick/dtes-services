@@ -1,5 +1,5 @@
 // ── Animation system ──────────────────────────────────────────────────────
-// Depends on: data.js (events, COLS), map.js (map, markers, mkIcon, popup, render, activeO)
+// Depends on: data.js (events, COLS), map.js (map, markers, popup, render)
 // chart.js (initAnimChart, updateAnimChart) — called at runtime, loaded after this file
 
 const ANIM = {
@@ -15,6 +15,16 @@ const ANIM = {
   raf:      null,
   filterSubs: new Set(["Fentanyl","Benzo-adulterated","Meth / Stimulant","Medetomidine / Xylazine","Carfentanil","Unknown"]),
   filterOuts: new Set(["Naloxone administered","Revived - no EMS","EMS called","Fatal"]),
+};
+
+// Substance colours — shared by chart.js via global scope
+const SUB_COLS = {
+  "Fentanyl":                "#D94040",
+  "Benzo-adulterated":       "#E8930A",
+  "Meth / Stimulant":        "#7B61FF",
+  "Medetomidine / Xylazine": "#F2C94C",
+  "Carfentanil":             "#EB5757",
+  "Unknown":                 "#7EC8C0",
 };
 
 function fmtSimTime(ts) {
@@ -60,8 +70,13 @@ function animSetBounds() {
 
 function animPlay() {
   if (!ANIM.active || ANIM.simTime >= ANIM.winEnd) {
+    // Fresh play or replay — reset all state
     animSetBounds();
     ANIM.simTime = ANIM.winStart;
+    animClearCells();
+    animCounts = { total:0, nal:0, rev:0, ems:0, fat:0 };
+    animRenderedUpTo = ANIM.winStart;
+    animUpdateCounts();
   }
   ANIM.active   = true;
   ANIM.paused   = false;
@@ -72,7 +87,6 @@ function animPlay() {
   document.getElementById('btn-play').classList.add('active');
   document.getElementById('anim-map-overlay').classList.add('show');
   initAnimChart();
-  renderAnimFull(ANIM.simTime);
   animUpdateProgress();
   ANIM.raf = requestAnimationFrame(animFrame);
 }
@@ -102,6 +116,7 @@ function animReset() {
   document.getElementById('anim-map-overlay').classList.remove('show');
   document.getElementById('anim-chart-panel').classList.remove('show');
   if (animChart) { animChart.destroy(); animChart = null; }
+  animClearCells();
   animSetBounds();
   render();
 }
@@ -141,31 +156,83 @@ function animUpdateProgress() {
   document.getElementById('amo-time').textContent   = label;
 }
 
-// ── Additive rendering ────────────────────────────────────────────────────
-// Only new markers are added each frame; clearLayers() only on reset/scrub.
-// CSS @keyframes handles the pop-in — no per-frame SVG rebuilds needed.
+// ── Cell-based aggregation ────────────────────────────────────────────────
+// One L.circleMarker per ~55 m grid cell, coloured by dominant substance.
+// Radius = 4 + sqrt(count) * 3  →  area ∝ event count.
+// Additive rendering: cells grow in place each frame; clearLayers only on reset/scrub.
 
+let CELL_SIZE = 0.0005; // degrees — updated by UI selector
+
+let animCells        = new Map(); // cellKey → { count, subCounts, lat, lng, circle }
 let animRenderedUpTo = 0;
-let animCounts = { total:0, nal:0, rev:0, ems:0, fat:0 };
+let animCounts       = { total:0, nal:0, rev:0, ems:0, fat:0 };
 
-function mkIconAnimNew(outcome) {
-  const c = COLS[outcome] || COLS["Naloxone administered"];
-  const r = outcome === "Fatal" ? 8 : 6;
-  const d = r * 2;
-  return L.divIcon({
-    html: `<div class="mp" style="width:${d}px;height:${d}px;border-radius:50%;background:${c.fill};border:2px solid rgba(255,255,255,0.9);box-shadow:0 1px 6px rgba(0,0,0,0.35);"></div>`,
-    className: '', iconSize: [d, d], iconAnchor: [r, r],
-  });
+function animCellKey(lat, lng) {
+  return `${Math.round(lat / CELL_SIZE)},${Math.round(lng / CELL_SIZE)}`;
 }
 
-function mkIconAnimOld(outcome) {
-  const c = COLS[outcome] || COLS["Naloxone administered"];
-  const r = outcome === "Fatal" ? 7 : 5;
-  const d = r * 2;
-  return L.divIcon({
-    html: `<div style="width:${d}px;height:${d}px;border-radius:50%;background:${c.fill};opacity:0.7;border:1.5px solid rgba(255,255,255,0.8);box-shadow:0 1px 4px rgba(0,0,0,0.25);"></div>`,
-    className: '', iconSize: [d, d], iconAnchor: [r, r],
-  });
+function animCellCenter(lat, lng) {
+  return [Math.round(lat / CELL_SIZE) * CELL_SIZE, Math.round(lng / CELL_SIZE) * CELL_SIZE];
+}
+
+function animDominantSub(subCounts) {
+  let top = "Unknown", max = 0;
+  for (const [k, v] of Object.entries(subCounts)) {
+    if (v > max) { max = v; top = k; }
+  }
+  return top;
+}
+
+function animCellRadius(count) {
+  return 4 + Math.sqrt(count) * 3;
+}
+
+function animCellPopupHtml(cell) {
+  const rows = Object.entries(cell.subCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([k, v]) => `<div style="display:flex;gap:6px;align-items:center;">
+      <span style="width:8px;height:8px;border-radius:50%;background:${SUB_COLS[k]||'#aaa'};flex-shrink:0;"></span>
+      <span style="flex:1">${k}</span><strong>${v}</strong></div>`)
+    .join('');
+  return `<div style="font-size:12px;line-height:1.6;">
+    <strong style="font-size:13px;">${cell.count} event${cell.count !== 1 ? 's' : ''}</strong>
+    <div style="margin-top:4px;">${rows}</div>
+  </div>`;
+}
+
+function animUpsertCell(e, isNew) {
+  const key = animCellKey(e.lat, e.lng);
+  let cell  = animCells.get(key);
+  if (!cell) {
+    const [clat, clng] = animCellCenter(e.lat, e.lng);
+    cell = { count: 0, subCounts: {}, lat: clat, lng: clng, circle: null };
+    animCells.set(key, cell);
+  }
+  cell.count++;
+  cell.subCounts[e.substance] = (cell.subCounts[e.substance] || 0) + 1;
+
+  const dom = animDominantSub(cell.subCounts);
+  const col = SUB_COLS[dom] || '#7EC8C0';
+  const r   = animCellRadius(cell.count);
+
+  if (!cell.circle) {
+    cell.circle = L.circleMarker([cell.lat, cell.lng], {
+      radius:      r,
+      color:       'rgba(255,255,255,0.6)',
+      weight:      1.5,
+      fillColor:   col,
+      fillOpacity: isNew ? 0.85 : 0.55,
+    }).addTo(map);
+  } else {
+    cell.circle.setRadius(r);
+    cell.circle.setStyle({ fillColor: col });
+  }
+  cell.circle.bindPopup(animCellPopupHtml(cell), { maxWidth: 220 });
+}
+
+function animClearCells() {
+  animCells.forEach(cell => { if (cell.circle) map.removeLayer(cell.circle); });
+  animCells.clear();
 }
 
 function animUpdateCounts() {
@@ -179,8 +246,7 @@ function animUpdateCounts() {
   document.getElementById('mo-fat').textContent  = animCounts.fat.toLocaleString();
 }
 
-// Additive: only add markers for events that just entered the window.
-// Called every rAF tick — must be very cheap.
+// Additive: only process events that just entered the window this frame.
 function renderAnimAdditive(upToTs) {
   const newEvents = events.filter(e =>
     e.ts > animRenderedUpTo &&
@@ -190,9 +256,7 @@ function renderAnimAdditive(upToTs) {
     ANIM.filterSubs.has(e.substance)
   );
   newEvents.forEach(e => {
-    const m = L.marker([e.lat, e.lng], { icon: mkIconAnimNew(e.outcome) });
-    m.bindPopup(popup(e), { maxWidth: 220 });
-    markers.addLayer(m);
+    animUpsertCell(e, true);
     animCounts.total++;
     if (e.outcome === "Naloxone administered") animCounts.nal++;
     if (e.outcome === "Revived - no EMS")      animCounts.rev++;
@@ -203,21 +267,20 @@ function renderAnimAdditive(upToTs) {
   animRenderedUpTo = upToTs;
 }
 
-// Full rebuild — used only for reset and scrub.
+// Full rebuild — used only for scrub.
 function renderAnimFull(upToTs) {
-  markers.clearLayers();
+  animClearCells();
   animCounts = { total:0, nal:0, rev:0, ems:0, fat:0 };
   animRenderedUpTo = ANIM.winStart;
   if (upToTs <= ANIM.winStart) { animUpdateCounts(); return; }
+
   const f = events.filter(e =>
     e.ts >= ANIM.winStart && e.ts <= upToTs &&
     ANIM.filterOuts.has(e.outcome) &&
     ANIM.filterSubs.has(e.substance)
   );
   f.forEach(e => {
-    const m = L.marker([e.lat, e.lng], { icon: mkIconAnimOld(e.outcome) });
-    m.bindPopup(popup(e), { maxWidth: 220 });
-    markers.addLayer(m);
+    animUpsertCell(e, false);
     animCounts.total++;
     if (e.outcome === "Naloxone administered") animCounts.nal++;
     if (e.outcome === "Revived - no EMS")      animCounts.rev++;
@@ -301,6 +364,14 @@ document.getElementById('anim-outs-all').addEventListener('click', () => {
   });
   if (ANIM.active) animReset();
 });
+
+// Cell size buttons
+document.querySelectorAll('#cell-size-btns .speed-btn').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#cell-size-btns .speed-btn').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  CELL_SIZE = +b.dataset.cell;
+  if (ANIM.active) animReset();
+}));
 
 // Speed buttons
 document.querySelectorAll('#speed-btns .speed-btn').forEach(b => b.addEventListener('click', () => {

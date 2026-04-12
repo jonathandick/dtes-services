@@ -1,14 +1,8 @@
 // ── Animated chart (live, alongside the map) ──────────────────────────────
 // Depends on: Chart.js (global), data.js (events), animation.js (ANIM)
 
-const CHART_SUBS = [
-  { key: "Fentanyl",                color: "#D94040" },
-  { key: "Benzo-adulterated",       color: "#E8930A" },
-  { key: "Meth / Stimulant",        color: "#7B61FF" },
-  { key: "Medetomidine / Xylazine", color: "#F2C94C" },
-  { key: "Carfentanil",             color: "#EB5757" },
-  { key: "Unknown",                 color: "#7EC8C0" },
-];
+// Derive from SUB_COLS defined in animation.js (loaded first)
+const CHART_SUBS = Object.entries(SUB_COLS).map(([key, color]) => ({ key, color }));
 
 let animChart        = null;
 let animChartBinMs   = 3600000;
