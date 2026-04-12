@@ -4,6 +4,47 @@
 // Derive from SUB_COLS defined in animation.js (loaded first)
 const CHART_SUBS = Object.entries(SUB_COLS).map(([key, color]) => ({ key, color }));
 
+// ── Vertical cursor plugin ────────────────────────────────────────────────────
+// Replaces the blocking tooltip popup with a dashed cursor line + compact label.
+const verticalCursorPlugin = {
+  id: 'verticalCursor',
+  afterDraw(chart) {
+    if (!chart.tooltip._active || !chart.tooltip._active.length) return;
+    const active = chart.tooltip._active[0];
+    const x      = active.element.x;
+    const idx    = active.index;
+    const { top, bottom, right } = chart.chartArea;
+    const ctx = chart.ctx;
+
+    // Dashed vertical line
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(x, top);
+    ctx.lineTo(x, bottom);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+    ctx.setLineDash([3, 3]);
+    ctx.stroke();
+    ctx.restore();
+
+    // Single combined label: "N this period · N total"
+    const datasets = chart.data.datasets;
+    const N = 1 + CHART_SUBS.length; // per-bin dataset count
+    const perBin = datasets[0].data[idx];
+    const cumul  = datasets[N].data[idx];
+    if (perBin === null || cumul === null) return;
+
+    const label = `${perBin} this period  ·  ${cumul} total`;
+    ctx.save();
+    ctx.font = "500 10px 'DM Sans', sans-serif";
+    ctx.fillStyle = 'rgba(255,255,255,0.72)';
+    const rightAligned = x > right - 130;
+    ctx.textAlign = rightAligned ? 'right' : 'left';
+    ctx.fillText(label, rightAligned ? x - 6 : x + 6, top + 11);
+    ctx.restore();
+  },
+};
+
 let animChart        = null;
 let animChartBinMs   = 3600000;
 let animChartLastBin = -1;
@@ -72,6 +113,7 @@ function initAnimChart() {
   animChart = new Chart(ctx, {
     type: 'line',
     data: { labels, datasets },
+    plugins: [verticalCursorPlugin],
     options: {
       responsive: true, maintainAspectRatio: false, animation: false,
       interaction: { mode:'index', intersect:false },
@@ -83,20 +125,7 @@ function initAnimChart() {
             boxWidth:8, padding:8,
           },
         },
-        tooltip: {
-          backgroundColor:'rgba(7,31,27,0.95)', borderColor:'rgba(255,255,255,0.1)', borderWidth:1,
-          titleColor:'#fff', bodyColor:'rgba(255,255,255,0.7)',
-          titleFont:{ family:"'DM Sans',sans-serif", size:11 },
-          bodyFont: { family:"'DM Sans',sans-serif", size:11 },
-          callbacks: {
-            label: ctx => {
-              const isCumul = ctx.datasetIndex >= N;
-              const v = ctx.raw;
-              if (v === null) return null;
-              return ` ${ctx.dataset.label}: ${v}${isCumul ? ' (running total)' : ''}`;
-            }
-          }
-        },
+        tooltip: { enabled: false },
       },
       scales: {
         x:  { ticks:{ color:'rgba(255,255,255,0.3)', font:{size:9}, maxRotation:30, maxTicksLimit:8 },
