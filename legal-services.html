@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legal Services – DTES Community Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<link rel="stylesheet" href="shared.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+.td-name  { font-weight: 500; color: var(--ink); min-width: 160px; }
+.td-name small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; margin-top: 2px; }
+.td-addr  { color: var(--muted); min-width: 130px; font-size: 12px; }
+.td-areas { min-width: 120px; }
+.td-access { min-width: 80px; }
+.td-hours { font-size: 12px; color: var(--muted); min-width: 100px; }
+.td-phone { font-size: 12px; }
+.td-phone a { color: var(--teal); text-decoration: none; }
+.td-phone a:hover { text-decoration: underline; }
+
+.area-tag {
+  display: inline-flex; align-items: center;
+  font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 9px;
+  margin: 1px 1px 1px 0; white-space: nowrap;
+}
+.area-criminal    { background: #FEE2E2; color: #991B1B; }
+.area-housing     { background: #D1FAE5; color: #065F46; }
+.area-human-rights{ background: #DBEAFE; color: #1E40AF; }
+.area-poverty     { background: #FEF3DC; color: #7A4A00; }
+.area-indigenous  { background: #E8FBF0; color: #166534; }
+.area-women       { background: #FFE4EE; color: #9B1745; }
+
+.access-badge {
+  font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 10px;
+}
+.access-drop-in    { background: #D1FAE5; color: #065F46; }
+.access-appointment{ background: #EFF6FF; color: #1D4ED8; }
+.access-phone      { background: #F5F3FF; color: #5B21B6; }
+.access-referral   { background: var(--amber-pale); color: #7A4A00; }
+
+#legal-map { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+
+<script src="nav.js"></script>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div>
+      <div class="page-eyebrow">⚖️ Vancouver · DTES &amp; Metro Area</div>
+      <h1>DTES <span>Legal Services</span></h1>
+      <p>Free and low-cost legal help for DTES residents — criminal duty counsel, tenant rights, human rights, benefits advocacy, and more. Always verify hours before visiting.</p>
+    </div>
+    <div class="header-meta">
+      <div class="meta-pill"><strong id="total-count">—</strong> organizations</div>
+      <div class="meta-pill"><strong id="free-count">—</strong> free services</div>
+      <div class="meta-pill"><strong id="dropin-count">—</strong> drop-in access</div>
+    </div>
+  </div>
+</div>
+
+<div class="controls-bar">
+  <div class="controls-inner">
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="search" class="search-input" placeholder="Search by name, area, address…">
+    </div>
+    <div class="filter-group">
+      <button class="filter-btn" data-filter="criminal">Criminal</button>
+      <button class="filter-btn" data-filter="housing">Housing/Tenant</button>
+      <button class="filter-btn" data-filter="human-rights">Human Rights</button>
+      <button class="filter-btn" data-filter="poverty">Poverty/Benefits</button>
+      <button class="filter-btn" data-filter="indigenous">Indigenous</button>
+      <button class="filter-btn" data-filter="women">Women</button>
+      <button class="filter-btn" data-filter="dropin">Drop-in</button>
+      <button class="filter-btn" data-filter="free">Free</button>
+    </div>
+    <select class="sort-select" id="sort-select">
+      <option value="name">Sort: Name A–Z</option>
+      <option value="cat">Sort: Category</option>
+      <option value="addr">Sort: Address</option>
+    </select>
+  </div>
+</div>
+
+<div class="main-wrap">
+  <div class="split-layout">
+    <div id="map-container">
+      <div id="legal-map"></div>
+    </div>
+    <div class="table-side">
+      <div class="results-bar"><strong id="shown-count">—</strong> of <strong id="total-shown">—</strong> organizations · Click row to highlight on map</div>
+      <div class="table-scroll">
+        <table id="legal-table">
+          <thead>
+            <tr>
+              <th data-col="name">Name</th>
+              <th data-col="addr">Address</th>
+              <th data-col="area">Practice Areas</th>
+              <th data-col="access">Access</th>
+              <th data-col="hours">Hours</th>
+              <th data-col="phone">Phone</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="source-note">
+  <strong>Sources:</strong> Legal Aid BC, Pivot Legal Society, CLAS, TRAC, DABC, West Coast LEAF, Access Pro Bono Society of BC, NCCABC, LSLAP.
+  Information may change — always call ahead to confirm hours and availability.
+  Corrections or additions: <a href="mailto:DTEShousing@gmail.com">DTEShousing@gmail.com</a>
+</div>
+
+<script src="data/legal-services.js"></script>
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+let sortCol = "name", sortDir = 1;
+let activeFilters = new Set();
+
+// ── Category colours ──────────────────────────────────────────────────────────
+const CAT_COLORS = {
+  "Criminal / Duty Counsel":    "#C0392B",
+  "Indigenous Legal Support":   "#0A7A6B",
+  "Civil Rights / Human Rights":"#1655A2",
+  "Tenant / Housing Law":       "#1A7A4A",
+  "Poverty / Benefits":         "#D95F00",
+  "Women's Rights":             "#A0306B",
+  "General Legal Aid":          "#4A5568",
+};
+
+// ── Map ───────────────────────────────────────────────────────────────────────
+const map = L.map('legal-map', {zoomControl:true}).setView([49.272, -123.12], 12);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com">CARTO</a>',
+  maxZoom:19
+}).addTo(map);
+setTimeout(() => map.invalidateSize(), 200);
+
+const legalMarkers = {};
+LEGAL_SERVICES.forEach(s => {
+  if (!s.lat || !s.lng) return;
+  const color = CAT_COLORS[s.cat] || "#4A5568";
+  const icon = L.divIcon({
+    html:`<div style="background:${color};width:11px;height:11px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>`,
+    className:'', iconSize:[11,11], iconAnchor:[5,5], popupAnchor:[0,-8]
+  });
+  const areaTags = (s.area||[]).map(a =>
+    `<span style="font-size:10px;font-weight:500;padding:1px 6px;border-radius:8px;background:#f0f0f0;color:#444;margin-right:2px">${a}</span>`
+  ).join('');
+  const m = L.marker([s.lat, s.lng], {icon}).addTo(map);
+  m.bindPopup(`
+    <div class="popup-name">${s.name}</div>
+    <div class="popup-addr" style="color:${color};font-size:11px;margin-bottom:4px">${s.cat}</div>
+    <div class="popup-addr">${s.addr}</div>
+    <div style="margin:4px 0">${areaTags}</div>
+    <div style="font-size:11px;color:#666;margin-top:4px">${s.hours}</div>
+    ${s.phone ? `<div style="margin-top:4px;font-size:12px"><a href="tel:${s.phone.replace(/[^0-9]/g,'')}" style="color:var(--teal)">${s.phone}</a></div>` : ''}
+    ${s.desc ? `<div style="margin-top:6px;font-size:11px;color:#555;line-height:1.45;max-width:240px">${s.desc.slice(0,160)}…</div>` : ''}
+  `, {maxWidth:300});
+  legalMarkers[s.id] = m;
+});
+
+// ── Filters ───────────────────────────────────────────────────────────────────
+function matchFilters(s) {
+  if (activeFilters.size === 0) return true;
+  for (const f of activeFilters) {
+    let match = false;
+    if      (f === "criminal")    match = s.area?.includes("criminal");
+    else if (f === "housing")     match = s.area?.includes("housing");
+    else if (f === "human-rights")match = s.area?.includes("human-rights");
+    else if (f === "poverty")     match = s.area?.includes("poverty");
+    else if (f === "indigenous")  match = s.area?.includes("indigenous") || !!s.flags?.indigenous;
+    else if (f === "women")       match = !!s.flags?.women;
+    else if (f === "dropin")      match = !!s.flags?.dropin;
+    else if (f === "free")        match = !!s.flags?.free;
+    if (!match) return false;
+  }
+  return true;
+}
+
+function matchSearch(s, q) {
+  if (!q) return true;
+  const txt = [s.name, s.inst, s.addr, s.cat, s.desc, ...(s.area||[])].join(" ").toLowerCase();
+  return q.toLowerCase().split(" ").every(w => txt.includes(w));
+}
+
+function sortData(arr) {
+  return [...arr].sort((a, b) => {
+    let av, bv;
+    if      (sortCol === "name") { av = a.name.toLowerCase();  bv = b.name.toLowerCase(); }
+    else if (sortCol === "cat")  { av = a.cat.toLowerCase();   bv = b.cat.toLowerCase(); }
+    else if (sortCol === "addr") { av = a.addr.toLowerCase();  bv = b.addr.toLowerCase(); }
+    else                         { av = a.name.toLowerCase();  bv = b.name.toLowerCase(); }
+    return av < bv ? -sortDir : av > bv ? sortDir : 0;
+  });
+}
+
+// ── Badge helpers ─────────────────────────────────────────────────────────────
+const AREA_LABELS = {
+  criminal:"Criminal", housing:"Housing", "human-rights":"Human Rights",
+  poverty:"Poverty/Benefits", indigenous:"Indigenous", women:"Women"
+};
+
+function areaTags(s) {
+  return (s.area||[]).map(a =>
+    `<span class="area-tag area-${a}">${AREA_LABELS[a]||a}</span>`
+  ).join("");
+}
+
+function accessBadge(s) {
+  const labels = { "drop-in":"Drop-in", appointment:"Appointment", phone:"Phone/Online", referral:"Referral" };
+  return `<span class="access-badge access-${s.access}">${labels[s.access]||s.access||"—"}</span>`;
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+let selectedId = null;
+function selectService(id) {
+  selectedId = id;
+  document.querySelectorAll("#table-body tr").forEach(r => r.classList.remove("row-selected"));
+  const row = document.getElementById("lrow-" + id);
+  if (row) { row.classList.add("row-selected"); row.scrollIntoView({block:"nearest"}); }
+  const m = legalMarkers[id];
+  if (m) { map.setView(m.getLatLng(), 15, {animate:true}); m.openPopup(); }
+}
+
+function renderTable() {
+  const q = document.getElementById("search").value;
+  const filtered = sortData(LEGAL_SERVICES.filter(s => matchFilters(s) && matchSearch(s, q)));
+  const tbody = document.getElementById("table-body");
+
+  document.getElementById("total-count").textContent  = LEGAL_SERVICES.length;
+  document.getElementById("free-count").textContent   = LEGAL_SERVICES.filter(s => s.flags?.free).length;
+  document.getElementById("dropin-count").textContent = LEGAL_SERVICES.filter(s => s.flags?.dropin).length;
+  document.getElementById("shown-count").textContent  = filtered.length;
+  document.getElementById("total-shown").textContent  = LEGAL_SERVICES.length;
+
+  // map visibility
+  LEGAL_SERVICES.forEach(s => {
+    const m = legalMarkers[s.id];
+    if (!m) return;
+    const show = filtered.some(f => f.id === s.id);
+    if (show) { if (!map.hasLayer(m)) m.addTo(map); }
+    else      { if (map.hasLayer(m)) map.removeLayer(m); }
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr class="no-results-row"><td colspan="6">⚖️ No services match — try removing some filters.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(s => {
+    const color = CAT_COLORS[s.cat] || "#4A5568";
+    return `
+    <tr id="lrow-${s.id}" onclick="selectService('${s.id}')">
+      <td class="td-name">
+        ${s.name}
+        <small style="color:${color}">${s.cat}</small>
+      </td>
+      <td class="td-addr">${s.addr}</td>
+      <td class="td-areas"><div class="tag-row">${areaTags(s)}</div></td>
+      <td class="td-access">${accessBadge(s)}</td>
+      <td class="td-hours">${s.hours||"—"}</td>
+      <td class="td-phone">${s.phone ? `<a href="tel:${s.phone.replace(/[^0-9]/g,'')}">${s.phone}</a>` : "—"}</td>
+    </tr>`;
+  }).join("");
+}
+
+// ── Events ────────────────────────────────────────────────────────────────────
+document.getElementById("search").addEventListener("input", renderTable);
+
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const f = btn.dataset.filter;
+    if (activeFilters.has(f)) { activeFilters.delete(f); btn.classList.remove("active"); }
+    else                       { activeFilters.add(f);    btn.classList.add("active"); }
+    renderTable();
+  });
+});
+
+document.getElementById("sort-select").addEventListener("change", e => {
+  sortCol = e.target.value;
+  renderTable();
+});
+
+document.querySelectorAll("thead th[data-col]").forEach(th => {
+  th.addEventListener("click", () => {
+    const col = th.dataset.col;
+    if (sortCol === col) sortDir *= -1;
+    else { sortCol = col; sortDir = 1; }
+    document.querySelectorAll("thead th").forEach(t => t.classList.remove("sort-asc","sort-desc"));
+    th.classList.add(sortDir === 1 ? "sort-asc" : "sort-desc");
+    renderTable();
+  });
+});
+
+renderTable();
+</script>
+</body>
+</html>
