@@ -22,6 +22,7 @@
         { href: "social-housing.html",     label: "Social Housing" },
         { href: "ctct.html",               label: "CTCT" },
         { href: "drug-supply.html",        label: "Drug Supply" },
+        { href: "income-assistance.html",  label: "Income Assistance" },
       ],
     },
     {

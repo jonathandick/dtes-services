@@ -121,30 +121,30 @@ let animChartBins         = [];
 let animChartChequeIdxs   = []; // bin indices of cheque Wednesdays in current window
 
 // ── Income assistance cheque dates ───────────────────────────────────────────
-// BC income assistance is paid on the last Wednesday of each month ("Welfare Wednesday").
-// Returns midnight timestamp of the last Wednesday in the given year/month.
-function lastWednesdayTs(year, month) {
-  const last = new Date(year, month + 1, 0); // last calendar day of month
-  const dow  = last.getDay(); // 0=Sun … 6=Sat; Wed=3
-  last.setDate(last.getDate() - ((dow - 3 + 7) % 7));
-  last.setHours(0, 0, 0, 0);
-  return last.getTime();
-}
+// Official BC income assistance payment dates (source: gov.bc.ca/income-assistance).
+// Payments are issued on government-scheduled Wednesdays and cover the following month.
+// Format: [year, month (0-indexed), day]
+const IA_PAYMENT_DATES = [
+  // 2025 (estimates — official dates not published for past years)
+  [2025, 0, 22], [2025, 1, 19], [2025, 2, 19], [2025, 3, 23],
+  [2025, 4, 21], [2025, 5, 25], [2025, 6, 23], [2025, 7, 27],
+  [2025, 8, 24], [2025, 9, 22], [2025, 10, 19], [2025, 11, 17],
+  // 2026 (official dates from gov.bc.ca/income-assistance)
+  [2026, 0, 21], [2026, 1, 25], [2026, 2, 25], [2026, 3, 22],
+  [2026, 4, 27], [2026, 5, 24], [2026, 6, 29], [2026, 7, 26],
+  [2026, 8, 23], [2026, 9, 21], [2026, 10, 18], [2026, 11, 16],
+];
 
 function computeChequeIndices() {
+  const numBins = Math.ceil((ANIM.winEnd - ANIM.winStart) / animChartBinMs);
   const idxs = [];
-  const d = new Date(ANIM.winStart);
-  d.setDate(1); d.setHours(0, 0, 0, 0);
-  while (d.getTime() < ANIM.winEnd) {
-    const ts = lastWednesdayTs(d.getFullYear(), d.getMonth());
+  IA_PAYMENT_DATES.forEach(([y, m, d]) => {
+    const ts = new Date(y, m, d, 0, 0, 0, 0).getTime();
     if (ts >= ANIM.winStart && ts < ANIM.winEnd) {
       const i = Math.floor((ts - ANIM.winStart) / animChartBinMs);
-      if (i >= 0 && i < Math.ceil((ANIM.winEnd - ANIM.winStart) / animChartBinMs)) {
-        idxs.push(i);
-      }
+      if (i >= 0 && i < numBins) idxs.push(i);
     }
-    d.setMonth(d.getMonth() + 1);
-  }
+  });
   return idxs;
 }
 

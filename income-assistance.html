@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BC Income Assistance · DTES Community Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+body { min-height: 100vh; display: flex; flex-direction: column; }
+.page-content { flex: 1; background: var(--surface); }
+.content-wrap { max-width: 860px; margin: 0 auto; padding: 48px 32px 80px; }
+
+/* ── Header ── */
+.page-header {
+  background: linear-gradient(135deg, var(--teal-deep) 0%, #0a2e28 100%);
+  padding: 48px 40px 40px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.page-header-inner { max-width: 860px; margin: 0 auto; }
+.page-eyebrow {
+  font-size: 11px; font-weight: 500; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--sky); margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: var(--font-head); font-size: clamp(28px, 4vw, 42px);
+  color: var(--white); line-height: 1.15; margin-bottom: 14px;
+}
+.page-header .lead {
+  font-size: 15px; color: rgba(255,255,255,0.6);
+  line-height: 1.7; max-width: 600px; margin-bottom: 24px;
+}
+.hero-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.hero-badge {
+  font-size: 11px; font-weight: 500; padding: 4px 12px;
+  border-radius: 20px; letter-spacing: 0.3px; white-space: nowrap;
+}
+.hb-teal  { background: rgba(126,200,192,0.15); color: var(--sky);   border: 1px solid rgba(126,200,192,0.25); }
+.hb-amber { background: rgba(232,147,10,0.15);  color: #FCD34D;      border: 1px solid rgba(232,147,10,0.25); }
+.hb-green { background: rgba(46,168,107,0.2);   color: #6EE7B7;      border: 1px solid rgba(46,168,107,0.3); }
+
+/* ── Section cards ── */
+.section-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px 32px; margin-bottom: 20px;
+}
+.section-eyebrow {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--teal-mid); margin-bottom: 8px;
+}
+.section-title {
+  font-family: var(--font-head); font-size: 22px;
+  color: var(--ink); margin-bottom: 14px; line-height: 1.25;
+}
+.section-body { font-size: 14px; color: var(--muted); line-height: 1.75; }
+.section-body p + p { margin-top: 12px; }
+.section-body strong { color: var(--ink); }
+
+/* ── Program type grid ── */
+.program-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 20px; }
+.program-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 18px 20px;
+  border-left: 4px solid var(--teal-mid);
+}
+.program-card.pwd   { border-left-color: var(--sky); }
+.program-card.ppmb  { border-left-color: var(--amber); }
+.program-card.hard  { border-left-color: #B4B2A9; }
+.program-name  { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.program-abbr  { font-size: 11px; color: var(--teal-mid); font-weight: 500; margin-bottom: 8px; }
+.program-card.pwd  .program-abbr  { color: var(--sky); }
+.program-card.ppmb .program-abbr  { color: var(--amber); }
+.program-desc  { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+/* ── Rates table ── */
+.rates-table { width: 100%; border-collapse: collapse; margin-top: 18px; font-size: 13px; }
+.rates-table th {
+  text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--muted); font-weight: 500; padding: 0 12px 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.rates-table td {
+  padding: 10px 12px 10px 0; border-bottom: 1px solid var(--border);
+  color: var(--ink); vertical-align: top;
+}
+.rates-table tr:last-child td { border-bottom: none; }
+.rates-table td:last-child { text-align: right; font-weight: 500; white-space: nowrap; }
+.rates-note {
+  font-size: 11px; color: var(--muted); margin-top: 12px;
+  padding: 8px 12px; background: var(--surface);
+  border-radius: 6px; border-left: 3px solid var(--border);
+}
+
+/* ── Cheque date calendar ── */
+.cheque-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px; margin-top: 20px;
+}
+.cheque-cell {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 4px;
+  transition: box-shadow 0.15s;
+}
+.cheque-cell.past { opacity: 0.45; }
+.cheque-cell.current {
+  background: rgba(126,200,192,0.1);
+  border-color: var(--teal-mid);
+  box-shadow: 0 0 0 2px rgba(126,200,192,0.2);
+}
+.cheque-cell.upcoming {
+  background: var(--white);
+  border-color: var(--border);
+}
+.cheque-month {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--muted);
+}
+.cheque-cell.current .cheque-month { color: var(--teal); }
+.cheque-date {
+  font-family: var(--font-head); font-size: 26px;
+  color: var(--ink); line-height: 1;
+}
+.cheque-day {
+  font-size: 11px; color: var(--muted);
+}
+.cheque-chip {
+  display: inline-block; font-size: 9px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 2px 7px; border-radius: 10px; margin-top: 4px;
+}
+.chip-current { background: var(--teal-pale); color: var(--teal-dark); }
+.chip-past    { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+.chip-next    { background: var(--amber-pale); color: #8A5200; }
+
+/* ── Steps ── */
+.steps { margin-top: 20px; display: flex; flex-direction: column; gap: 0; }
+.step { display: flex; gap: 16px; position: relative; }
+.step:not(:last-child)::before {
+  content: ''; position: absolute; left: 15px; top: 34px;
+  bottom: -4px; width: 1px; background: var(--border);
+}
+.step-num {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  background: var(--teal-pale); border: 2px solid var(--teal-mid);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: var(--teal-dark);
+  margin-top: 10px;
+}
+.step-body { padding: 10px 0 24px; flex: 1; }
+.step-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.step-desc  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.step-desc a { color: var(--teal); }
+
+/* ── Callout ── */
+.callout {
+  border-radius: 10px; padding: 16px 20px; margin-top: 20px;
+  font-size: 13px; line-height: 1.65;
+}
+.callout-amber { background: var(--amber-pale); color: #7A5200; border: 1px solid rgba(232,147,10,0.25); }
+.callout-teal  { background: var(--teal-pale);  color: #0D3D35; border: 1px solid rgba(126,200,192,0.25); }
+.callout strong { font-weight: 600; }
+
+/* ── Supplement list ── */
+.supp-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 16px; }
+.supp-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px;
+  font-size: 13px; color: var(--ink);
+}
+.supp-item span { display: block; font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+
+/* ── Resources ── */
+.resource-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.resource-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 10px;
+}
+.resource-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.resource-body { flex: 1; }
+.resource-name { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
+.resource-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.resource-link { font-size: 12px; color: var(--teal); text-decoration: none; margin-top: 4px; display: inline-block; }
+.resource-link:hover { text-decoration: underline; }
+
+@media (max-width: 600px) {
+  .page-header { padding: 32px 20px 28px; }
+  .content-wrap { padding: 28px 16px 60px; }
+  .section-card { padding: 20px 18px; }
+  .cheque-grid { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<script src="nav.js"></script>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-eyebrow">BC Ministry of Social Development &amp; Poverty Reduction</div>
+    <h1>BC Income Assistance</h1>
+    <p class="lead">Monthly financial support for BC residents who cannot meet basic needs. Payments are issued on government-scheduled Wednesdays each month — a date with significant impact on the DTES community.</p>
+    <div class="hero-badges">
+      <span class="hero-badge hb-teal">Province-wide program</span>
+      <span class="hero-badge hb-green">Paid monthly</span>
+      <span class="hero-badge hb-amber">Paid in advance for the following month</span>
+    </div>
+  </div>
+</div>
+
+<div class="page-content">
+<div class="content-wrap">
+
+  <!-- WHAT IT IS -->
+  <div class="section-card">
+    <div class="section-eyebrow">Overview</div>
+    <div class="section-title">What is Income Assistance?</div>
+    <div class="section-body">
+      <p>BC Income Assistance (IA) is a provincial program that provides monthly financial support to people who are unable to meet their basic needs through employment or other means. It is administered by the Ministry of Social Development and Poverty Reduction (MSDPR).</p>
+      <p>Payments cover two components: a <strong>support allowance</strong> for food, clothing, and personal needs, and a <strong>shelter allowance</strong> for housing costs. Additional health and disability supplements are available depending on individual circumstances.</p>
+      <p>To be eligible, applicants must be a BC resident, a Canadian citizen or permanent resident, and must have limited income and assets. Most recipients are expected to look for work unless they have a medical or other exemption.</p>
+    </div>
+
+    <div class="program-grid">
+      <div class="program-card">
+        <div class="program-name">Income Assistance</div>
+        <div class="program-abbr">IA / BC Works</div>
+        <div class="program-desc">For people who are expected to work or are actively seeking employment. Includes employable and temporarily excused categories.</div>
+      </div>
+      <div class="program-card pwd">
+        <div class="program-name">Persons with Disabilities</div>
+        <div class="program-abbr">PWD Designation</div>
+        <div class="program-desc">For people with a severe physical or mental impairment that is expected to last at least 2 years and significantly restricts daily living.</div>
+      </div>
+      <div class="program-card ppmb">
+        <div class="program-name">Persistent Multiple Barriers</div>
+        <div class="program-abbr">PPMB</div>
+        <div class="program-desc">For people who have been on IA for 12 of the last 15 months and face multiple barriers to employment such as health conditions.</div>
+      </div>
+      <div class="program-card hard">
+        <div class="program-name">Hardship Assistance</div>
+        <div class="program-abbr">Temporary</div>
+        <div class="program-desc">Short-term support for people who don't qualify for regular IA due to asset or income rules but are in immediate financial need.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RATES -->
+  <div class="section-card">
+    <div class="section-eyebrow">Monthly Rates</div>
+    <div class="section-title">Payment Amounts</div>
+    <div class="section-body">
+      <p>Rates vary by household type and program. The amounts below reflect current rates — verify the most current figures at <strong>gov.bc.ca</strong> as rates are subject to change.</p>
+    </div>
+    <table class="rates-table">
+      <thead>
+        <tr>
+          <th>Household type</th>
+          <th>Program</th>
+          <th>Support</th>
+          <th>Shelter</th>
+          <th>Total / month</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Single person</td>
+          <td>Income Assistance</td>
+          <td>$560</td>
+          <td>$375</td>
+          <td>$935</td>
+        </tr>
+        <tr>
+          <td>Single person</td>
+          <td>PWD</td>
+          <td>$983.50</td>
+          <td>$375</td>
+          <td>$1,358.50</td>
+        </tr>
+        <tr>
+          <td>Single person</td>
+          <td>PPMB</td>
+          <td>$660</td>
+          <td>$375</td>
+          <td>$1,035</td>
+        </tr>
+        <tr>
+          <td>Couple (no children)</td>
+          <td>Income Assistance</td>
+          <td>$902.50</td>
+          <td>$570</td>
+          <td>$1,472.50</td>
+        </tr>
+        <tr>
+          <td>Single parent, 1 child</td>
+          <td>Income Assistance</td>
+          <td>$802.50</td>
+          <td>$700</td>
+          <td>$1,502.50</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="rates-note">Rates may have been updated. Always confirm current amounts at <strong>gov.bc.ca/income-assistance</strong> or through your local office. Additional supplements (health, diet, transportation) may increase the total.</div>
+  </div>
+
+  <!-- 2026 PAYMENT DATES -->
+  <div class="section-card">
+    <div class="section-eyebrow">2026 Schedule</div>
+    <div class="section-title">2026 Payment Dates</div>
+    <div class="section-body">
+      <p>Income assistance is paid on a <strong>government-scheduled Wednesday each month</strong> — the specific date is set by the Ministry and varies month to month. Payments are issued <strong>in advance for the following month</strong> (e.g., the January payment covers February's assistance). Funds are typically available by midnight the night before. If you use direct deposit, the payment usually clears by early morning on cheque day.</p>
+    </div>
+
+    <div class="cheque-grid" id="cheque-grid">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="callout callout-teal" style="margin-top:20px;">
+      <strong>Direct deposit is strongly recommended.</strong> It is faster, safer, and eliminates the risk of lost or stolen cheques. You can set up direct deposit through your <a href="https://www.gov.bc.ca/myhsd" style="color:var(--teal);">MyHSD account</a> or at your local MSDPR office.
+    </div>
+  </div>
+
+  <!-- HOW TO APPLY -->
+  <div class="section-card">
+    <div class="section-eyebrow">Applying</div>
+    <div class="section-title">How to Apply</div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Check eligibility</div>
+          <div class="step-desc">You must be a BC resident, 19 or older (or 16–18 with special circumstances), and have income and assets below the program limits. Use the eligibility checker at <a href="https://www.gov.bc.ca/income-assistance">gov.bc.ca/income-assistance</a>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Apply online or in person</div>
+          <div class="step-desc">Apply online at <a href="https://www.gov.bc.ca/income-assistance">gov.bc.ca/income-assistance</a> or visit a local Ministry of Social Development office. The DTES-area office is located at <strong>411 Dunsmuir St, Vancouver</strong>. No appointment is needed for in-person applications.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Provide documentation</div>
+          <div class="step-desc">You will need to provide ID (BC ID, SIN, birth certificate or passport), proof of residency, and financial information including income, assets, and housing costs. A worker can help you gather documents if you need it.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Attend an intake interview</div>
+          <div class="step-desc">After submitting your application, you will have a brief intake interview — usually by phone — with a ministry worker. Approval typically takes a few business days. You may receive an immediate hardship payment if you are in crisis.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Set up direct deposit</div>
+          <div class="step-desc">Once approved, set up direct deposit through your <a href="https://www.gov.bc.ca/myhsd">MyHSD account</a> or give your banking information to your worker. Payments begin on the next monthly cheque date.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADDITIONAL SUPPLEMENTS -->
+  <div class="section-card">
+    <div class="section-eyebrow">Additional Support</div>
+    <div class="section-title">Supplements &amp; Crisis Support</div>
+    <div class="section-body">
+      <p>Beyond the monthly payment, IA recipients may be eligible for additional supports. Ask your worker about what you qualify for.</p>
+    </div>
+
+    <div class="supp-list">
+      <div class="supp-item">
+        Crisis supplement
+        <span>One-time emergency funds for unexpected costs like replacing a stove, bedding, or other essentials.</span>
+      </div>
+      <div class="supp-item">
+        BC Bus Pass
+        <span>Free or reduced-cost transit pass for PWD recipients and seniors. Check eligibility with your worker.</span>
+      </div>
+      <div class="supp-item">
+        Health supplements
+        <span>Dental, optical, and medical item coverage for eligible recipients, including diabetic supplies and medical equipment.</span>
+      </div>
+      <div class="supp-item">
+        Diet supplement
+        <span>Additional monthly allowance for people with specific medical conditions requiring a special diet (e.g., diabetes, Crohn's, renal disease).</span>
+      </div>
+      <div class="supp-item">
+        Moving costs
+        <span>Help with moving expenses if you need to relocate for employment, to escape violence, or due to health or safety.</span>
+      </div>
+      <div class="supp-item">
+        Employment supports
+        <span>Childcare, transportation, and training costs for people in BC Works (income assistance) pursuing employment.</span>
+      </div>
+    </div>
+
+    <div class="callout callout-amber" style="margin-top:20px;">
+      <strong>If you're in immediate financial crisis,</strong> ask your worker specifically about a <strong>crisis supplement</strong> or an <strong>immediate need payment</strong>. These can sometimes be issued the same day without waiting for the next cheque date.
+    </div>
+  </div>
+
+  <!-- CHEQUE WEEK & HARM REDUCTION -->
+  <div class="section-card">
+    <div class="section-eyebrow">Community Context</div>
+    <div class="section-title">Cheque Week &amp; Harm Reduction</div>
+    <div class="section-body">
+      <p>In communities like the DTES, income assistance payment dates — often called <strong>"Welfare Wednesday"</strong> or "cheque week" — are associated with a documented increase in overdose events in the days that follow. This pattern is driven by a combination of factors: some people purchase substances after receiving funds, the influx of cash changes the supply dynamic, and people may use in unfamiliar locations or after a period of reduced use.</p>
+      <p>Harm reduction organizations and frontline services in the DTES prepare for cheque week by increasing outreach, extending hours, and ensuring naloxone supplies are stocked. The OD Watch tool on this site marks cheque Wednesdays on the animation chart to make this pattern visible.</p>
+      <p>If you are supporting someone through cheque week, the most important things are: <strong>don't use alone</strong>, carry naloxone, use a test strip if checking a new supply, and know where the nearest overdose prevention site is.</p>
+    </div>
+
+    <div class="callout callout-teal">
+      <strong>Overdose prevention sites near the DTES:</strong> Insite (139 E Hastings St) is open 24 hours and offers supervised consumption, nurse on-site, and immediate access to addiction treatment. No ID required. You can also get naloxone at most pharmacies and harm reduction programs — no prescription needed in BC.
+    </div>
+  </div>
+
+  <!-- RESOURCES -->
+  <div class="section-card">
+    <div class="section-eyebrow">Resources</div>
+    <div class="section-title">Where to Get Help</div>
+
+    <div class="resource-list">
+      <div class="resource-item">
+        <div class="resource-icon">🏛️</div>
+        <div class="resource-body">
+          <div class="resource-name">BC Income Assistance — Ministry of Social Development</div>
+          <div class="resource-desc">Official program information, online application, MyHSD account, and office locator.</div>
+          <a href="https://www.gov.bc.ca/income-assistance" class="resource-link">gov.bc.ca/income-assistance →</a>
+        </div>
+      </div>
+      <div class="resource-item">
+        <div class="resource-icon">📞</div>
+        <div class="resource-body">
+          <div class="resource-name">BC211</div>
+          <div class="resource-desc">Free, confidential information and referral service for health and social services across BC. Call 211 or text 211. Available 24/7 in over 150 languages.</div>
+          <a href="https://bc211.ca" class="resource-link">bc211.ca →</a>
+        </div>
+      </div>
+      <div class="resource-item">
+        <div class="resource-icon">🤝</div>
+        <div class="resource-body">
+          <div class="resource-name">Carnegie Community Action Project (CCAP)</div>
+          <div class="resource-desc">DTES-based advocacy organization that helps residents navigate income assistance, housing, and legal issues. Located at Carnegie Centre, Main &amp; Hastings.</div>
+          <a href="https://carnegieaction.org" class="resource-link">carnegieaction.org →</a>
+        </div>
+      </div>
+      <div class="resource-item">
+        <div class="resource-icon">⚖️</div>
+        <div class="resource-body">
+          <div class="resource-name">Pivot Legal Society</div>
+          <div class="resource-desc">Free legal support for people in the DTES on income assistance appeals, housing rights, and police accountability.</div>
+          <a href="https://pivotlegal.org" class="resource-link">pivotlegal.org →</a>
+        </div>
+      </div>
+      <div class="resource-item">
+        <div class="resource-icon">🏥</div>
+        <div class="resource-body">
+          <div class="resource-name">Insite — Supervised Consumption Site</div>
+          <div class="resource-desc">139 E Hastings St, Vancouver. Open 24 hours, 365 days a year. Supervised consumption, health care, and immediate access to addiction treatment. No ID required.</div>
+        </div>
+      </div>
+      <div class="resource-item">
+        <div class="resource-icon">💊</div>
+        <div class="resource-body">
+          <div class="resource-name">Naloxone — Free &amp; No Prescription Required</div>
+          <div class="resource-desc">Naloxone kits are available for free at most pharmacies, harm reduction programs, and community health centres in BC. Training is provided with every kit.</div>
+          <a href="https://towardtheheart.com/naloxone" class="resource-link">towardtheheart.com/naloxone →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<footer style="background:var(--teal-deep);color:rgba(255,255,255,0.3);text-align:center;padding:24px 32px;font-size:11px;line-height:1.8;border-top:1px solid rgba(255,255,255,0.06);">
+  BC Income Assistance information · DTES Community Tools ·
+  Rates and program details sourced from the
+  <a href="https://www.gov.bc.ca/income-assistance" style="color:rgba(126,200,192,0.5);">BC Ministry of Social Development and Poverty Reduction</a>.
+  Always verify current rates and eligibility at gov.bc.ca.
+</footer>
+
+<script>
+// ── Render 2026 cheque date calendar ─────────────────────────────────────────
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+// Official 2026 BC income assistance payment dates (source: gov.bc.ca/income-assistance)
+// Each date is when the payment is issued; it covers the following month's assistance.
+const CHEQUE_DATES_2026 = [21, 25, 25, 22, 27, 24, 29, 26, 23, 21, 18, 16];
+
+const today = new Date();
+const todayY = today.getFullYear();
+const todayM = today.getMonth(); // 0-indexed
+const todayD = today.getDate();
+
+const grid = document.getElementById('cheque-grid');
+
+CHEQUE_DATES_2026.forEach((day, m) => {
+  const isCurrent = todayY === 2026 && todayM === m;
+  const isPast    = todayY > 2026 || (todayY === 2026 && (m < todayM || (m === todayM && todayD > day)));
+  const isNext    = !isPast && !isCurrent && CHEQUE_DATES_2026.slice(0, m).every((d, i) => {
+    return todayY > 2026 || (todayY === 2026 && (i < todayM || (i === todayM && todayD > d)));
+  }) && !CHEQUE_DATES_2026.slice(0, m).some((d, i) => {
+    // is there an upcoming date before this one?
+    return todayY === 2026 && (i > todayM || (i === todayM && todayD <= d));
+  });
+
+  // Simpler next-date logic: first month that hasn't passed
+  const cellEl = document.createElement('div');
+  cellEl.className = 'cheque-cell' + (isPast ? ' past' : isCurrent ? ' current' : ' upcoming');
+
+  let chip = '';
+  if (isCurrent) chip = '<div class="cheque-chip chip-current">This month</div>';
+  else if (isPast) chip = '<div class="cheque-chip chip-past">Passed</div>';
+
+  const coversMonth = MONTHS[(m + 1) % 12];
+  cellEl.innerHTML = `
+    <div class="cheque-month">${MONTHS[m]}</div>
+    <div class="cheque-date">${day}</div>
+    <div class="cheque-day">Wednesday</div>
+    <div style="font-size:10px;color:var(--muted);margin-top:3px;">covers ${coversMonth}</div>
+    ${chip}
+  `;
+  grid.appendChild(cellEl);
+});
+
+// Mark the next upcoming cheque date
+const upcoming = grid.querySelectorAll('.cheque-cell.upcoming');
+if (upcoming.length > 0) {
+  const chip = document.createElement('div');
+  chip.className = 'cheque-chip chip-next';
+  chip.textContent = 'Next';
+  upcoming[0].appendChild(chip);
+}
+</script>
+
+</body>
+</html>
