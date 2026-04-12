@@ -164,7 +164,8 @@ function animUpdateProgress() {
 
 let CELL_SIZE = 0.0005; // degrees — updated by UI selector; 0 = individual event mode
 
-let animCells        = new Map(); // cellKey → { count, subCounts, lat, lng, circle }
+let animColourBy     = 'substance'; // 'substance' | 'outcome'
+let animCells        = new Map(); // cellKey → { count, subCounts, outcomeCounts, lat, lng, circle }
 let animIndividuals  = [];        // L.circleMarkers used in individual event mode
 let animRenderedUpTo = 0;
 let animCounts       = { total:0, nal:0, rev:0, ems:0, fat:0 };
@@ -180,6 +181,14 @@ function animCellCenter(lat, lng) {
 function animDominantSub(subCounts) {
   let top = "Unknown", max = 0;
   for (const [k, v] of Object.entries(subCounts)) {
+    if (v > max) { max = v; top = k; }
+  }
+  return top;
+}
+
+function animDominantOut(outcomeCounts) {
+  let top = "Naloxone administered", max = 0;
+  for (const [k, v] of Object.entries(outcomeCounts)) {
     if (v > max) { max = v; top = k; }
   }
   return top;
@@ -203,13 +212,15 @@ function animCellPopupHtml(cell) {
 }
 
 function animUpsertCell(e, isNew) {
-  // Individual event mode — one dot per event, coloured by outcome
+  // Individual event mode — one dot per event
   if (CELL_SIZE === 0) {
-    const col = COLS[e.outcome] || COLS["Naloxone administered"];
-    const r   = e.outcome === "Fatal" ? 7 : 5;
-    const m   = L.circleMarker([e.lat, e.lng], {
+    const fillColor = animColourBy === 'outcome'
+      ? (COLS[e.outcome] || COLS["Naloxone administered"]).fill
+      : (SUB_COLS[e.substance] || '#7EC8C0');
+    const r = e.outcome === "Fatal" ? 7 : 5;
+    const m = L.circleMarker([e.lat, e.lng], {
       radius: r, color: 'rgba(255,255,255,0.7)', weight: 1.5,
-      fillColor: col.fill, fillOpacity: isNew ? 0.85 : 0.55,
+      fillColor, fillOpacity: isNew ? 0.85 : 0.55,
     }).addTo(map);
     m.bindPopup(popup(e), { maxWidth: 220 });
     animIndividuals.push(m);
@@ -220,14 +231,16 @@ function animUpsertCell(e, isNew) {
   let cell  = animCells.get(key);
   if (!cell) {
     const [clat, clng] = animCellCenter(e.lat, e.lng);
-    cell = { count: 0, subCounts: {}, lat: clat, lng: clng, circle: null };
+    cell = { count: 0, subCounts: {}, outcomeCounts: {}, lat: clat, lng: clng, circle: null };
     animCells.set(key, cell);
   }
   cell.count++;
-  cell.subCounts[e.substance] = (cell.subCounts[e.substance] || 0) + 1;
+  cell.subCounts[e.substance]  = (cell.subCounts[e.substance]  || 0) + 1;
+  cell.outcomeCounts[e.outcome] = (cell.outcomeCounts[e.outcome] || 0) + 1;
 
-  const dom = animDominantSub(cell.subCounts);
-  const col = SUB_COLS[dom] || '#7EC8C0';
+  const col = animColourBy === 'outcome'
+    ? (COLS[animDominantOut(cell.outcomeCounts)] || COLS["Naloxone administered"]).fill
+    : (SUB_COLS[animDominantSub(cell.subCounts)] || '#7EC8C0');
   const r   = animCellRadius(cell.count);
 
   if (!cell.circle) {
@@ -381,6 +394,14 @@ document.getElementById('anim-outs-all').addEventListener('click', () => {
   });
   if (ANIM.active) animReset();
 });
+
+// Colour-by buttons
+document.querySelectorAll('#colour-by-btns .speed-btn').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#colour-by-btns .speed-btn').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  animColourBy = b.dataset.colourby;
+  if (ANIM.active) animReset();
+}));
 
 // Cell size buttons
 document.querySelectorAll('#cell-size-btns .speed-btn').forEach(b => b.addEventListener('click', () => {
