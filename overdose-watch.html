@@ -904,13 +904,17 @@ function animPlay() {
     animSetBounds();
     ANIM.simTime = ANIM.winStart;
   }
-  ANIM.active  = true;
-  ANIM.paused  = false;
-  ANIM.realRef = performance.now();
-  ANIM.simRef  = ANIM.simTime;
+  ANIM.active   = true;
+  ANIM.paused   = false;
+  ANIM.realRef  = performance.now();
+  ANIM.simRef   = ANIM.simTime;
+  animFirstFrame = true;
   document.getElementById('btn-play').textContent = '⏸ Pause';
   document.getElementById('btn-play').classList.add('active');
   document.getElementById('anim-map-overlay').classList.add('show');
+  // Clear to 0 events immediately before the first rAF fires
+  renderAnim(ANIM.simTime);
+  animUpdateProgress();
   ANIM.raf = requestAnimationFrame(animFrame);
 }
 
@@ -941,7 +945,14 @@ function animReset() {
   render();
 }
 
+let animFirstFrame = false;
 function animFrame(realNow) {
+  // On the very first frame, anchor realRef so no time is consumed by Play click overhead
+  if (animFirstFrame) {
+    animFirstFrame = false;
+    ANIM.realRef = realNow;
+    ANIM.simRef  = ANIM.simTime;
+  }
   const realElapsed = realNow - ANIM.realRef;
   ANIM.simTime = ANIM.simRef + realElapsed * ANIM.speed;
 
