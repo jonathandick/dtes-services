@@ -94,21 +94,27 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
       <div id="legal-map"></div>
     </div>
     <div class="table-side">
-      <div class="results-bar"><strong id="shown-count">—</strong> of <strong id="total-shown">—</strong> organizations · Click row to highlight on map</div>
-      <div class="table-scroll">
-        <table id="legal-table">
-          <thead>
-            <tr>
-              <th data-col="name">Name</th>
-              <th data-col="addr">Address</th>
-              <th data-col="area">Practice Areas</th>
-              <th data-col="access">Access</th>
-              <th data-col="hours">Hours</th>
-              <th data-col="phone">Phone</th>
-            </tr>
-          </thead>
-          <tbody id="table-body"></tbody>
-        </table>
+      <div id="list-panel">
+        <div class="results-bar"><strong id="shown-count">—</strong> of <strong id="total-shown">—</strong> organizations · Click a row for details</div>
+        <div class="table-scroll">
+          <table id="legal-table">
+            <thead>
+              <tr>
+                <th data-col="name">Name</th>
+                <th data-col="addr">Address</th>
+                <th data-col="area">Practice Areas</th>
+                <th data-col="access">Access</th>
+                <th data-col="hours">Hours</th>
+                <th data-col="phone">Phone</th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="detail-panel">
+        <div id="detail-back" onclick="showList()">← Back to results</div>
+        <div id="detail-scroll"></div>
       </div>
     </div>
   </div>
@@ -126,7 +132,7 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 let sortCol = "name", sortDir = 1;
 let activeFilters = new Set();
 
-// ── Category colours ──────────────────────────────────────────────────────────
+// ── Category colours & icons ──────────────────────────────────────────────────
 const CAT_COLORS = {
   "Criminal / Duty Counsel":    "#C0392B",
   "Indigenous Legal Support":   "#0A7A6B",
@@ -135,6 +141,15 @@ const CAT_COLORS = {
   "Poverty / Benefits":         "#D95F00",
   "Women's Rights":             "#A0306B",
   "General Legal Aid":          "#4A5568",
+};
+const CAT_ICONS = {
+  "Criminal / Duty Counsel":    "⚖️",
+  "Indigenous Legal Support":   "🤝",
+  "Civil Rights / Human Rights":"🛡",
+  "Tenant / Housing Law":       "🏠",
+  "Poverty / Benefits":         "📋",
+  "Women's Rights":             "♀",
+  "General Legal Aid":          "⚖️",
 };
 
 // ── Map ───────────────────────────────────────────────────────────────────────
@@ -221,8 +236,61 @@ function accessBadge(s) {
   return `<span class="access-badge access-${s.access}">${labels[s.access]||s.access||"—"}</span>`;
 }
 
-// ── Render ────────────────────────────────────────────────────────────────────
+// ── Detail panel ──────────────────────────────────────────────────────────────
 let selectedId = null;
+
+function showList() {
+  document.getElementById("list-panel").style.display = "";
+  document.getElementById("detail-panel").classList.remove("show");
+}
+
+function showDetail(id) {
+  const s = LEGAL_SERVICES.find(o => o.id === id);
+  if (!s) return;
+  const color = CAT_COLORS[s.cat] || "#4A5568";
+  const icon  = CAT_ICONS[s.cat]  || "⚖️";
+
+  const accessLabels = { "drop-in":"Drop-in", appointment:"Appointment", phone:"Phone/Online", referral:"Referral required" };
+  const accessBadgeHtml = `<span class="access-badge access-${s.access}" style="font-size:12px;padding:3px 10px">${accessLabels[s.access]||s.access}</span>`;
+  const freeBadge = s.flags?.free ? `<span class="dbadge dbadge-yes">Free</span>` : "";
+  const webHtml = s.web
+    ? `<div class="detail-row"><span class="detail-label">Website</span><span class="detail-val"><a href="https://${s.web}" target="_blank" rel="noopener">${s.web}</a></span></div>`
+    : "";
+
+  document.getElementById("detail-scroll").innerHTML = `
+    <div class="detail-icon-row">
+      <div class="detail-icon" style="background:${color}22;font-size:20px">${icon}</div>
+      <div>
+        <div class="detail-cat" style="color:${color}">${s.cat}</div>
+        <div class="detail-name">${s.name}</div>
+      </div>
+    </div>
+    <div class="detail-inst">${s.inst||""}</div>
+    <div class="detail-badges">
+      ${areaTags(s)}
+      ${accessBadgeHtml}
+      ${freeBadge}
+    </div>
+
+    <div class="detail-section-title">Contact &amp; Access</div>
+    <div class="detail-row"><span class="detail-label">Address</span><span class="detail-val">${s.addr||"—"}</span></div>
+    <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-val">${s.phone ? `<a href="tel:${s.phone.replace(/[^0-9]/g,'')}">${s.phone}</a>` : "—"}</span></div>
+    <div class="detail-row"><span class="detail-label">Hours</span><span class="detail-val">${s.hours||"—"}</span></div>
+    ${webHtml}
+
+    <div class="detail-section-title">About This Service</div>
+    <div class="detail-desc">${s.desc||"No description available."}</div>
+
+    <div class="detail-cta">
+      ${s.phone ? `<button class="detail-cta-btn primary" onclick="window.location='tel:${s.phone.replace(/[^0-9]/g,'')}'">Call</button>` : ""}
+      ${s.web   ? `<button class="detail-cta-btn" onclick="window.open('https://${s.web}','_blank')">Visit Website</button>` : ""}
+    </div>
+  `;
+
+  document.getElementById("list-panel").style.display = "none";
+  document.getElementById("detail-panel").classList.add("show");
+}
+
 function selectService(id) {
   selectedId = id;
   document.querySelectorAll("#table-body tr").forEach(r => r.classList.remove("row-selected"));
@@ -230,6 +298,7 @@ function selectService(id) {
   if (row) { row.classList.add("row-selected"); row.scrollIntoView({block:"nearest"}); }
   const m = legalMarkers[id];
   if (m) { map.setView(m.getLatLng(), 15, {animate:true}); m.openPopup(); }
+  showDetail(id);
 }
 
 function renderTable() {
