@@ -312,9 +312,10 @@ body {
 
 /* ── Animate pane date range ── */
 .anim-date-row {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px;
+  display: flex; flex-direction: column; gap: 8px; margin-top: 6px;
 }
-.anim-date-field { display: flex; flex-direction: column; gap: 3px; }
+.anim-date-field { display: flex; align-items: center; gap: 8px; }
+.anim-date-label { flex-shrink: 0; width: 30px; }
 .anim-date-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
 .anim-date-input {
   font-family: var(--font-body); font-size: 11px; color: var(--ink);
