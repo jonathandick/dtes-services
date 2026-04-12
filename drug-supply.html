@@ -198,6 +198,63 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
 .live-link-name { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
 .live-link-desc { font-size: 11px; color: var(--muted); }
 
+/* ── Glossary ── */
+.glossary-search-wrap {
+  position: relative; margin: 16px 0 0;
+}
+.glossary-search-wrap svg {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); pointer-events: none;
+}
+#glossary-search {
+  width: 100%; padding: 8px 10px 8px 32px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 13px; font-family: var(--font-body);
+  background: var(--surface); color: var(--ink); outline: none;
+  transition: border-color 0.15s;
+}
+#glossary-search:focus { border-color: var(--teal-mid); background: var(--white); }
+.glossary-table { display: flex; flex-direction: column; margin-top: 16px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.gl-row {
+  display: grid; grid-template-columns: 200px 1fr;
+  grid-template-rows: auto auto;
+  gap: 0; border-bottom: 1px solid var(--border);
+  padding: 14px 16px; transition: background 0.1s;
+}
+.gl-row:last-child { border-bottom: none; }
+.gl-row:hover { background: var(--teal-pale); }
+.gl-row.hidden { display: none; }
+.gl-substance { grid-column: 1; grid-row: 1 / 3; padding-right: 16px; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; justify-content: flex-start; padding-top: 2px; }
+.gl-name { font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+.gl-class {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 10px; display: inline-block; width: fit-content;
+}
+.gl-class.opioid     { background: #fee2e2; color: #7f1d1d; }
+.gl-class.stimulant  { background: #fff7ed; color: #7c2d12; }
+.gl-class.benzo      { background: #ede9fe; color: #3730a3; }
+.gl-class.alpha2     { background: #dcfce7; color: #14532d; }
+.gl-class.depressant { background: #e0f2fe; color: #0c4a6e; }
+.gl-class.dissociative { background: #f0fdf4; color: #166534; }
+.gl-class.adulterant { background: #fefce8; color: #713f12; }
+.gl-class.mixed      { background: #f3f4f6; color: #374151; }
+.gl-terms { grid-column: 2; grid-row: 1; padding-left: 16px; display: flex; flex-wrap: wrap; gap: 5px; align-content: flex-start; padding-bottom: 6px; }
+.gl-note  { grid-column: 2; grid-row: 2; padding-left: 16px; font-size: 11.5px; color: var(--muted); line-height: 1.55; border-top: 1px solid var(--border); padding-top: 7px; margin-top: 2px; }
+.gl-tag {
+  font-size: 12px; font-weight: 500; padding: 3px 10px;
+  border-radius: 20px; background: var(--teal-pale);
+  border: 1px solid var(--teal-mist); color: var(--teal-dark);
+  white-space: nowrap;
+}
+.gl-tag.gl-unknown { background: #f3f4f6; border-color: #d1d5db; color: #6b7280; font-style: italic; }
+
+@media (max-width: 640px) {
+  .gl-row { grid-template-columns: 1fr; grid-template-rows: auto auto auto; }
+  .gl-substance { grid-column: 1; grid-row: 1; padding-right: 0; border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 8px; flex-direction: row; align-items: center; gap: 8px; }
+  .gl-terms { grid-column: 1; grid-row: 2; padding-left: 0; }
+  .gl-note  { grid-column: 1; grid-row: 3; padding-left: 0; }
+}
+
 /* ── Source note ── */
 .source-note { background: var(--teal-pale); border-top: 1px solid var(--teal-mist); padding: 12px 32px; font-size: 12px; color: var(--muted); }
 .source-note a { color: var(--teal); }
@@ -670,6 +727,307 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
     </div>
   </div>
 
+  <!-- Glossary -->
+  <div class="section-card">
+    <div class="section-eyebrow">Street Name Glossary</div>
+    <div class="section-title">Slang terms for substances in the current supply</div>
+    <div class="section-body">
+      <p>Common street names used in Vancouver and the DTES. The same term can mean different things in different communities or cities — context matters. Grouped by substance.</p>
+    </div>
+
+    <div class="glossary-search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="glossary-search" placeholder="Search a slang term or substance…" autocomplete="off">
+    </div>
+
+    <div class="glossary-table" id="glossary-table">
+
+      <div class="gl-row" data-terms="down fent powder white tan soft dope">
+        <div class="gl-substance">
+          <div class="gl-name">Fentanyl</div>
+          <div class="gl-class opioid">Synthetic Opioid</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag">down</span>
+          <span class="gl-tag">fent</span>
+          <span class="gl-tag">powder</span>
+          <span class="gl-tag">white</span>
+          <span class="gl-tag">tan</span>
+          <span class="gl-tag">soft</span>
+          <span class="gl-tag">dope</span>
+          <span class="gl-tag">peach</span>
+        </div>
+        <div class="gl-note">"Down" is the dominant Vancouver/DTES term for any opioid. "Soft" contrasts with "up"/"hard" for stimulants.</div>
+      </div>
+
+      <div class="gl-row" data-terms="carfentanil elephant tranquilizer down">
+        <div class="gl-substance">
+          <div class="gl-name">Carfentanil</div>
+          <div class="gl-class opioid">Synthetic Opioid</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag gl-unknown">Usually undisclosed</span>
+        </div>
+        <div class="gl-note">Rarely labelled — sold as or mixed into fentanyl without disclosure. No widely used street name of its own. Colloquially called "elephant tranquilizer" in media, not by people who use it.</div>
+      </div>
+
+      <div class="gl-row" data-terms="nitazenes iso meto research chemicals">
+        <div class="gl-substance">
+          <div class="gl-name">Nitazenes</div>
+          <div class="gl-class opioid">Synthetic Opioid</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag gl-unknown">Usually undisclosed</span>
+        </div>
+        <div class="gl-note">Sold as or cut into fentanyl or heroin. No established street name. Occasionally referenced as "research chemicals" in online markets.</div>
+      </div>
+
+      <div class="gl-row" data-terms="heroin dope junk smack H horse chiva brown black tar mud boy">
+        <div class="gl-substance">
+          <div class="gl-name">Heroin</div>
+          <div class="gl-class opioid">Opioid</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag">dope</span>
+          <span class="gl-tag">junk</span>
+          <span class="gl-tag">smack</span>
+          <span class="gl-tag">H</span>
+          <span class="gl-tag">horse</span>
+          <span class="gl-tag">chiva</span>
+          <span class="gl-tag">brown</span>
+          <span class="gl-tag">boy</span>
+          <span class="gl-tag">mud</span>
+          <span class="gl-tag">down</span>
+        </div>
+        <div class="gl-note">Largely displaced by fentanyl in Vancouver since ~2016. "Down" now usually means fentanyl. "Boy" (heroin) vs "girl" (cocaine) is older terminology still in use.</div>
+      </div>
+
+      <div class="gl-row" data-terms="hydromorphone dilaudid dillies D's k4 pharms scripts hydromorph">
+        <div class="gl-substance">
+          <div class="gl-name">Hydromorphone (Dilaudid)</div>
+          <div class="gl-class opioid">Opioid</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag">dillies</span>
+          <span class="gl-tag">D's</span>
+          <span class="gl-tag">dilaudid</span>
+          <span class="gl-tag">K4s</span>
+          <span class="gl-tag">pharms</span>
+          <span class="gl-tag">hydromorph</span>
+        </div>
+        <div class="gl-note">"K4" refers to 4mg Knoll-brand tablets. Widely used in DTES; also the medication used in prescribed iOAT programs.</div>
+      </div>
+
+      <div class="gl-row" data-terms="oxycodone oxy percs OC hillbilly heroin oxys perc 30 M30">
+        <div class="gl-substance">
+          <div class="gl-name">Oxycodone</div>
+          <div class="gl-class opioid">Opioid</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag">oxy</span>
+          <span class="gl-tag">oxys</span>
+          <span class="gl-tag">percs</span>
+          <span class="gl-tag">OC</span>
+          <span class="gl-tag">M30s</span>
+          <span class="gl-tag">hillbilly heroin</span>
+        </div>
+        <div class="gl-note">Legitimate oxycodone is rare in the unregulated supply. "M30s" now almost always refers to counterfeit pills containing fentanyl pressed to look like 30mg oxycodone.</div>
+      </div>
+
+      <div class="gl-row" data-terms="morphine M morph">
+        <div class="gl-substance">
+          <div class="gl-name">Morphine</div>
+          <div class="gl-class opioid">Opioid</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag">M</span>
+          <span class="gl-tag">morph</span>
+          <span class="gl-tag">Miss Emma</span>
+        </div>
+        <div class="gl-note">Mostly seen in prescribed form (Kadian). Rarely encountered in unregulated supply in Vancouver.</div>
+      </div>
+
+      <div class="gl-row" data-terms="methamphetamine up meth crystal tina shard ice glass crank speed">
+        <div class="gl-substance">
+          <div class="gl-name">Methamphetamine</div>
+          <div class="gl-class stimulant">Stimulant</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag">up</span>
+          <span class="gl-tag">meth</span>
+          <span class="gl-tag">crystal</span>
+          <span class="gl-tag">tina</span>
+          <span class="gl-tag">shard</span>
+          <span class="gl-tag">ice</span>
+          <span class="gl-tag">glass</span>
+          <span class="gl-tag">crank</span>
+          <span class="gl-tag">hard</span>
+          <span class="gl-tag">speed</span>
+        </div>
+        <div class="gl-note">"Up" is the dominant Vancouver/DTES term — contrasts with "down" for opioids. "Hard" and "up" are sometimes used interchangeably with crack in DTES context.</div>
+      </div>
+
+      <div class="gl-row" data-terms="crack rock hard base stone">
+        <div class="gl-substance">
+          <div class="gl-name">Crack Cocaine</div>
+          <div class="gl-class stimulant">Stimulant</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag">rock</span>
+          <span class="gl-tag">crack</span>
+          <span class="gl-tag">hard</span>
+          <span class="gl-tag">base</span>
+          <span class="gl-tag">stone</span>
+          <span class="gl-tag">up</span>
+        </div>
+        <div class="gl-note">"Hard" and "rock" are the most common DTES terms. "Up" is used for both meth and crack. Frequently contaminated with fentanyl.</div>
+      </div>
+
+      <div class="gl-row" data-terms="cocaine coke blow snow white powder charlie girl nose candy flake soft">
+        <div class="gl-substance">
+          <div class="gl-name">Cocaine (powder)</div>
+          <div class="gl-class stimulant">Stimulant</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag">coke</span>
+          <span class="gl-tag">blow</span>
+          <span class="gl-tag">snow</span>
+          <span class="gl-tag">white</span>
+          <span class="gl-tag">powder</span>
+          <span class="gl-tag">charlie</span>
+          <span class="gl-tag">girl</span>
+          <span class="gl-tag">nose candy</span>
+          <span class="gl-tag">flake</span>
+        </div>
+        <div class="gl-note">"Girl" (cocaine) vs "boy" (heroin) is classic paired slang. Cocaine in BC is frequently contaminated with fentanyl and levamisole.</div>
+      </div>
+
+      <div class="gl-row" data-terms="benzodiazepine benzo bars xans xannies blues vallies vals">
+        <div class="gl-substance">
+          <div class="gl-name">Benzodiazepines<br><small style="font-weight:400;font-size:11px;">(etizolam, bromazolam, phenazolam, diazepam…)</small></div>
+          <div class="gl-class benzo">Depressant</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag">bars</span>
+          <span class="gl-tag">xans</span>
+          <span class="gl-tag">xannies</span>
+          <span class="gl-tag">benzos</span>
+          <span class="gl-tag">blues</span>
+          <span class="gl-tag">vals</span>
+          <span class="gl-tag">vallies</span>
+          <span class="gl-tag">downers</span>
+        </div>
+        <div class="gl-note">Designer benzos (etizolam, bromazolam, phenazolam) are adulterants — people often don't know they're present. "Bars" and "xans" usually refer to pressed Xanax-like tablets which may contain no actual alprazolam.</div>
+      </div>
+
+      <div class="gl-row" data-terms="xylazine tranq tranq dope sleep cut">
+        <div class="gl-substance">
+          <div class="gl-name">Xylazine</div>
+          <div class="gl-class alpha2">Alpha-2 Agonist</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag">tranq</span>
+          <span class="gl-tag">tranq dope</span>
+          <span class="gl-tag gl-unknown">Usually undisclosed</span>
+        </div>
+        <div class="gl-note">"Tranq" and "tranq dope" come from the US East Coast and are spreading with awareness. In Vancouver, xylazine is typically an undisclosed adulterant — people don't know it's in what they've bought.</div>
+      </div>
+
+      <div class="gl-row" data-terms="medetomidine undisclosed adulterant">
+        <div class="gl-substance">
+          <div class="gl-name">Medetomidine</div>
+          <div class="gl-class alpha2">Alpha-2 Agonist</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag gl-unknown">No street name</span>
+          <span class="gl-tag gl-unknown">Usually undisclosed</span>
+        </div>
+        <div class="gl-note">No established street name — it's an undisclosed adulterant. People who have experienced its effects describe unusual prolonged sedation that doesn't respond to naloxone.</div>
+      </div>
+
+      <div class="gl-row" data-terms="MDMA molly ecstasy E rolls beans mandy disco biscuits">
+        <div class="gl-substance">
+          <div class="gl-name">MDMA</div>
+          <div class="gl-class stimulant">Entactogen</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag">molly</span>
+          <span class="gl-tag">E</span>
+          <span class="gl-tag">ecstasy</span>
+          <span class="gl-tag">rolls</span>
+          <span class="gl-tag">beans</span>
+          <span class="gl-tag">mandy</span>
+          <span class="gl-tag">disco biscuits</span>
+        </div>
+        <div class="gl-note">Sold as powder ("molly") or pressed pills ("E"). BC supply frequently adulterated with fentanyl, methamphetamine, or cathinones ("bath salts"). Always test.</div>
+      </div>
+
+      <div class="gl-row" data-terms="GHB G gina liquid G liquid E soap juice">
+        <div class="gl-substance">
+          <div class="gl-name">GHB / GBL</div>
+          <div class="gl-class depressant">Depressant</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag">G</span>
+          <span class="gl-tag">gina</span>
+          <span class="gl-tag">liquid G</span>
+          <span class="gl-tag">liquid E</span>
+          <span class="gl-tag">soap</span>
+          <span class="gl-tag">juice</span>
+        </div>
+        <div class="gl-note">"G" is universal. Extremely narrow margin between recreational and overdose dose — a teaspoon too much can be fatal. Extremely dangerous combined with alcohol or other depressants. No antidote.</div>
+      </div>
+
+      <div class="gl-row" data-terms="ketamine K special K ket vitamin K horse tranquilizer cat valium">
+        <div class="gl-substance">
+          <div class="gl-name">Ketamine</div>
+          <div class="gl-class dissociative">Dissociative</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag">K</span>
+          <span class="gl-tag">special K</span>
+          <span class="gl-tag">ket</span>
+          <span class="gl-tag">vitamin K</span>
+          <span class="gl-tag">cat valium</span>
+        </div>
+        <div class="gl-note">Powder or liquid. High doses cause the "K-hole" — a dissociative state. Risk of respiratory depression if combined with opioids or depressants. Sometimes used to adulterate other drugs.</div>
+      </div>
+
+      <div class="gl-row" data-terms="counterfeit pills fake M30 blues pressies fake oxy fake pills pressed">
+        <div class="gl-substance">
+          <div class="gl-name">Counterfeit / Pressed Pills</div>
+          <div class="gl-class mixed">Mixed / Unknown</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag">fake 30s</span>
+          <span class="gl-tag">fake M30s</span>
+          <span class="gl-tag">blues</span>
+          <span class="gl-tag">pressies</span>
+          <span class="gl-tag">fake oxy</span>
+          <span class="gl-tag">pressed pills</span>
+        </div>
+        <div class="gl-note">Pills pressed to look like M30 oxycodone, Dilaudid, Xanax, or Adderall. "Blues" can refer to both real and fake pills. Almost always contain fentanyl ± benzos. Content is inconsistent even within the same batch.</div>
+      </div>
+
+      <div class="gl-row" data-terms="levamisole cut adulterant cocaine wormer">
+        <div class="gl-substance">
+          <div class="gl-name">Levamisole</div>
+          <div class="gl-class adulterant">Adulterant</div>
+        </div>
+        <div class="gl-terms">
+          <span class="gl-tag gl-unknown">No street name</span>
+        </div>
+        <div class="gl-note">A veterinary dewormer used to cut cocaine. No street name — it's an undisclosed cutting agent. Causes agranulocytosis (dangerous drop in white blood cells) with repeated exposure. Common in Vancouver's cocaine supply.</div>
+      </div>
+
+    </div><!-- /glossary-table -->
+
+    <div class="note-box teal" style="margin-top:20px;">
+      <span class="note-icon">📍</span>
+      <span>Street names vary by city, neighbourhood, and community. The terms above reflect common Vancouver/DTES usage. The same substance may have different names in different parts of BC.</span>
+    </div>
+  </div>
+
   <!-- Stay Informed -->
   <div class="section-card">
     <div class="section-eyebrow">Stay Informed</div>
@@ -735,5 +1093,18 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
   Supply composition data retrieved April 11, 2026. Drug supply changes rapidly — verify with live sources before acting on this information.
 </div>
 
+<script>
+// Glossary search
+document.getElementById('glossary-search').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  document.querySelectorAll('#glossary-table .gl-row').forEach(row => {
+    const terms = row.dataset.terms || '';
+    const name  = row.querySelector('.gl-name')?.textContent.toLowerCase() || '';
+    const tags  = Array.from(row.querySelectorAll('.gl-tag')).map(t => t.textContent.toLowerCase()).join(' ');
+    const match = !q || terms.includes(q) || name.includes(q) || tags.includes(q);
+    row.classList.toggle('hidden', !match);
+  });
+});
+</script>
 </body>
 </html>
