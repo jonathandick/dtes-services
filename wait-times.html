@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treatment Wait Times – DTES Community Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+/* ── Page layout ── */
+body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+.main-scroll { flex: 1; overflow-y: auto; background: var(--surface); }
+
+/* ── Wait band colour coding ── */
+.wait-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; font-weight: 500; padding: 3px 9px; border-radius: 20px;
+  white-space: nowrap;
+}
+.wait-none  { background: #D1FAE5; color: #065F46; }       /* 0 days */
+.wait-short { background: #D1FAE5; color: #065F46; }       /* 1–7 days */
+.wait-mid   { background: #FEF3DC; color: #92400E; }       /* 8–21 days */
+.wait-long  { background: #FEE2E2; color: #991B1B; }       /* 22–41 days */
+.wait-very  { background: #FCE7F3; color: #831843; }       /* 42+ days */
+
+/* ── Staleness indicator ── */
+.stale-warn {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 10px; color: var(--amber); font-weight: 500;
+  background: var(--amber-pale); padding: 2px 7px; border-radius: 10px;
+}
+
+/* ── Beds availability mini-bar ── */
+.beds-bar { display: flex; flex-direction: column; gap: 2px; min-width: 80px; }
+.beds-numbers { font-size: 12px; color: var(--ink); }
+.beds-numbers span { color: var(--muted); }
+.beds-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.beds-fill  { height: 100%; border-radius: 2px; background: var(--teal); transition: width 0.3s; }
+
+/* ── Table ── */
+.wt-table-wrap { padding: 20px 24px 40px; }
+table.wt-table {
+  width: 100%; border-collapse: collapse;
+  background: var(--white); border-radius: 10px; overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+table.wt-table thead th {
+  background: var(--teal-deep); color: rgba(255,255,255,0.6);
+  font-size: 10px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 10px 14px; text-align: left; white-space: nowrap; border-bottom: none;
+}
+table.wt-table thead th.sortable { cursor: pointer; user-select: none; }
+table.wt-table thead th.sortable:hover { color: var(--sky); }
+table.wt-table thead th.sort-asc::after  { content: ' ↑'; }
+table.wt-table thead th.sort-desc::after { content: ' ↓'; }
+table.wt-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+table.wt-table tbody tr:last-child { border-bottom: none; }
+table.wt-table tbody tr:hover { background: var(--surface); }
+table.wt-table tbody tr.hidden { display: none; }
+table.wt-table td { padding: 11px 14px; vertical-align: middle; font-size: 13px; }
+
+.td-name     { font-weight: 500; color: var(--ink); min-width: 180px; }
+.td-name small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; margin-top: 1px; }
+.td-loc      { color: var(--muted); font-size: 12px; min-width: 110px; }
+.td-wait     { min-width: 100px; }
+.td-beds     { min-width: 100px; }
+.td-discharge { font-size: 12px; color: var(--ink); min-width: 80px; }
+.td-reported { font-size: 11px; color: var(--muted); min-width: 110px; }
+.td-coord    { min-width: 140px; }
+.td-actions  { min-width: 70px; }
+.coord-name  { font-size: 12px; font-weight: 500; color: var(--ink); display: block; }
+.coord-links { display: flex; gap: 6px; margin-top: 2px; }
+.coord-links a {
+  font-size: 11px; color: var(--teal); text-decoration: none;
+  background: var(--teal-pale); padding: 1px 7px; border-radius: 10px;
+  transition: background 0.12s;
+}
+.coord-links a:hover { background: var(--teal-mist); text-decoration: none; }
+
+.btn-report {
+  font-size: 11px; font-weight: 500; color: var(--teal);
+  border: 1px solid var(--teal-mist); background: var(--white);
+  padding: 4px 10px; border-radius: 6px; cursor: pointer;
+  transition: all 0.12s; white-space: nowrap;
+}
+.btn-report:hover { background: var(--teal-pale); border-color: var(--teal); }
+
+.type-badge {
+  display: inline-block; font-size: 10px; font-weight: 500; letter-spacing: 0.5px;
+  text-transform: uppercase; padding: 2px 7px; border-radius: 10px;
+  margin-top: 3px;
+}
+.type-bed       { background: #EDE9FE; color: #5B21B6; }
+.type-outpatient{ background: #DBEAFE; color: #1D4ED8; }
+
+/* ── Empty state ── */
+.empty-state {
+  padding: 48px; text-align: center; color: var(--muted);
+}
+
+/* ── Report modal ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 2000;
+  background: rgba(7,31,27,0.7); backdrop-filter: blur(2px);
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--white); border-radius: 12px; padding: 28px 28px 24px;
+  width: min(520px, calc(100vw - 32px)); max-height: calc(100vh - 48px);
+  overflow-y: auto; position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.modal-title {
+  font-family: var(--font-head); font-size: 20px; color: var(--ink);
+  margin-bottom: 4px;
+}
+.modal-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.modal-close {
+  position: absolute; top: 16px; right: 16px; width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface); border-radius: 50%; cursor: pointer;
+  font-size: 14px; color: var(--muted); border: none;
+  transition: background 0.12s;
+}
+.modal-close:hover { background: var(--border); color: var(--ink); }
+
+/* Form fields */
+.form-row { margin-bottom: 16px; }
+.form-row label {
+  display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.6px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 5px;
+}
+.form-row select,
+.form-row input,
+.form-row textarea {
+  width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 7px;
+  font-family: var(--font-body); font-size: 13px; color: var(--ink);
+  background: var(--white); outline: none; transition: border-color 0.15s;
+}
+.form-row select:focus,
+.form-row input:focus,
+.form-row textarea:focus { border-color: var(--teal); }
+.form-row textarea { resize: vertical; min-height: 60px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.form-actions { display: flex; gap: 10px; margin-top: 20px; align-items: center; }
+.btn-submit {
+  background: var(--teal); color: var(--white); border: none;
+  padding: 9px 22px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: background 0.15s;
+}
+.btn-submit:hover { background: var(--teal-dark); }
+.btn-cancel {
+  font-size: 13px; color: var(--muted); cursor: pointer;
+  background: none; border: none; padding: 9px 12px;
+}
+.btn-cancel:hover { color: var(--ink); }
+.form-success {
+  display: none; padding: 14px 16px; background: #D1FAE5; border-radius: 8px;
+  font-size: 13px; color: #065F46; margin-top: 16px;
+}
+.form-success.show { display: block; }
+
+/* ── Survey modal ── */
+.survey-list { list-style: none; margin: 0; padding: 0; }
+.survey-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; border-bottom: 1px solid var(--border); gap: 12px;
+}
+.survey-item:last-child { border-bottom: none; }
+.survey-item-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+.survey-item-email { font-size: 11px; color: var(--muted); }
+.btn-send-one {
+  font-size: 11px; color: var(--teal); border: 1px solid var(--teal-mist);
+  background: var(--white); padding: 4px 12px; border-radius: 6px;
+  cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  transition: all 0.12s;
+}
+.btn-send-one:hover { background: var(--teal-pale); }
+.survey-copy-area {
+  font-family: monospace; font-size: 11px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px;
+  white-space: pre-wrap; word-break: break-all; max-height: 120px; overflow-y: auto;
+  margin-top: 12px;
+}
+.btn-copy-emails {
+  font-size: 12px; font-weight: 500; color: var(--white);
+  background: var(--teal-dark); border: none; padding: 8px 18px;
+  border-radius: 7px; cursor: pointer; margin-top: 12px;
+  transition: background 0.15s;
+}
+.btn-copy-emails:hover { background: var(--teal); }
+
+/* ── Summary bar ── */
+.summary-bar {
+  display: flex; gap: 0; background: var(--teal-deep);
+  border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0;
+}
+.sum-cell {
+  flex: 1; padding: 10px 16px; text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.sum-cell:last-child { border-right: none; }
+.sum-val { font-size: 18px; font-weight: 600; color: var(--sky); line-height: 1.2; }
+.sum-label { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 0.5px; }
+</style>
+</head>
+<body>
+
+<script src="nav.js"></script>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div>
+      <div class="page-eyebrow">🏥 VCH · Fraser Health · PHSA</div>
+      <h1>Treatment <span>Wait Times</span></h1>
+      <p>Current bed availability and wait times for publicly funded treatment programs. Updated by program coordinators. Data reflects most recent report — verify directly before referring.</p>
+    </div>
+    <div class="header-meta">
+      <div class="meta-pill"><strong id="stat-facilities">—</strong> facilities tracked</div>
+      <div class="meta-pill"><strong id="stat-reporting">—</strong> reporting this week</div>
+      <div class="meta-pill"><strong id="stat-avg-wait">—</strong> avg wait (bed-based)</div>
+    </div>
+  </div>
+</div>
+
+<div class="controls-bar">
+  <div class="controls-inner">
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="search" class="search-input" placeholder="Search by name or location…">
+    </div>
+    <div class="filter-group">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="bed">Bed-Based</button>
+      <button class="filter-btn" data-filter="outpatient">Outpatient</button>
+      <button class="filter-btn" data-filter="vch">VCH</button>
+      <button class="filter-btn" data-filter="fh">Fraser Health</button>
+      <button class="filter-btn" data-filter="phsa">PHSA</button>
+      <button class="filter-btn" data-filter="avail">Has Availability</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-left:auto;flex-shrink:0;">
+      <button class="filter-btn" id="btn-report-open" style="background:var(--teal);color:#fff;border-color:var(--teal);">
+        + Report availability
+      </button>
+      <button class="filter-btn" id="btn-survey-open">
+        Survey coordinators
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Summary bar -->
+<div class="summary-bar" id="summary-bar">
+  <div class="sum-cell"><div class="sum-val" id="sb-bed-avail">—</div><div class="sum-label">Bed-based beds available</div></div>
+  <div class="sum-cell"><div class="sum-val" id="sb-shortest">—</div><div class="sum-label">Shortest wait</div></div>
+  <div class="sum-cell"><div class="sum-val" id="sb-stale">—</div><div class="sum-label">Reports &gt;7 days old</div></div>
+  <div class="sum-cell"><div class="sum-val" id="sb-no-report">—</div><div class="sum-label">No recent report</div></div>
+</div>
+
+<div class="main-scroll">
+  <div class="wt-table-wrap">
+    <table class="wt-table" id="wt-table">
+      <thead>
+        <tr>
+          <th class="sortable" data-col="name">Facility</th>
+          <th>Location</th>
+          <th class="sortable" data-col="wait">Wait</th>
+          <th>Beds</th>
+          <th>Discharges<br><span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:9px;opacity:0.6">expected this week</span></th>
+          <th class="sortable" data-col="reported">Last Report</th>
+          <th>Coordinator</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="wt-tbody">
+        <tr><td colspan="8" class="empty-state">Loading…</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── Report availability modal ─────────────────────────────────── -->
+<div class="modal-overlay" id="report-modal">
+  <div class="modal-box">
+    <button class="modal-close" id="report-modal-close">✕</button>
+    <div class="modal-title">Report Availability</div>
+    <div class="modal-subtitle" id="report-modal-subtitle">Update wait times and bed availability for your facility.</div>
+    <form id="report-form" autocomplete="off">
+      <div class="form-row">
+        <label>Facility</label>
+        <select id="rf-facility" required>
+          <option value="">— Select facility —</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Your name</label>
+        <input type="text" id="rf-reporter" placeholder="Coordinator / intake worker name" required>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Current wait (days)</label>
+          <input type="number" id="rf-wait" min="0" max="365" placeholder="e.g. 21" required>
+          <div class="form-hint">Estimated wait from referral to intake</div>
+        </div>
+        <div class="form-row">
+          <label>Beds available now</label>
+          <input type="number" id="rf-beds" min="0" max="999" placeholder="0">
+          <div class="form-hint">Leave blank for outpatient programs</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Expected discharges this week</label>
+        <input type="number" id="rf-discharges" min="0" max="99" placeholder="0">
+      </div>
+      <div class="form-row">
+        <label>Notes (optional)</label>
+        <textarea id="rf-notes" placeholder="Priority populations, intake conditions, special availability…" rows="3"></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-submit">Save report</button>
+        <button type="button" class="btn-cancel" id="report-modal-cancel">Cancel</button>
+      </div>
+      <div class="form-success" id="report-success">
+        ✓ Report saved. The table has been updated with the new data.
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── Survey coordinators modal ─────────────────────────────────── -->
+<div class="modal-overlay" id="survey-modal">
+  <div class="modal-box" style="max-width:560px;">
+    <button class="modal-close" id="survey-modal-close">✕</button>
+    <div class="modal-title">Survey Coordinators</div>
+    <div class="modal-subtitle">Send a standard availability update request to each program coordinator. Click "Send email" to open your mail client pre-filled, or copy all addresses to send a group message.</div>
+    <div style="margin:12px 0 8px;display:flex;align-items:center;gap:8px;">
+      <input type="text" id="survey-search" class="search-input" placeholder="Filter by name…" style="max-width:220px;padding:6px 10px;font-size:12px;">
+      <button class="btn-copy-emails" id="btn-copy-all-emails">Copy all email addresses</button>
+    </div>
+    <ul class="survey-list" id="survey-list"></ul>
+    <div class="form-hint" style="margin-top:12px;">Tip — paste all addresses into your email client's BCC field with the template below to batch-request updates.</div>
+    <div class="survey-copy-area" id="survey-template"></div>
+  </div>
+</div>
+
+<script src="data/treatment-programs.js"></script>
+<script src="data/wait-times.js"></script>
+<script>
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function daysSince(dateStr) {
+  if (!dateStr) return Infinity;
+  const d = new Date(dateStr + 'T00:00:00');
+  return Math.floor((Date.now() - d.getTime()) / 86400000);
+}
+
+function waitClass(days) {
+  if (days === null || days === undefined) return '';
+  if (days === 0)  return 'wait-none';
+  if (days <= 7)   return 'wait-short';
+  if (days <= 21)  return 'wait-mid';
+  if (days <= 41)  return 'wait-long';
+  return 'wait-very';
+}
+
+function waitLabel(days) {
+  if (days === null || days === undefined) return '<span style="color:var(--muted);font-size:12px;">—</span>';
+  if (days === 0) return '<span class="wait-badge wait-none">Same day</span>';
+  if (days === 1) return '<span class="wait-badge wait-short">1 day</span>';
+  return `<span class="wait-badge ${waitClass(days)}">${days} days</span>`;
+}
+
+function reportedLabel(snap) {
+  if (!snap || !snap.reportedAt) {
+    return '<span style="color:var(--muted);font-size:12px;font-style:italic;">No report</span>';
+  }
+  const age = daysSince(snap.reportedAt);
+  const dateStr = new Date(snap.reportedAt + 'T00:00:00')
+    .toLocaleDateString('en-CA', { month:'short', day:'numeric' });
+  const byLine = snap.reporterName ? `<span style="display:block;font-size:10px;color:var(--muted);margin-top:1px;">by ${snap.reporterName}</span>` : '';
+  if (age > 7) {
+    return `${dateStr} <span class="stale-warn">⚠ ${age}d ago</span>${byLine}`;
+  }
+  return `${dateStr}${byLine}`;
+}
+
+function bedsHtml(snap, prog) {
+  if (!snap || snap.bedsAvail === null || snap.bedsAvail === undefined) {
+    return '<span style="color:var(--muted);font-size:12px;">—</span>';
+  }
+  const avail = snap.bedsAvail;
+  const total = snap.totalBeds || prog.beds || null;
+  const pct   = total ? Math.round((avail / total) * 100) : null;
+  const fill  = pct !== null ? `<div class="beds-fill" style="width:${Math.max(pct,4)}%"></div>` : '';
+  const track = pct !== null ? `<div class="beds-track">${fill}</div>` : '';
+  const nums  = total
+    ? `<span class="beds-numbers"><strong>${avail}</strong> <span>/ ${total}</span></span>`
+    : `<span class="beds-numbers"><strong>${avail}</strong> <span>available</span></span>`;
+  return `<div class="beds-bar">${nums}${track}</div>`;
+}
+
+function dischargeHtml(snap) {
+  if (!snap || snap.expectedDischarges === null || snap.expectedDischarges === undefined)
+    return '<span style="color:var(--muted);font-size:12px;">—</span>';
+  return snap.expectedDischarges === 0
+    ? '<span style="color:var(--muted);font-size:12px;">0</span>'
+    : `<strong>${snap.expectedDischarges}</strong>`;
+}
+
+// ── Build table ───────────────────────────────────────────────────────────────
+const funded = PROGRAMS.filter(p => p.tags && p.tags.includes('funded'));
+let sortCol = 'wait', sortDir = 1;
+let activeFilter = 'all';
+let searchQ = '';
+
+function buildRow(prog) {
+  const snap = WAIT_SNAPSHOTS[prog.id] || null;
+  const age  = snap ? daysSince(snap.reportedAt) : Infinity;
+  const coordHtml = prog.coord
+    ? `<span class="coord-name">${prog.coord.name}</span>
+       <div class="coord-links">
+         <a href="mailto:${prog.coord.email}">${prog.coord.email}</a>
+         ${prog.coord.phone ? `<a href="tel:${prog.coord.phone.replace(/\D/g,'')}">${prog.coord.phone}</a>` : ''}
+       </div>`
+    : '<span style="color:var(--muted);font-size:12px;">—</span>';
+
+  const notesAttr = (snap && snap.notes)
+    ? ` title="${snap.notes.replace(/"/g,'&quot;')}"` : '';
+
+  return `<tr
+    data-id="${prog.id}"
+    data-type="${prog.type}"
+    data-ha="${prog.ha}"
+    data-wait="${snap ? snap.waitDays : 9999}"
+    data-avail="${snap && snap.bedsAvail > 0 ? '1' : '0'}"
+    data-age="${age}"
+    data-name="${prog.name.toLowerCase()}"
+    data-loc="${(prog.location||'').toLowerCase()}"
+    ${notesAttr}
+  >
+    <td class="td-name">
+      ${prog.name}
+      <small>${prog.inst}</small>
+      <span class="type-badge type-${prog.type}">${prog.type === 'bed' ? 'Bed-Based' : 'Outpatient'}</span>
+    </td>
+    <td class="td-loc">${prog.location || '—'}</td>
+    <td class="td-wait">${waitLabel(snap ? snap.waitDays : null)}</td>
+    <td class="td-beds">${bedsHtml(snap, prog)}</td>
+    <td class="td-discharge">${dischargeHtml(snap)}</td>
+    <td class="td-reported">${reportedLabel(snap)}</td>
+    <td class="td-coord">${coordHtml}</td>
+    <td class="td-actions">
+      <button class="btn-report" data-id="${prog.id}">Report</button>
+    </td>
+  </tr>`;
+}
+
+function renderTable() {
+  const q = searchQ.toLowerCase();
+  let rows = funded.filter(p => {
+    if (q && !p.name.toLowerCase().includes(q) && !(p.location||'').toLowerCase().includes(q)) return false;
+    if (activeFilter === 'all')       return true;
+    if (activeFilter === 'bed')       return p.type === 'bed';
+    if (activeFilter === 'outpatient')return p.type === 'outpatient';
+    if (activeFilter === 'vch')       return p.ha === 'vch';
+    if (activeFilter === 'fh')        return p.ha === 'fh';
+    if (activeFilter === 'phsa')      return p.ha === 'phsa';
+    if (activeFilter === 'avail') {
+      const s = WAIT_SNAPSHOTS[p.id];
+      return s && s.bedsAvail !== null && s.bedsAvail > 0;
+    }
+    return true;
+  });
+
+  rows.sort((a, b) => {
+    const sa = WAIT_SNAPSHOTS[a.id] || {};
+    const sb = WAIT_SNAPSHOTS[b.id] || {};
+    if (sortCol === 'name')     return sortDir * a.name.localeCompare(b.name);
+    if (sortCol === 'wait')     return sortDir * ((sa.waitDays ?? 9999) - (sb.waitDays ?? 9999));
+    if (sortCol === 'reported') return sortDir * (daysSince(sa.reportedAt) - daysSince(sb.reportedAt));
+    return 0;
+  });
+
+  const tbody = document.getElementById('wt-tbody');
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No facilities match the current filter.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(buildRow).join('');
+
+  // Row click → show notes tooltip (already via title attr), report button
+  tbody.querySelectorAll('.btn-report').forEach(btn => {
+    btn.addEventListener('click', () => openReportModal(btn.dataset.id));
+  });
+}
+
+function updateStats() {
+  const bed = funded.filter(p => p.type === 'bed' && WAIT_SNAPSHOTS[p.id]);
+  const allW = bed.map(p => WAIT_SNAPSHOTS[p.id].waitDays).filter(d => d !== null && d !== undefined);
+  const avgWait = allW.length ? Math.round(allW.reduce((a,b) => a+b, 0) / allW.length) : null;
+
+  const totalBedAvail = funded
+    .filter(p => p.type === 'bed' && WAIT_SNAPSHOTS[p.id])
+    .reduce((s, p) => s + (WAIT_SNAPSHOTS[p.id].bedsAvail || 0), 0);
+
+  const shortest = allW.length ? Math.min(...allW) : null;
+  const staleCount = funded.filter(p => WAIT_SNAPSHOTS[p.id] && daysSince(WAIT_SNAPSHOTS[p.id].reportedAt) > 7).length;
+  const noReport = funded.filter(p => !WAIT_SNAPSHOTS[p.id]).length;
+  const reportingThisWeek = funded.filter(p => WAIT_SNAPSHOTS[p.id] && daysSince(WAIT_SNAPSHOTS[p.id].reportedAt) <= 7).length;
+
+  document.getElementById('stat-facilities').textContent = funded.length;
+  document.getElementById('stat-reporting').textContent = reportingThisWeek;
+  document.getElementById('stat-avg-wait').textContent = avgWait !== null ? avgWait + ' days' : '—';
+  document.getElementById('sb-bed-avail').textContent = totalBedAvail;
+  document.getElementById('sb-shortest').textContent = shortest !== null ? shortest + 'd' : '—';
+  document.getElementById('sb-stale').textContent = staleCount;
+  document.getElementById('sb-no-report').textContent = noReport;
+}
+
+// ── Filters + search ──────────────────────────────────────────────────────────
+document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    renderTable();
+  });
+});
+
+document.getElementById('search').addEventListener('input', e => {
+  searchQ = e.target.value;
+  renderTable();
+});
+
+// ── Sort ──────────────────────────────────────────────────────────────────────
+document.querySelectorAll('th.sortable').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    if (sortCol === col) {
+      sortDir *= -1;
+      th.classList.toggle('sort-asc', sortDir === 1);
+      th.classList.toggle('sort-desc', sortDir === -1);
+    } else {
+      document.querySelectorAll('th').forEach(t => t.classList.remove('sort-asc','sort-desc'));
+      sortCol = col; sortDir = 1;
+      th.classList.add('sort-asc');
+    }
+    renderTable();
+  });
+});
+
+// ── Report modal ──────────────────────────────────────────────────────────────
+const reportModal = document.getElementById('report-modal');
+const rfFacility  = document.getElementById('rf-facility');
+
+// Populate facility selector
+funded.forEach(p => {
+  const opt = document.createElement('option');
+  opt.value = p.id;
+  opt.textContent = p.name;
+  rfFacility.appendChild(opt);
+});
+
+function openReportModal(id) {
+  document.getElementById('report-success').classList.remove('show');
+  document.getElementById('report-form').reset();
+  if (id) rfFacility.value = id;
+  // Pre-fill coordinator name if known
+  if (id) {
+    const prog = funded.find(p => p.id === id);
+    if (prog && prog.coord) document.getElementById('rf-reporter').value = prog.coord.name;
+    const snap = WAIT_SNAPSHOTS[id];
+    if (snap) {
+      if (snap.waitDays !== null && snap.waitDays !== undefined) document.getElementById('rf-wait').value = snap.waitDays;
+      if (snap.bedsAvail !== null && snap.bedsAvail !== undefined) document.getElementById('rf-beds').value = snap.bedsAvail;
+      if (snap.expectedDischarges !== null && snap.expectedDischarges !== undefined) document.getElementById('rf-discharges').value = snap.expectedDischarges;
+      if (snap.notes) document.getElementById('rf-notes').value = snap.notes;
+      if (snap.reporterName) document.getElementById('rf-reporter').value = snap.reporterName;
+    }
+  }
+  reportModal.classList.add('open');
+}
+
+document.getElementById('btn-report-open').addEventListener('click', () => openReportModal(null));
+document.getElementById('report-modal-close').addEventListener('click', () => reportModal.classList.remove('open'));
+document.getElementById('report-modal-cancel').addEventListener('click', () => reportModal.classList.remove('open'));
+reportModal.addEventListener('click', e => { if (e.target === reportModal) reportModal.classList.remove('open'); });
+
+document.getElementById('report-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const id   = rfFacility.value;
+  if (!id) return;
+  const wait = parseInt(document.getElementById('rf-wait').value, 10);
+  const beds = document.getElementById('rf-beds').value !== '' ? parseInt(document.getElementById('rf-beds').value, 10) : null;
+  const disc = document.getElementById('rf-discharges').value !== '' ? parseInt(document.getElementById('rf-discharges').value, 10) : null;
+  const notes = document.getElementById('rf-notes').value.trim() || null;
+  const reporter = document.getElementById('rf-reporter').value.trim() || 'Unknown';
+
+  const today = new Date().toISOString().slice(0, 10);
+  WAIT_SNAPSHOTS[id] = { waitDays: wait, bedsAvail: beds, expectedDischarges: disc, notes, reportedAt: today, reporterName: reporter,
+    totalBeds: (WAIT_SNAPSHOTS[id] && WAIT_SNAPSHOTS[id].totalBeds) || null };
+
+  // Persist in session
+  try {
+    const saved = JSON.parse(sessionStorage.getItem('wt_overrides') || '{}');
+    saved[id] = WAIT_SNAPSHOTS[id];
+    sessionStorage.setItem('wt_overrides', JSON.stringify(saved));
+  } catch(err) {}
+
+  document.getElementById('report-success').classList.add('show');
+  renderTable();
+  updateStats();
+
+  setTimeout(() => reportModal.classList.remove('open'), 1800);
+});
+
+// ── Survey modal ──────────────────────────────────────────────────────────────
+const surveyModal = document.getElementById('survey-modal');
+document.getElementById('btn-survey-open').addEventListener('click', () => {
+  buildSurveyList('');
+  surveyModal.classList.add('open');
+});
+document.getElementById('survey-modal-close').addEventListener('click', () => surveyModal.classList.remove('open'));
+surveyModal.addEventListener('click', e => { if (e.target === surveyModal) surveyModal.classList.remove('open'); });
+
+document.getElementById('survey-search').addEventListener('input', e => {
+  buildSurveyList(e.target.value.toLowerCase());
+});
+
+const SURVEY_SUBJECT = encodeURIComponent('Treatment Availability Update Request – DTES Community Tools');
+const SURVEY_BODY = encodeURIComponent(
+`Hi,
+
+We're updating the DTES Community Tools wait-times dashboard and would appreciate a quick availability report for your program.
+
+Could you please provide:
+  • Current estimated wait time (days from referral to intake)
+  • Beds or spaces currently available
+  • Expected discharges / openings this week
+  • Any intake conditions or priority populations to note
+
+You can submit directly at: https://dtes-community-tools.ca/wait-times.html
+
+Thank you for your time. Reports help clinicians make timely and appropriate referrals.
+
+— DTES Community Tools`
+);
+
+function buildSurveyList(q) {
+  const list = document.getElementById('survey-list');
+  const progs = funded.filter(p => p.coord && (!q || p.name.toLowerCase().includes(q) || p.coord.name.toLowerCase().includes(q)));
+
+  list.innerHTML = progs.map(p => `
+    <li class="survey-item">
+      <div>
+        <div class="survey-item-name">${p.name}</div>
+        <div class="survey-item-email">${p.coord.name} · ${p.coord.email}</div>
+      </div>
+      <a class="btn-send-one" href="mailto:${p.coord.email}?subject=${SURVEY_SUBJECT}&body=${SURVEY_BODY}" target="_blank">Send email</a>
+    </li>
+  `).join('');
+
+  document.getElementById('survey-template').textContent =
+    `To: ${progs.map(p => `${p.coord.name} <${p.coord.email}>`).join(', ')}`;
+}
+
+document.getElementById('btn-copy-all-emails').addEventListener('click', () => {
+  const progs = funded.filter(p => p.coord);
+  const text = progs.map(p => p.coord.email).join(', ');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('btn-copy-all-emails');
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy all email addresses'; }, 2000);
+  });
+});
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+// Default sort: shortest wait first
+document.querySelector('th[data-col="wait"]').classList.add('sort-asc');
+renderTable();
+updateStats();
+</script>
+
+</body>
+</html>

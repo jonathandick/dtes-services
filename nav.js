@@ -34,6 +34,13 @@
         { href: "pilot-plan.html",              label: "Pilot Plan" },
       ],
     },
+    {
+      label: "Treatment",
+      children: [
+        { href: "treatment-programs.html", label: "Programs" },
+        { href: "wait-times.html",         label: "Wait Times" },
+      ],
+    },
   ];
 
   // ── CSS ───────────────────────────────────────────────────────
