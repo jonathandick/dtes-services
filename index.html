@@ -9,10 +9,10 @@
 <style>
 body { min-height: 100vh; display: flex; flex-direction: column; }
 
-/* HERO */
+/* ── Hero ── */
 .hero {
   background: var(--teal-deep);
-  padding: 80px 32px 72px;
+  padding: 72px 32px 64px;
   text-align: center;
   position: relative; overflow: hidden;
 }
@@ -29,94 +29,199 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
   border: 1px solid rgba(126,200,192,0.3); padding: 4px 14px; border-radius: 20px;
 }
 .hero h1 {
-  font-family: var(--font-head); font-size: clamp(36px, 5vw, 58px);
-  color: var(--white); line-height: 1.15; margin-bottom: 20px;
+  font-family: var(--font-head); font-size: clamp(34px, 5vw, 54px);
+  color: var(--white); line-height: 1.15; margin-bottom: 18px;
 }
 .hero h1 span { color: var(--sky); }
 .hero p {
-  font-size: 17px; color: rgba(255,255,255,0.65); max-width: 560px;
-  margin: 0 auto 40px; line-height: 1.7;
+  font-size: 16px; color: rgba(255,255,255,0.6); max-width: 520px;
+  margin: 0 auto; line-height: 1.75;
 }
-.hero-scroll { font-size: 12px; color: rgba(255,255,255,0.3); letter-spacing: 0.5px; margin-top: 16px; }
 
-/* APPS GRID */
-.apps-section { padding: 72px 32px; background: var(--surface); flex: 1; }
-.apps-section h2 {
-  font-family: var(--font-head); font-size: 28px; color: var(--ink);
-  text-align: center; margin-bottom: 8px;
+/* ── Stats strip ── */
+.stats-strip {
+  background: #031510;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 0 32px;
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
 }
-.apps-section .sub { text-align: center; color: var(--muted); font-size: 15px; margin-bottom: 48px; }
+.stat-cell {
+  flex: 1; min-width: 160px;
+  padding: 24px 20px;
+  display: flex; flex-direction: column; gap: 5px;
+  border-right: 1px solid rgba(255,255,255,0.05);
+  position: relative;
+}
+.stat-cell:last-child { border-right: none; }
+.stat-value {
+  font-family: var(--font-head);
+  font-size: clamp(26px, 3vw, 36px);
+  line-height: 1;
+  color: #ef4444;
+}
+.stat-value.amber { color: var(--amber); }
+.stat-value.sky   { color: var(--sky); }
+.stat-value.white { color: rgba(255,255,255,0.8); }
+.stat-label {
+  font-size: 11px; color: rgba(255,255,255,0.35);
+  text-transform: uppercase; letter-spacing: 0.8px; line-height: 1.4;
+}
+.stat-source {
+  font-size: 10px; color: rgba(255,255,255,0.18); margin-top: 2px;
+}
 
-.apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; max-width: 900px; margin: 0 auto; }
+/* ── Section layouts ── */
+.tools-section {
+  padding: 60px 32px;
+}
+.tools-section.alt { background: #f9fafb; }
 
-.app-card {
+.section-header {
+  display: flex; align-items: flex-start; gap: 16px;
+  max-width: 960px; margin: 0 auto 36px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.section-pip {
+  width: 4px; border-radius: 4px; flex-shrink: 0;
+  align-self: stretch; min-height: 36px;
+}
+.section-pip.teal   { background: var(--teal); }
+.section-pip.amber  { background: var(--amber); }
+.section-header-text { flex: 1; }
+.section-label {
+  font-size: 10px; font-weight: 500; letter-spacing: 1.2px;
+  text-transform: uppercase; margin-bottom: 5px;
+}
+.section-label.teal  { color: var(--teal); }
+.section-label.amber { color: var(--amber); }
+.section-header-text h2 {
+  font-family: var(--font-head); font-size: 24px;
+  color: var(--ink); margin-bottom: 6px;
+}
+.section-header-text p {
+  font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 520px;
+}
+
+/* ── Tool cards ── */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  max-width: 960px; margin: 0 auto;
+}
+
+.tool-card {
   background: var(--white); border: 1px solid var(--border);
-  border-radius: 18px; overflow: hidden;
-  transition: box-shadow 0.2s, transform 0.2s;
+  border-radius: 16px; overflow: hidden;
   display: flex; flex-direction: column;
+  transition: box-shadow 0.2s, transform 0.2s;
 }
-.app-card:hover { box-shadow: 0 8px 32px rgba(26,122,110,0.12); transform: translateY(-2px); }
+.tool-card:hover {
+  box-shadow: 0 6px 24px rgba(26,122,110,0.1);
+  transform: translateY(-2px);
+}
+.tool-card.amber-accent { border-top: 3px solid var(--amber); }
+.tool-card.teal-accent  { border-top: 3px solid var(--teal-mid); }
 
-.app-card-header {
-  padding: 28px 28px 20px;
-  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+.tool-card-top {
+  padding: 22px 22px 14px;
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 10px;
 }
-.app-icon {
-  width: 52px; height: 52px; border-radius: 14px;
+.tool-icon {
+  width: 44px; height: 44px; border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 24px; flex-shrink: 0;
+  font-size: 20px; flex-shrink: 0;
 }
-.app-icon.teal { background: var(--teal-pale); }
-.app-icon.amber { background: var(--amber-pale); }
+.tool-icon.teal  { background: var(--teal-pale); }
+.tool-icon.amber { background: var(--amber-pale); }
 
-.app-badge {
+.tool-badge {
   font-size: 10px; font-weight: 500; padding: 3px 9px;
   border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;
   white-space: nowrap;
 }
-.badge-live { background: #E8F7F0; color: #1A6640; border: 1px solid #A8DFC0; }
+.badge-live  { background: #E8F7F0; color: #1A6640; border: 1px solid #A8DFC0; }
 .badge-proto { background: var(--amber-pale); color: #8A5200; border: 1px solid #F5C86A; }
+.badge-data  { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
 
-.app-card-body { padding: 0 28px 24px; flex: 1; }
-.app-card-body h3 { font-family: var(--font-head); font-size: 22px; color: var(--ink); margin-bottom: 8px; }
-.app-card-body p { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 16px; }
+.tool-card-body { padding: 0 22px 18px; flex: 1; }
+.tool-card-body h3 {
+  font-family: var(--font-head); font-size: 20px;
+  color: var(--ink); margin-bottom: 7px;
+}
+.tool-card-body p {
+  font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 14px;
+}
+.feature-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.feature-list li {
+  font-size: 12px; color: var(--muted);
+  display: flex; align-items: center; gap: 7px;
+}
+.feature-list li::before {
+  content: ''; width: 4px; height: 4px; border-radius: 50%;
+  background: var(--teal-mid); flex-shrink: 0;
+}
 
-.feature-list { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 24px; }
-.feature-list li { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
-.feature-list li::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--teal-mid); flex-shrink: 0; }
-
-.app-card-footer { padding: 0 28px 28px; }
+.tool-card-footer { padding: 0 22px 22px; display: flex; flex-direction: column; gap: 7px; }
 .btn {
   display: inline-flex; align-items: center; gap: 8px;
-  padding: 11px 22px; border-radius: 10px; font-size: 14px;
+  padding: 10px 20px; border-radius: 9px; font-size: 13px;
   font-weight: 500; font-family: var(--font-body); cursor: pointer;
   text-decoration: none; transition: all 0.15s; border: none;
+  justify-content: center;
 }
 .btn-primary { background: var(--teal); color: var(--white); }
 .btn-primary:hover { background: var(--teal-dark); text-decoration: none; }
-.btn-outline { background: transparent; color: var(--teal); border: 1px solid var(--border); }
+.btn-primary.amber { background: var(--amber); color: #3d1e00; }
+.btn-primary.amber:hover { background: #c97a08; text-decoration: none; }
+.btn-outline {
+  background: transparent; color: var(--teal);
+  border: 1px solid var(--border); font-size: 12px;
+}
 .btn-outline:hover { border-color: var(--teal); background: var(--teal-pale); text-decoration: none; }
-.btn-full { width: 100%; justify-content: center; }
-.btn svg { width: 16px; height: 16px; }
+.btn-row { display: flex; gap: 7px; }
+.btn-row .btn { flex: 1; }
+.btn svg { width: 14px; height: 14px; flex-shrink: 0; }
 
-/* ABOUT STRIP */
+/* ── About strip ── */
 .about-strip {
-  background: var(--teal-deep); color: rgba(255,255,255,0.7);
+  background: var(--teal-deep); color: rgba(255,255,255,0.65);
   padding: 48px 32px; text-align: center;
 }
-.about-strip h3 { font-family: var(--font-head); color: var(--white); font-size: 22px; margin-bottom: 12px; }
-.about-strip p { font-size: 14px; max-width: 600px; margin: 0 auto; line-height: 1.75; }
-.about-strip .tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 20px; }
-.tag { font-size: 11px; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(126,200,192,0.3); color: var(--sky); }
+.about-strip h3 {
+  font-family: var(--font-head); color: var(--white);
+  font-size: 22px; margin-bottom: 12px;
+}
+.about-strip p {
+  font-size: 14px; max-width: 580px;
+  margin: 0 auto 20px; line-height: 1.75;
+}
+.tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.tag {
+  font-size: 11px; padding: 4px 12px; border-radius: 20px;
+  border: 1px solid rgba(126,200,192,0.3); color: var(--sky);
+}
 
-/* FOOTER */
-.site-footer { background: var(--teal-deep); color: var(--sky); text-align: center; padding: 24px 32px; font-size: 12px; line-height: 1.8; }
-.site-footer a { color: var(--sky); }
+/* ── Footer ── */
+.site-footer {
+  background: #031510; color: rgba(255,255,255,0.25);
+  text-align: center; padding: 24px 32px;
+  font-size: 11px; line-height: 1.8;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.site-footer a { color: rgba(126,200,192,0.5); }
 
-@media (max-width: 600px) {
-  .hero { padding: 52px 20px 48px; }
-  .apps-section { padding: 48px 20px; }
-  .apps-grid { grid-template-columns: 1fr; }
+@media (max-width: 640px) {
+  .hero { padding: 48px 20px 44px; }
+  .stats-strip { flex-wrap: wrap; }
+  .stat-cell { min-width: 50%; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .tools-section { padding: 44px 16px; }
+  .tools-grid { grid-template-columns: 1fr; }
+  .section-header { flex-direction: column; gap: 10px; }
 }
 </style>
 </head>
@@ -124,79 +229,176 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
 
 <script src="nav.js"></script>
 
+<!-- ── Hero ─────────────────────────────────────────────────── -->
 <section class="hero">
   <div class="hero-eyebrow">Downtown Eastside · Vancouver</div>
   <h1>Tools for the<br><span>DTES Community</span></h1>
-  <p>Open-source, community-controlled tools to support harm reduction, service navigation, and crisis response in Vancouver's Downtown Eastside.</p>
+  <p>Open-source, community-controlled tools to support harm reduction, service navigation, and overdose crisis response in Vancouver's Downtown Eastside.</p>
 </section>
 
-<section class="apps-section">
-  <h2>Community Applications</h2>
-  <p class="sub">Community tools to keep people connected to services and workers connected to each other.</p>
+<!-- ── Crisis context strip ──────────────────────────────────── -->
+<div class="stats-strip">
+  <div class="stat-cell">
+    <span class="stat-value">39,592</span>
+    <span class="stat-label">OD events in BC (2025)</span>
+    <span class="stat-source">Source: BCEHS</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-value amber">108</span>
+    <span class="stat-label">Paramedic responses / day</span>
+    <span class="stat-source">2025 average</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-value amber">9,537</span>
+    <span class="stat-label">OD events in Vancouver (2025)</span>
+    <span class="stat-source">Source: BCEHS</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-value white">2016</span>
+    <span class="stat-label">Public health emergency declared</span>
+    <span class="stat-source">April 14, 2016 — ongoing</span>
+  </div>
+</div>
 
-  <div class="apps-grid">
+<!-- ── OD Response tools ─────────────────────────────────────── -->
+<section class="tools-section">
+  <div class="section-header">
+    <div class="section-pip amber"></div>
+    <div class="section-header-text">
+      <div class="section-label amber">OD Response</div>
+      <h2>Real-Time Crisis Tools</h2>
+      <p>Tools for frontline workers and coordinators responding to the overdose emergency — live event tracking, pattern detection, and situational awareness.</p>
+    </div>
+  </div>
 
-    <!-- SERVICES MAP -->
-    <div class="app-card">
-      <div class="app-card-header">
-        <div class="app-icon teal">🗺️</div>
-        <span class="app-badge badge-live">Live</span>
+  <div class="tools-grid">
+
+    <!-- OD Watch -->
+    <div class="tool-card amber-accent">
+      <div class="tool-card-top">
+        <div class="tool-icon amber">📍</div>
+        <span class="tool-badge badge-proto">Prototype</span>
       </div>
-      <div class="app-card-body">
+      <div class="tool-card-body">
+        <h3>DTES OD Watch</h3>
+        <p>Real-time overdose tracking for frontline workers and peer responders. Log events in seconds, visualise emerging hotspots on a live map.</p>
+        <ul class="feature-list">
+          <li>Live map with animated event replay</li>
+          <li>3-tap logging — no typing needed</li>
+          <li>Substance &amp; outcome breakdowns</li>
+          <li>Privacy-first — no personal data collected</li>
+        </ul>
+      </div>
+      <div class="tool-card-footer">
+        <a href="overdose-watch.html" class="btn btn-primary amber">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          Open OD Watch
+        </a>
+        <div class="btn-row">
+          <a href="pilot-plan.html" class="btn btn-outline">Pilot Plan</a>
+          <a href="onepager.html" class="btn btn-outline">One-Pager</a>
+          <a href="qa.html" class="btn btn-outline">Q&amp;A</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PH Dashboard -->
+    <div class="tool-card amber-accent">
+      <div class="tool-card-top">
+        <div class="tool-icon amber">📊</div>
+        <span class="tool-badge badge-proto">Prototype</span>
+      </div>
+      <div class="tool-card-body">
+        <h3>Public Health Dashboard</h3>
+        <p>A command-level view of overdose patterns across the DTES — aggregated stats, trend lines, and actionable intelligence for coordinators and public health staff.</p>
+        <ul class="feature-list">
+          <li>Incident volume by time &amp; location</li>
+          <li>Substance and outcome breakdowns</li>
+          <li>Spike detection and trend alerts</li>
+          <li>Designed for shift briefings &amp; reports</li>
+        </ul>
+      </div>
+      <div class="tool-card-footer">
+        <a href="public-health-dashboard.html" class="btn btn-primary amber">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Open PH Dashboard
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Community Services ─────────────────────────────────────── -->
+<section class="tools-section alt">
+  <div class="section-header">
+    <div class="section-pip teal"></div>
+    <div class="section-header-text">
+      <div class="section-label teal">Community Services</div>
+      <h2>Service Navigation Tools</h2>
+      <p>Directories and information tools to help people find services and help workers connect clients to care — searchable, filterable, and mobile-friendly.</p>
+    </div>
+  </div>
+
+  <div class="tools-grid">
+
+    <!-- Services Map -->
+    <div class="tool-card teal-accent">
+      <div class="tool-card-top">
+        <div class="tool-icon teal">🗺️</div>
+        <span class="tool-badge badge-live">Live</span>
+      </div>
+      <div class="tool-card-body">
         <h3>DTES Services Map</h3>
-        <p>An interactive directory of harm reduction, housing, health, and social services across the Downtown Eastside — searchable, filterable, and mobile-friendly.</p>
+        <p>An interactive directory of harm reduction, housing, health, and social services across the Downtown Eastside.</p>
         <ul class="feature-list">
           <li>Needle exchanges &amp; supervised consumption</li>
-          <li>Shelter, SRO housing &amp; supports</li>
+          <li>Shelter, housing &amp; supports</li>
           <li>Mental health &amp; primary care clinics</li>
           <li>Food programs &amp; drop-ins</li>
         </ul>
       </div>
-      <div class="app-card-footer">
-        <a href="dtes-services.html" class="btn btn-primary btn-full">
+      <div class="tool-card-footer">
+        <a href="dtes-services.html" class="btn btn-primary">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
           Open Services Map
         </a>
       </div>
     </div>
 
-    <!-- OD WATCH -->
-    <div class="app-card">
-      <div class="app-card-header">
-        <div class="app-icon amber">📍</div>
-        <span class="app-badge badge-proto">Prototype</span>
+    <!-- Drug Supply -->
+    <div class="tool-card teal-accent">
+      <div class="tool-card-top">
+        <div class="tool-icon amber">⚠️</div>
+        <span class="tool-badge badge-data">Live Data</span>
       </div>
-      <div class="app-card-body">
-        <h3>DTES OD Watch</h3>
-        <p>A real-time overdose tracking tool for frontline workers and peer responders. Log events in seconds, visualise emerging hotspots on a live map, filtered by time window.</p>
+      <div class="tool-card-body">
+        <h3>Toxic Drug Supply</h3>
+        <p>What's in Vancouver's unregulated supply right now — active alerts, substance breakdowns, naloxone guidance, and drug checking sites. Updated from live sources.</p>
         <ul class="feature-list">
-          <li>Live heatmap on real DTES streets</li>
-          <li>3-tap event logging — no typing needed</li>
-          <li>Substance &amp; outcome tracking</li>
-          <li>Privacy-first — no personal data collected</li>
+          <li>Active alerts: carfentanil, phenazolam, medetomidine</li>
+          <li>Substance-by-substance breakdown</li>
+          <li>2025 overdose statistics (BCEHS)</li>
+          <li>Drug checking locations</li>
         </ul>
       </div>
-      <div class="app-card-footer" style="display:flex;flex-direction:column;gap:8px;">
-        <a href="overdose-watch.html" class="btn btn-primary btn-full">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-          Open OD Watch
+      <div class="tool-card-footer">
+        <a href="drug-supply.html" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+          View Drug Supply
         </a>
-        <div style="display:flex;gap:8px;">
-          <a href="onepager.html" class="btn btn-outline" style="flex:1;justify-content:center;font-size:12px;">One-Pager</a>
-          <a href="qa.html" class="btn btn-outline" style="flex:1;justify-content:center;font-size:12px;">Q&amp;A Doc</a>
-        </div>
       </div>
     </div>
 
-    <!-- SHELTERS -->
-    <div class="app-card">
-      <div class="app-card-header">
-        <div class="app-icon teal">🏠</div>
-        <span class="app-badge badge-live">Live</span>
+    <!-- Shelters -->
+    <div class="tool-card teal-accent">
+      <div class="tool-card-top">
+        <div class="tool-icon teal">🏠</div>
+        <span class="tool-badge badge-live">Live</span>
       </div>
-      <div class="app-card-body">
+      <div class="tool-card-body">
         <h3>Vancouver Shelter Directory</h3>
-        <p>A searchable directory of emergency shelters across Vancouver — with capacity type, eligibility, and contact info.</p>
+        <p>A searchable directory of emergency shelters across Vancouver — capacity type, eligibility, and contact info.</p>
         <ul class="feature-list">
           <li>Men's, women's &amp; mixed shelters</li>
           <li>Youth &amp; family options</li>
@@ -204,23 +406,23 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
           <li>Filterable by area &amp; population</li>
         </ul>
       </div>
-      <div class="app-card-footer">
-        <a href="vancouver-shelters.html" class="btn btn-primary btn-full">
+      <div class="tool-card-footer">
+        <a href="vancouver-shelters.html" class="btn btn-primary">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           Open Shelter Directory
         </a>
       </div>
     </div>
 
-    <!-- SOCIAL HOUSING -->
-    <div class="app-card">
-      <div class="app-card-header">
-        <div class="app-icon teal">🏢</div>
-        <span class="app-badge badge-live">Live</span>
+    <!-- Social Housing -->
+    <div class="tool-card teal-accent">
+      <div class="tool-card-top">
+        <div class="tool-icon teal">🏢</div>
+        <span class="tool-badge badge-live">Live</span>
       </div>
-      <div class="app-card-body">
+      <div class="tool-card-body">
         <h3>Social Housing Directory</h3>
-        <p>A directory of supportive and social housing in the Downtown Eastside — including SROs, supportive housing, and co-ops.</p>
+        <p>Supportive and social housing in the Downtown Eastside — SROs, supportive housing, and co-ops with operator and referral info.</p>
         <ul class="feature-list">
           <li>SROs, supportive &amp; co-op housing</li>
           <li>Operator &amp; contact details</li>
@@ -228,69 +430,45 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
           <li>Searchable by name &amp; area</li>
         </ul>
       </div>
-      <div class="app-card-footer">
-        <a href="social-housing.html" class="btn btn-primary btn-full">
+      <div class="tool-card-footer">
+        <a href="social-housing.html" class="btn btn-primary">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
           Open Housing Directory
         </a>
       </div>
     </div>
 
-    <!-- DRUG SUPPLY -->
-    <div class="app-card">
-      <div class="app-card-header">
-        <div class="app-icon amber">⚠️</div>
-        <span class="app-badge badge-live">Live Data</span>
-      </div>
-      <div class="app-card-body">
-        <h3>Toxic Drug Supply</h3>
-        <p>What's currently in Vancouver's unregulated drug supply — substances detected, active alerts, key risks, drug checking locations, and harm reduction guidance. Updated from live sources.</p>
-        <ul class="feature-list">
-          <li>Active alerts (phenazolam, medetomidine, carfentanil)</li>
-          <li>Substance-by-substance breakdown with naloxone info</li>
-          <li>2025 overdose statistics (BCEHS data)</li>
-          <li>Drug checking sites &amp; harm reduction steps</li>
-        </ul>
-      </div>
-      <div class="app-card-footer">
-        <a href="drug-supply.html" class="btn btn-primary btn-full">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
-          Open Drug Supply Page
-        </a>
-      </div>
-    </div>
-
     <!-- CTCT -->
-    <div class="app-card">
-      <div class="app-card-header">
-        <div class="app-icon teal">🏥</div>
-        <span class="app-badge badge-live">Live</span>
+    <div class="tool-card teal-accent">
+      <div class="tool-card-top">
+        <div class="tool-icon teal">🏥</div>
+        <span class="tool-badge badge-live">Live</span>
       </div>
-      <div class="app-card-body">
-        <h3>CTCT – Community Transitional Care Team</h3>
+      <div class="tool-card-body">
+        <h3>CTCT — Community Transitional Care Team</h3>
         <p>Residential acute care for people who use drugs discharged from hospital — IV antibiotics, 24/7 nursing, OAT, and housing secured at every discharge. Active use permitted.</p>
         <ul class="feature-list">
-          <li>History &amp; founding context (PA Hotel, 1991)</li>
-          <li>Current care model &amp; harm reduction principles</li>
+          <li>History &amp; founding context</li>
+          <li>Current care model &amp; HR principles</li>
           <li>Referral pathway from St. Paul's &amp; VGH</li>
-          <li>HAH partnership (Nov 2025) &amp; co-located PSS</li>
+          <li>HAH partnership &amp; co-located PSS</li>
         </ul>
       </div>
-      <div class="app-card-footer">
-        <a href="ctct.html" class="btn btn-primary btn-full">
+      <div class="tool-card-footer">
+        <a href="ctct.html" class="btn btn-primary">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
           Open CTCT Profile
         </a>
       </div>
     </div>
 
-    <!-- TREATMENT PROGRAMS -->
-    <div class="app-card">
-      <div class="app-card-header">
-        <div class="app-icon amber">💊</div>
-        <span class="app-badge badge-live">Live</span>
+    <!-- Treatment Programs -->
+    <div class="tool-card teal-accent">
+      <div class="tool-card-top">
+        <div class="tool-icon amber">💊</div>
+        <span class="tool-badge badge-live">Live</span>
       </div>
-      <div class="app-card-body">
+      <div class="tool-card-body">
         <h3>LM Treatment Programs</h3>
         <p>A directory of residential and outpatient treatment programs across the Lower Mainland for substance use recovery.</p>
         <ul class="feature-list">
@@ -300,8 +478,8 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
           <li>Filterable by type &amp; location</li>
         </ul>
       </div>
-      <div class="app-card-footer">
-        <a href="treatment-programs.html" class="btn btn-primary btn-full">
+      <div class="tool-card-footer">
+        <a href="treatment-programs.html" class="btn btn-primary">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
           Open Treatment Directory
         </a>
@@ -311,15 +489,16 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
   </div>
 </section>
 
+<!-- ── About strip ────────────────────────────────────────────── -->
 <div class="about-strip">
   <h3>Built for the community, by the community</h3>
-  <p>These tools are open-source, free to use, and designed with the values of harm reduction at their core. No law enforcement access. No personal data. Community-controlled.</p>
+  <p>These tools are open-source, free to use, and designed with the values of harm reduction at their core. No law enforcement access. No personal data collected. Community-controlled.</p>
   <div class="tags">
     <span class="tag">Harm Reduction</span>
     <span class="tag">Open Source</span>
     <span class="tag">Privacy-First</span>
     <span class="tag">Community-Controlled</span>
-    <span class="tag">DTES</span>
+    <span class="tag">DTES Vancouver</span>
   </div>
 </div>
 
