@@ -162,9 +162,10 @@ function animUpdateProgress() {
 // Radius = 4 + sqrt(count) * 3  →  area ∝ event count.
 // Additive rendering: cells grow in place each frame; clearLayers only on reset/scrub.
 
-let CELL_SIZE = 0.0005; // degrees — updated by UI selector
+let CELL_SIZE = 0.0005; // degrees — updated by UI selector; 0 = individual event mode
 
 let animCells        = new Map(); // cellKey → { count, subCounts, lat, lng, circle }
+let animIndividuals  = [];        // L.circleMarkers used in individual event mode
 let animRenderedUpTo = 0;
 let animCounts       = { total:0, nal:0, rev:0, ems:0, fat:0 };
 
@@ -202,6 +203,19 @@ function animCellPopupHtml(cell) {
 }
 
 function animUpsertCell(e, isNew) {
+  // Individual event mode — one dot per event, coloured by outcome
+  if (CELL_SIZE === 0) {
+    const col = COLS[e.outcome] || COLS["Naloxone administered"];
+    const r   = e.outcome === "Fatal" ? 7 : 5;
+    const m   = L.circleMarker([e.lat, e.lng], {
+      radius: r, color: 'rgba(255,255,255,0.7)', weight: 1.5,
+      fillColor: col.fill, fillOpacity: isNew ? 0.85 : 0.55,
+    }).addTo(map);
+    m.bindPopup(popup(e), { maxWidth: 220 });
+    animIndividuals.push(m);
+    return;
+  }
+
   const key = animCellKey(e.lat, e.lng);
   let cell  = animCells.get(key);
   if (!cell) {
@@ -234,6 +248,8 @@ function animUpsertCell(e, isNew) {
 function animClearCells() {
   animCells.forEach(cell => { if (cell.circle) map.removeLayer(cell.circle); });
   animCells.clear();
+  animIndividuals.forEach(m => map.removeLayer(m));
+  animIndividuals = [];
 }
 
 function animUpdateCounts() {
@@ -370,7 +386,7 @@ document.getElementById('anim-outs-all').addEventListener('click', () => {
 document.querySelectorAll('#cell-size-btns .speed-btn').forEach(b => b.addEventListener('click', () => {
   document.querySelectorAll('#cell-size-btns .speed-btn').forEach(x => x.classList.remove('active'));
   b.classList.add('active');
-  CELL_SIZE = +b.dataset.cell;
+  CELL_SIZE = b.dataset.cell === 'individual' ? 0 : +b.dataset.cell;
   if (ANIM.active) animReset();
 }));
 
