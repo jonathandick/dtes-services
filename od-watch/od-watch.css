@@ -354,7 +354,7 @@ body {
 
 /* ── Animation map overlay ── */
 #anim-map-overlay {
-  display: none; position: absolute; bottom: 40px; left: 50%;
+  display: none; position: absolute; top: 14px; left: 50%;
   transform: translateX(-50%); z-index: 900;
   background: rgba(7,31,27,0.92); backdrop-filter: blur(8px);
   border: 1px solid rgba(126,200,192,0.3); border-radius: 10px;
