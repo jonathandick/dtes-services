@@ -75,7 +75,7 @@ function animPlay() {
     ANIM.simTime = ANIM.winStart;
     animClearCells();
     markers.clearLayers(); // hide live-view dots while animating
-    animCounts = { total:0, nal:0, rev:0, ems:0, fat:0 };
+    animCounts = { total:0, nal:0, rev:0, ems:0, fat:0, subs:{} };
     animRenderedUpTo = ANIM.winStart;
     animUpdateCounts();
   }
@@ -87,6 +87,7 @@ function animPlay() {
   document.getElementById('btn-play').textContent = '⏸ Pause';
   document.getElementById('btn-play').classList.add('active');
   document.getElementById('anim-map-overlay').classList.add('show');
+  updateMapOverlay();
   initAnimChart();
   animUpdateProgress();
   ANIM.raf = requestAnimationFrame(animFrame);
@@ -119,6 +120,7 @@ function animReset() {
   if (animChart) { animChart.destroy(); animChart = null; }
   animClearCells();
   animSetBounds();
+  updateMapOverlay();
   render();
 }
 
@@ -265,15 +267,57 @@ function animClearCells() {
   animIndividuals = [];
 }
 
+const SUB_LABELS = {
+  "Fentanyl":                "Fentanyl",
+  "Benzo-adulterated":       "Benzo",
+  "Meth / Stimulant":        "Meth",
+  "Medetomidine / Xylazine": "Medetomidine",
+  "Carfentanil":             "Carfentanil",
+  "Unknown":                 "Unknown",
+};
+
+function updateMapOverlay() {
+  const el = document.getElementById('map-overlay');
+  if (!el) return;
+  if (ANIM.active && animColourBy === 'substance') {
+    const rows = Object.entries(SUB_COLS).map(([sub, col]) =>
+      `<div class="mo-row">
+        <span class="mo-dot" style="background:${col}"></span>
+        ${SUB_LABELS[sub] || sub}
+        <span class="mo-n" data-sub="${sub}">0</span>
+      </div>`
+    ).join('');
+    el.innerHTML = `<div class="mo-title">⚠ Mock data — prototype</div>${rows}`;
+  } else {
+    el.innerHTML = `<div class="mo-title">⚠ Mock data — prototype</div>
+      <div class="mo-row"><span class="mo-dot" style="background:#2EA86B"></span>Naloxone<span class="mo-n" id="mo-nal">—</span></div>
+      <div class="mo-row"><span class="mo-dot" style="background:#7EC8C0"></span>Revived<span class="mo-n" id="mo-rev">—</span></div>
+      <div class="mo-row"><span class="mo-dot" style="background:#E8930A"></span>EMS<span class="mo-n" id="mo-ems">—</span></div>
+      <div class="mo-row"><span class="mo-dot" style="background:#D94040"></span>Fatal<span class="mo-n" id="mo-fat">—</span></div>`;
+    if (ANIM.active) {
+      document.getElementById('mo-nal').textContent = animCounts.nal.toLocaleString();
+      document.getElementById('mo-rev').textContent = animCounts.rev.toLocaleString();
+      document.getElementById('mo-ems').textContent = animCounts.ems.toLocaleString();
+      document.getElementById('mo-fat').textContent = animCounts.fat.toLocaleString();
+    }
+  }
+}
+
 function animUpdateCounts() {
   document.getElementById('s-total').textContent = animCounts.total.toLocaleString();
   document.getElementById('s-nal').textContent   = animCounts.nal.toLocaleString();
   document.getElementById('s-ems').textContent   = animCounts.ems.toLocaleString();
   document.getElementById('s-fatal').textContent = animCounts.fat.toLocaleString();
-  document.getElementById('mo-nal').textContent  = animCounts.nal.toLocaleString();
-  document.getElementById('mo-rev').textContent  = animCounts.rev.toLocaleString();
-  document.getElementById('mo-ems').textContent  = animCounts.ems.toLocaleString();
-  document.getElementById('mo-fat').textContent  = animCounts.fat.toLocaleString();
+  if (animColourBy === 'substance') {
+    document.querySelectorAll('#map-overlay [data-sub]').forEach(el => {
+      el.textContent = (animCounts.subs[el.dataset.sub] || 0).toLocaleString();
+    });
+  } else {
+    document.getElementById('mo-nal').textContent = animCounts.nal.toLocaleString();
+    document.getElementById('mo-rev').textContent = animCounts.rev.toLocaleString();
+    document.getElementById('mo-ems').textContent = animCounts.ems.toLocaleString();
+    document.getElementById('mo-fat').textContent = animCounts.fat.toLocaleString();
+  }
 }
 
 // Additive: only process events that just entered the window this frame.
@@ -292,6 +336,7 @@ function renderAnimAdditive(upToTs) {
     if (e.outcome === "Revived - no EMS")      animCounts.rev++;
     if (e.outcome === "EMS called")            animCounts.ems++;
     if (e.outcome === "Fatal")                 animCounts.fat++;
+    animCounts.subs[e.substance] = (animCounts.subs[e.substance] || 0) + 1;
   });
   if (newEvents.length) animUpdateCounts();
   animRenderedUpTo = upToTs;
@@ -300,7 +345,7 @@ function renderAnimAdditive(upToTs) {
 // Full rebuild — used only for scrub.
 function renderAnimFull(upToTs) {
   animClearCells();
-  animCounts = { total:0, nal:0, rev:0, ems:0, fat:0 };
+  animCounts = { total:0, nal:0, rev:0, ems:0, fat:0, subs:{} };
   animRenderedUpTo = ANIM.winStart;
   if (upToTs <= ANIM.winStart) { animUpdateCounts(); return; }
 
@@ -316,6 +361,7 @@ function renderAnimFull(upToTs) {
     if (e.outcome === "Revived - no EMS")      animCounts.rev++;
     if (e.outcome === "EMS called")            animCounts.ems++;
     if (e.outcome === "Fatal")                 animCounts.fat++;
+    animCounts.subs[e.substance] = (animCounts.subs[e.substance] || 0) + 1;
   });
   animRenderedUpTo = upToTs;
   animUpdateCounts();
@@ -401,6 +447,7 @@ document.querySelectorAll('#colour-by-btns .speed-btn').forEach(b => b.addEventL
   b.classList.add('active');
   animColourBy = b.dataset.colourby;
   if (ANIM.active) animReset();
+  else updateMapOverlay();
 }));
 
 // Cell size buttons
