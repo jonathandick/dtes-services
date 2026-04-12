@@ -114,10 +114,75 @@ const verticalCursorPlugin = {
   },
 };
 
-let animChart        = null;
-let animChartBinMs   = 3600000;
-let animChartLastBin = -1;
-let animChartBins    = [];
+let animChart             = null;
+let animChartBinMs        = 3600000;
+let animChartLastBin      = -1;
+let animChartBins         = [];
+let animChartChequeIdxs   = []; // bin indices of cheque Wednesdays in current window
+
+// ── Income assistance cheque dates ───────────────────────────────────────────
+// BC income assistance is paid on the last Wednesday of each month ("Welfare Wednesday").
+// Returns midnight timestamp of the last Wednesday in the given year/month.
+function lastWednesdayTs(year, month) {
+  const last = new Date(year, month + 1, 0); // last calendar day of month
+  const dow  = last.getDay(); // 0=Sun … 6=Sat; Wed=3
+  last.setDate(last.getDate() - ((dow - 3 + 7) % 7));
+  last.setHours(0, 0, 0, 0);
+  return last.getTime();
+}
+
+function computeChequeIndices() {
+  const idxs = [];
+  const d = new Date(ANIM.winStart);
+  d.setDate(1); d.setHours(0, 0, 0, 0);
+  while (d.getTime() < ANIM.winEnd) {
+    const ts = lastWednesdayTs(d.getFullYear(), d.getMonth());
+    if (ts >= ANIM.winStart && ts < ANIM.winEnd) {
+      const i = Math.floor((ts - ANIM.winStart) / animChartBinMs);
+      if (i >= 0 && i < Math.ceil((ANIM.winEnd - ANIM.winStart) / animChartBinMs)) {
+        idxs.push(i);
+      }
+    }
+    d.setMonth(d.getMonth() + 1);
+  }
+  return idxs;
+}
+
+// ── Cheque date line plugin ───────────────────────────────────────────────────
+const chequeDatePlugin = {
+  id: 'chequeDates',
+  afterDraw(chart) {
+    if (!animChartChequeIdxs.length) return;
+    const { top, bottom } = chart.chartArea;
+    const ctx  = chart.ctx;
+    const meta = chart.getDatasetMeta(0); // use dataset 0 for x positions
+    if (!meta || !meta.data.length) return;
+
+    ctx.save();
+    animChartChequeIdxs.forEach(idx => {
+      const pt = meta.data[idx];
+      if (!pt) return;
+      const x = pt.x;
+
+      // Dashed amber line
+      ctx.beginPath();
+      ctx.moveTo(x, top);
+      ctx.lineTo(x, bottom);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(232,147,10,0.55)';
+      ctx.setLineDash([3, 4]);
+      ctx.stroke();
+
+      // Label at top
+      ctx.setLineDash([]);
+      ctx.fillStyle = 'rgba(232,147,10,0.75)';
+      ctx.font = "9px 'DM Sans', sans-serif";
+      ctx.textAlign = 'center';
+      ctx.fillText('cheque', x, top - 2);
+    });
+    ctx.restore();
+  },
+};
 
 function initAnimChart() {
   const span = ANIM.winEnd - ANIM.winStart;
@@ -156,7 +221,8 @@ function initAnimChart() {
     );
   }
 
-  animChartLastBin = -1;
+  animChartLastBin    = -1;
+  animChartChequeIdxs = computeChequeIndices();
 
   // Dataset layout: [0..N-1] per-bin (left axis y), [N..2N-1] cumulative (right axis y2)
   const nd = () => Array(numBins).fill(null);
@@ -182,9 +248,10 @@ function initAnimChart() {
   animChart = new Chart(ctxEl, {
     type: 'line',
     data: { labels, datasets },
-    plugins: [verticalCursorPlugin],
+    plugins: [verticalCursorPlugin, chequeDatePlugin],
     options: {
       responsive: true, maintainAspectRatio: false, animation: false,
+      layout: { padding: { top: 14 } },
       interaction: { mode:'index', intersect:false },
       plugins: {
         legend: {
