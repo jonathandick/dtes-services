@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTES Demographics · DTES Community Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+body { min-height: 100vh; display: flex; flex-direction: column; }
+.page-content { flex: 1; background: var(--surface); }
+.content-wrap { max-width: 900px; margin: 0 auto; padding: 48px 32px 80px; }
+
+/* ── Header ── */
+.page-header {
+  background: linear-gradient(135deg, var(--teal-deep) 0%, #0a2e28 100%);
+  padding: 48px 40px 40px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.page-header-inner { max-width: 900px; margin: 0 auto; }
+.page-eyebrow {
+  font-size: 11px; font-weight: 500; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--sky); margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: var(--font-head); font-size: clamp(28px, 4vw, 42px);
+  color: var(--white); line-height: 1.15; margin-bottom: 14px;
+}
+.page-header .lead {
+  font-size: 15px; color: rgba(255,255,255,0.6);
+  line-height: 1.7; max-width: 640px; margin-bottom: 24px;
+}
+.header-updated {
+  font-size: 11px; color: rgba(255,255,255,0.3);
+  margin-top: 8px; font-style: italic;
+}
+
+/* ── Stat strip ── */
+.stat-strip {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0; background: #031510;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.stat-cell {
+  padding: 20px 20px;
+  border-right: 1px solid rgba(255,255,255,0.05);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.stat-cell:last-child { border-right: none; }
+.stat-value { font-family: var(--font-head); font-size: 28px; line-height: 1; }
+.stat-value.red   { color: #ef4444; }
+.stat-value.amber { color: var(--amber); }
+.stat-value.sky   { color: var(--sky); }
+.stat-value.white { color: rgba(255,255,255,0.85); }
+.stat-label { font-size: 10px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.8px; line-height: 1.4; }
+.stat-source { font-size: 9px; color: rgba(255,255,255,0.18); margin-top: 2px; }
+
+/* ── Section cards ── */
+.section-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px 32px; margin-bottom: 20px;
+}
+.section-eyebrow {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--teal-mid); margin-bottom: 8px;
+}
+.section-title {
+  font-family: var(--font-head); font-size: 22px;
+  color: var(--ink); margin-bottom: 14px; line-height: 1.25;
+}
+.section-body { font-size: 14px; color: var(--muted); line-height: 1.75; }
+.section-body p + p { margin-top: 12px; }
+.section-body strong { color: var(--ink); }
+
+/* ── Stat grid (in-card) ── */
+.in-card-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px; margin: 20px 0;
+}
+.in-stat {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px;
+}
+.in-stat-value { font-family: var(--font-head); font-size: 26px; color: var(--ink); line-height: 1; margin-bottom: 4px; }
+.in-stat-value.red   { color: #dc2626; }
+.in-stat-value.amber { color: var(--amber); }
+.in-stat-value.teal  { color: var(--teal); }
+.in-stat-label { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+/* ── Bar chart (pure CSS) ── */
+.bar-chart { margin: 20px 0; }
+.bar-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 6px; font-size: 12px;
+}
+.bar-label { width: 90px; flex-shrink: 0; color: var(--muted); text-align: right; }
+.bar-track { flex: 1; height: 20px; background: var(--surface); border-radius: 4px; overflow: hidden; position: relative; }
+.bar-fill  { height: 100%; border-radius: 4px; display: flex; align-items: center; transition: width 0.6s ease; }
+.bar-fill span { font-size: 10px; color: rgba(255,255,255,0.85); padding-left: 7px; white-space: nowrap; }
+
+/* ── Demographic breakdown rows ── */
+.demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+.demo-item { display: flex; flex-direction: column; gap: 5px; }
+.demo-label { font-size: 12px; color: var(--muted); }
+.demo-bar-wrap { height: 8px; background: var(--surface); border-radius: 4px; overflow: hidden; }
+.demo-bar { height: 100%; border-radius: 4px; }
+.demo-value { font-size: 13px; font-weight: 500; color: var(--ink); }
+
+/* ── Chart canvas ── */
+.chart-wrap { position: relative; width: 100%; }
+
+/* ── Callout ── */
+.callout {
+  border-radius: 10px; padding: 14px 18px; margin-top: 16px;
+  font-size: 13px; line-height: 1.65;
+}
+.callout-amber { background: var(--amber-pale); color: #7A5200; border: 1px solid rgba(232,147,10,0.25); }
+.callout-teal  { background: var(--teal-pale);  color: #0D3D35; border: 1px solid rgba(126,200,192,0.25); }
+.callout-red   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+.callout strong { font-weight: 600; }
+
+/* ── Timeline ── */
+.timeline { margin-top: 20px; display: flex; flex-direction: column; gap: 0; }
+.tl-item { display: flex; gap: 16px; position: relative; }
+.tl-item:not(:last-child)::before {
+  content: ''; position: absolute; left: 19px; top: 30px;
+  bottom: -10px; width: 1px; background: var(--border);
+}
+.tl-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--teal-pale); border: 2px solid var(--teal-mid);
+  flex-shrink: 0; margin-top: 14px; margin-left: 13px;
+}
+.tl-dot.red { background: #fef2f2; border-color: #dc2626; }
+.tl-dot.amber { background: var(--amber-pale); border-color: var(--amber); }
+.tl-body { padding: 10px 0 24px; flex: 1; }
+.tl-year { font-size: 11px; font-weight: 700; color: var(--teal-mid); letter-spacing: 0.5px; margin-bottom: 2px; }
+.tl-year.red { color: #dc2626; }
+.tl-event { font-size: 14px; color: var(--ink); font-weight: 500; margin-bottom: 3px; }
+.tl-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ── Citations ── */
+.citations { margin-top: 8px; }
+.cite-item {
+  display: flex; gap: 10px; padding: 10px 0;
+  border-bottom: 1px solid var(--border); font-size: 12px; color: var(--muted);
+  line-height: 1.5;
+}
+.cite-item:last-child { border-bottom: none; }
+.cite-num {
+  width: 20px; flex-shrink: 0; font-weight: 600;
+  color: var(--teal); font-size: 11px; padding-top: 1px;
+}
+.cite-body a { color: var(--teal); }
+
+/* ── Data gap notice ── */
+.data-gap {
+  background: var(--surface); border: 1px dashed var(--border);
+  border-radius: 8px; padding: 10px 14px; font-size: 12px;
+  color: var(--muted); margin-top: 12px; line-height: 1.5;
+}
+
+sup { font-size: 9px; color: var(--teal); font-weight: 600; vertical-align: super; }
+
+@media (max-width: 640px) {
+  .page-header { padding: 32px 20px 28px; }
+  .content-wrap { padding: 28px 16px 60px; }
+  .section-card { padding: 20px 18px; }
+  .stat-strip { grid-template-columns: repeat(2, 1fr); }
+  .stat-cell { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .demo-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-eyebrow">Downtown Eastside · Vancouver, BC</div>
+    <h1>DTES Demographics</h1>
+    <p class="lead">A data portrait of Vancouver's Downtown Eastside — population, housing, income, Indigenous community, health, and how these measures have shifted over the past decade. All figures are cited; see the sources section for links.</p>
+    <div class="header-updated">Last reviewed April 2026 · Data from BC Coroners Service, BCEHS, Statistics Canada, Metro Vancouver, Vancouver Coastal Health, and City of Vancouver</div>
+  </div>
+</div>
+
+<!-- STAT STRIP -->
+<div class="stat-strip">
+  <div class="stat-cell">
+    <span class="stat-value white">~18,000</span>
+    <span class="stat-label">Residents (DTES core)</span>
+    <span class="stat-source">City of Vancouver / 2021 Census</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-value amber">39%</span>
+    <span class="stat-label">Of homeless residents identify as Indigenous</span>
+    <span class="stat-source">Vancouver Homeless Count, 2023</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-value red">2,511</span>
+    <span class="stat-label">BC toxic drug deaths (2023, record high)</span>
+    <span class="stat-source">BC Coroners Service</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-value amber">9,537</span>
+    <span class="stat-label">OD events in Vancouver (2025)</span>
+    <span class="stat-source">BCEHS</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-value white">71%</span>
+    <span class="stat-label">Of Vancouver's homeless in chronic homelessness</span>
+    <span class="stat-source">Vancouver Homeless Count, 2023</span>
+  </div>
+</div>
+
+<div class="page-content">
+<div class="content-wrap">
+
+  <!-- OVERVIEW -->
+  <div class="section-card">
+    <div class="section-eyebrow">Overview</div>
+    <div class="section-title">The DTES: Canada's Poorest Urban Postal Code</div>
+    <div class="section-body">
+      <p>The Downtown Eastside (DTES) is a roughly 2 km² area east of Vancouver's downtown core, bounded roughly by Carrall Street to the west, Clark Drive to the east, the waterfront to the north, and Prior Street to the south. The City of Vancouver defines it as encompassing six sub-areas: Gastown, Chinatown, Oppenheimer, Strathcona, Hastings Crossing, and Victory Square.</p>
+      <p>The DTES carries one of the highest concentrations of poverty, homelessness, mental health conditions, and substance use of any neighbourhood in Canada. It is also a community of long-standing residents, cultural institutions, Indigenous gathering spaces, and activist organizations with decades of history. These facts coexist.</p>
+      <p>The area has been shaped by deliberate policy choices over more than a century — from the displacement of Chinatown residents, to the concentration of social services post-Expo 86, to the ongoing impact of BC's toxic drug supply emergency. Understanding the demographics requires understanding that context.</p>
+    </div>
+    <div class="callout callout-teal">
+      <strong>Boundary note:</strong> Different institutions define the DTES differently. Population and income figures vary significantly depending on whether "DTES" refers to the core Oppenheimer/Hastings sub-area only, or the broader local area including Strathcona and Chinatown. This page uses the City of Vancouver Local Area definition where possible and notes when a narrower boundary applies.
+    </div>
+  </div>
+
+  <!-- POPULATION -->
+  <div class="section-card">
+    <div class="section-eyebrow">Population</div>
+    <div class="section-title">Who Lives Here</div>
+    <div class="section-body">
+      <p>The City of Vancouver's DTES Local Area had an estimated population of approximately <strong>18,000–20,000 residents</strong> as of the 2021 Census, depending on boundary definition.<sup>[1]</sup> This figure has remained relatively stable over the past decade, though it masks significant churn — many long-term residents have been displaced by gentrification in Gastown and Chinatown while others have moved into new supportive housing units.</p>
+      <p>The population skews older than the city average. The median age in the DTES core is in the mid-40s, reflecting both the aging of long-term residents and the relative scarcity of young families.<sup>[1]</sup> The neighbourhood has a larger proportion of men than the city overall, though women and gender-diverse people represent a growing and particularly vulnerable share of the street-involved population.</p>
+    </div>
+
+    <div class="in-card-stats">
+      <div class="in-stat">
+        <div class="in-stat-value">~18–20k</div>
+        <div class="in-stat-label">Residents (DTES Local Area, 2021 Census)<sup>[1]</sup></div>
+      </div>
+      <div class="in-stat">
+        <div class="in-stat-value">Mid-40s</div>
+        <div class="in-stat-label">Median age (DTES core, approximate)<sup>[1]</sup></div>
+      </div>
+      <div class="in-stat">
+        <div class="in-stat-value">~2 km²</div>
+        <div class="in-stat-label">Area of DTES Local Area</div>
+      </div>
+      <div class="in-stat">
+        <div class="in-stat-value">6</div>
+        <div class="in-stat-label">Defined sub-areas (City of Vancouver)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INCOME & POVERTY -->
+  <div class="section-card">
+    <div class="section-eyebrow">Income &amp; Poverty</div>
+    <div class="section-title">Concentrated, Entrenched Poverty</div>
+    <div class="section-body">
+      <p>The DTES consistently has among the lowest median incomes of any urban neighbourhood in Canada. Much of the population relies on provincial income assistance ($935/month for a single person) or Persons with Disabilities (PWD) payments ($1,358.50/month) as their primary income source. With Vancouver's average one-bedroom rent at <strong>$1,786/month</strong> as of 2023,<sup>[3]</sup> these amounts leave little margin for housing, food, or other essentials.</p>
+      <p>The 2021 Census showed that the Hastings-Sunrise and DTES local areas had the highest rates of low income in Metro Vancouver, with a large share of residents falling below Statistics Canada's Low Income Measure After Tax (LIM-AT).<sup>[1]</sup> For many residents, income assistance is not a transitional support — it is a permanent economic condition.</p>
+      <p>Gentrification in Gastown and Chinatown has increased average incomes in aggregate for the broader local area while displacing lower-income residents. This statistical effect can obscure worsening conditions for the community's most vulnerable residents.</p>
+    </div>
+
+    <div class="in-card-stats">
+      <div class="in-stat">
+        <div class="in-stat-value amber">$935</div>
+        <div class="in-stat-label">Monthly income assistance (single person)<sup>[6]</sup></div>
+      </div>
+      <div class="in-stat">
+        <div class="in-stat-value amber">$1,786</div>
+        <div class="in-stat-label">Average 1-bedroom rent, Vancouver (2023)<sup>[3]</sup></div>
+      </div>
+      <div class="in-stat">
+        <div class="in-stat-value red">0.8%</div>
+        <div class="in-stat-label">Apartment vacancy rate, Vancouver (2023)<sup>[3]</sup></div>
+      </div>
+    </div>
+
+    <div class="callout callout-amber">
+      <strong>The housing gap:</strong> A single person on income assistance receives $375/month toward shelter. The average Vancouver bachelor apartment costs $1,530/month — a monthly gap of $1,155. This structural shortfall forces many residents into SRO hotels, overcrowded shared housing, or homelessness.
+    </div>
+  </div>
+
+  <!-- HOUSING -->
+  <div class="section-card">
+    <div class="section-eyebrow">Housing</div>
+    <div class="section-title">SROs, Supportive Housing &amp; the Street</div>
+    <div class="section-body">
+      <p>The DTES contains the largest concentration of Single Room Occupancy (SRO) hotels in Canada — small, privately-owned rooms, typically 100–200 sq ft, with shared bathrooms and no kitchen, that have historically provided the lowest tier of private market housing accessible to people on income assistance.<sup>[1]</sup> Many SROs are in deteriorating condition; some have been described by residents as having rats, mold, and inadequate heat.</p>
+      <p>Over the past decade, BC Housing has built a significant number of new supportive housing units in the DTES through the Rapid Response to Homelessness program and subsequent provincial investments. These units offer on-site support services and fill housing at income-assistance shelter rates. However, the supply of new units has not kept pace with displacement from aging or gentrifying SROs.</p>
+      <p>Gentrification in Gastown and Chinatown — driven by short-term rentals, boutique hotels, and commercial development — has converted or demolished a significant portion of the historic SRO stock, reducing the supply of low-income housing in the area.</p>
+    </div>
+  </div>
+
+  <!-- HOMELESSNESS -->
+  <div class="section-card">
+    <div class="section-eyebrow">Homelessness</div>
+    <div class="section-title">Visible &amp; Hidden Homelessness</div>
+    <div class="section-body">
+      <p>Vancouver's 2023 homeless count enumerated <strong>2,420 people</strong> experiencing homelessness within city limits, of whom 1,815 were sheltered (in emergency shelters or transitional housing) and 605 were unsheltered (sleeping outside, in vehicles, or in other non-shelter spaces).<sup>[3]</sup> The DTES accounts for a disproportionate share of Vancouver's visible homeless population.</p>
+      <p><strong>71% of Vancouver's homeless population met the definition of chronic homelessness</strong> in 2023 — meaning they had been homeless for 6 months or more in the past year, or had experienced 3 or more episodes of homelessness in the past year.<sup>[3]</sup> This is an exceptionally high rate and reflects the failure of transitional and housing-first programs to reach the most complex cases.</p>
+      <p>Homeless counts are widely acknowledged to undercount the true scale of homelessness. They do not capture people who are couch-surfing, doubled up with family, or sleeping in unsafe situations. The "hidden homeless" population is estimated to be substantially larger than visible counts suggest.</p>
+    </div>
+
+    <!-- Demographic breakdown of homeless population -->
+    <div style="margin-top: 20px;">
+      <div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:14px;">Vancouver Homeless Population — Demographic Breakdown (2023)<sup>[3]</sup></div>
+      <div class="demo-grid">
+        <div class="demo-item">
+          <div class="demo-label">Indigenous identity</div>
+          <div class="demo-bar-wrap"><div class="demo-bar" style="width:39%;background:#E8930A;"></div></div>
+          <div class="demo-value">39%</div>
+        </div>
+        <div class="demo-item">
+          <div class="demo-label">Female</div>
+          <div class="demo-bar-wrap"><div class="demo-bar" style="width:23%;background:#7EC8C0;"></div></div>
+          <div class="demo-value">23%</div>
+        </div>
+        <div class="demo-item">
+          <div class="demo-label">LGBTQ2S+</div>
+          <div class="demo-bar-wrap"><div class="demo-bar" style="width:13%;background:#9B59B6;"></div></div>
+          <div class="demo-value">13%</div>
+        </div>
+        <div class="demo-item">
+          <div class="demo-label">Youth (under 25)</div>
+          <div class="demo-bar-wrap"><div class="demo-bar" style="width:8%;background:#2EA86B;"></div></div>
+          <div class="demo-value">8%</div>
+        </div>
+        <div class="demo-item">
+          <div class="demo-label">Transgender</div>
+          <div class="demo-bar-wrap"><div class="demo-bar" style="width:3%;background:#D94040;"></div></div>
+          <div class="demo-value">3%</div>
+        </div>
+        <div class="demo-item">
+          <div class="demo-label">Chronic homelessness</div>
+          <div class="demo-bar-wrap"><div class="demo-bar" style="width:71%;background:#1A7A6E;"></div></div>
+          <div class="demo-value">71%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INDIGENOUS COMMUNITY -->
+  <div class="section-card">
+    <div class="section-eyebrow">Indigenous Community</div>
+    <div class="section-title">Overrepresentation &amp; Historical Context</div>
+    <div class="section-body">
+      <p>Indigenous people — First Nations, Métis, and Inuit — are dramatically overrepresented in the DTES relative to both Vancouver and Canada as a whole. Indigenous people make up approximately <strong>2.5% of Vancouver's overall population</strong> (2021 Census) but <strong>39% of Vancouver's homeless population</strong><sup>[3]</sup> and a disproportionate share of those most severely affected by the overdose crisis, the criminal justice system, and child welfare involvement.</p>
+      <p>This overrepresentation is not a coincidence or a cultural characteristic — it is a direct and documented consequence of colonization, residential schools, the Sixties Scoop, and ongoing systemic discrimination in housing, healthcare, and the legal system. The DTES sits on the unceded territory of the Musqueam, Squamish, and Tsleil-Waututh Nations.</p>
+      <p>The DTES has a significant and long-established urban Indigenous community, including gathering spaces, cultural organizations, Indigenous-led health programs, and peer-run services. Institutions like the Vancouver Native Health Society, the Aboriginal Front Door, and the Friendship Centre have operated for decades. The community's presence predates the concentration of social services and poverty in the area.</p>
+      <p>Indigenous people who use drugs die from toxic drug poisoning at rates significantly higher than non-Indigenous people. The BC Coroners Service has documented that <strong>Indigenous people accounted for approximately 20% of all toxic drug deaths in BC in recent years</strong>, while making up under 5% of the provincial population.<sup>[2]</sup></p>
+    </div>
+    <div class="callout callout-teal">
+      <strong>Note on data:</strong> Statistics about Indigenous people experiencing homelessness or the overdose crisis are based on self-identification in surveys and counts, which likely undercounts the true proportion. Many people decline to identify or are missed by counting methodologies.
+    </div>
+  </div>
+
+  <!-- OVERDOSE CRISIS -->
+  <div class="section-card">
+    <div class="section-eyebrow">Overdose Crisis</div>
+    <div class="section-title">A Decade of Crisis — and Escalation</div>
+    <div class="section-body">
+      <p>On April 14, 2016, BC's Provincial Health Officer declared a public health emergency in response to the rapid increase in overdose deaths driven by the illicit fentanyl supply. That declaration has never been lifted. In the decade since, overdose deaths and events have increased dramatically, with brief periods of reduction followed by new peaks.</p>
+    </div>
+
+    <!-- BC toxic drug death trend chart -->
+    <div style="margin: 20px 0 8px; font-size:12px; font-weight:600; color:var(--ink);">BC Illicit Drug Toxicity Deaths by Year<sup>[2]</sup></div>
+    <div class="chart-wrap" style="height: 220px;"><canvas id="deathsChart"></canvas></div>
+    <div style="font-size:10px;color:var(--muted);margin-top:6px;">Source: BC Coroners Service. Note: 2024 figure is provisional pending completed investigations.</div>
+
+    <div style="margin-top: 24px; font-size:12px; font-weight:600; color:var(--ink);">BC Paramedic Overdose Responses by Year<sup>[4]</sup></div>
+    <div class="chart-wrap" style="height: 200px; margin-top:8px;"><canvas id="eventsChart"></canvas></div>
+    <div style="font-size:10px;color:var(--muted);margin-top:6px;">Source: BC Emergency Health Services (BCEHS). Covers all overdose/drug poisoning paramedic responses province-wide.</div>
+
+    <div class="section-body" style="margin-top:20px;">
+      <p>Vancouver consistently records the highest number of overdose events of any city in BC. In 2025, <strong>Vancouver accounted for 9,537 paramedic responses</strong> — roughly 26 events per day — out of 39,592 province-wide.<sup>[4]</sup> The VCH region (which includes the North Shore, Richmond, and other communities) recorded 10,927 events in 2025.<sup>[4]</sup></p>
+      <p>Fentanyl and its analogues (including carfentanil) dominate the unregulated supply and are the primary driver of deaths. Benzodiazepine adulterants — particularly etizolam and now bromazolam — have complicated responses, as naloxone does not reverse benzodiazepine effects, requiring prolonged and repeated interventions. <strong>Medetomidine</strong>, a veterinary sedative, has been increasingly detected since 2024, adding another layer of complexity.</p>
+      <p>The majority of overdose events are not fatal because naloxone is available and being administered by peer responders, friends, and outreach workers. Community-administered naloxone has saved thousands of lives. But the volume of events is so high that the gap between events and deaths reflects both heroic peer response and statistical inevitability — even a small increase in event severity or a decrease in peer coverage can produce rapid increases in deaths.</p>
+    </div>
+
+    <div class="in-card-stats" style="margin-top:16px;">
+      <div class="in-stat">
+        <div class="in-stat-value red">2,511</div>
+        <div class="in-stat-label">BC deaths in 2023 — highest year on record<sup>[2]</sup></div>
+      </div>
+      <div class="in-stat">
+        <div class="in-stat-value amber">~2,100</div>
+        <div class="in-stat-label">BC deaths in 2024 (provisional)<sup>[2]</sup></div>
+      </div>
+      <div class="in-stat">
+        <div class="in-stat-value teal">108</div>
+        <div class="in-stat-label">Avg. paramedic responses per day, BC (2025)<sup>[4]</sup></div>
+      </div>
+      <div class="in-stat">
+        <div class="in-stat-value red">105%</div>
+        <div class="in-stat-label">Increase in OD events since 2016 emergency declaration<sup>[4]</sup></div>
+      </div>
+    </div>
+
+    <div class="callout callout-red">
+      <strong>Gender and overdose:</strong> Men account for approximately 75–80% of overdose deaths in BC,<sup>[2]</sup> reflecting patterns of substance use, risk behaviour, and engagement with health services. However, women and gender-diverse people are increasingly affected and face distinct barriers — including stigma, childcare responsibilities, and safety concerns at supervised consumption sites.
+    </div>
+  </div>
+
+  <!-- GENDER & SAFETY -->
+  <div class="section-card">
+    <div class="section-eyebrow">Gender &amp; Safety</div>
+    <div class="section-title">Women &amp; Gender-Diverse People in the DTES</div>
+    <div class="section-body">
+      <p>Women and gender-diverse people in the DTES face compounding vulnerabilities. The 2023 homeless count found that <strong>23% of Vancouver's homeless population identified as female</strong> and <strong>13% identified as LGBTQ2S+</strong>.<sup>[3]</sup> Women experiencing homelessness face elevated rates of sexual violence, coercion, and survival sex work, and are more likely to be "hidden homeless" — staying with partners or acquaintances in dangerous situations to avoid sleeping outside.</p>
+      <p>The Missing and Murdered Indigenous Women, Girls, and 2-Spirit people (MMIWG2S) crisis is acutely present in the DTES. Robert Pickton operated just east of the neighbourhood; the failure to investigate the disappearances of women from the DTES for years has been extensively documented. The National Inquiry into MMIWG released its final report in 2019, finding that the violence amounts to genocide and identifying systemic failures in policing, the justice system, and social services.<sup>[5]</sup></p>
+      <p>Women who use drugs in the DTES also navigate particular barriers to harm reduction: some prefer not to use at mixed-gender supervised consumption sites due to safety concerns; childcare responsibilities limit access to services during certain hours; and many fear child welfare involvement if they access addiction treatment or disclose substance use.</p>
+    </div>
+  </div>
+
+  <!-- TRENDS TIMELINE -->
+  <div class="section-card">
+    <div class="section-eyebrow">Key Trends</div>
+    <div class="section-title">A Decade of Shifts: 2015–2025</div>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <div class="tl-year">2014–2015</div>
+          <div class="tl-event">Fentanyl detected in BC drug supply</div>
+          <div class="tl-desc">Illicitly manufactured fentanyl begins appearing in the heroin and cocaine supply, largely unknown to people using drugs. Overdose deaths begin rising sharply. The BC Coroners Service reports 529 deaths in 2015, up from 331 in 2014.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot red"></div>
+        <div class="tl-body">
+          <div class="tl-year red">April 14, 2016</div>
+          <div class="tl-event">Public Health Emergency declared</div>
+          <div class="tl-desc">BC's Provincial Health Officer Dr. Perry Kendall declares a public health emergency under the Public Health Act — a first in BC's history. Deaths reach 981 in 2016, nearly double the year before. Naloxone availability expands; take-home kits made available without prescription.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot amber"></div>
+        <div class="tl-body">
+          <div class="tl-year">2017–2018</div>
+          <div class="tl-event">Deaths peak (temporarily) at 1,543; homelessness rises</div>
+          <div class="tl-desc">BC deaths reach 1,489 in 2017 and 1,543 in 2018. Metro Vancouver's homeless count rises to 3,798 in 2018. The Rapid Response to Homelessness program funds hundreds of new supportive housing units in the DTES. Supervised consumption sites expand across BC.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <div class="tl-year">2019</div>
+          <div class="tl-event">Brief reduction — deaths fall to 983</div>
+          <div class="tl-desc">Overdose deaths drop to 983, a 36% decrease from 2018. The reduction is credited partly to expanded harm reduction access and naloxone distribution. However, advocates warn the supply remains toxic and conditions have not fundamentally changed.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot red"></div>
+        <div class="tl-body">
+          <div class="tl-year">2020</div>
+          <div class="tl-event">COVID-19 compounds the overdose crisis</div>
+          <div class="tl-desc">The pandemic disrupts supervised consumption sites, peer outreach, and social connections. Isolation dramatically increases the risk of fatal overdose — many die alone. Deaths jump to 1,765 in 2020, a 79% increase from 2019. The illegal supply becomes more toxic as border closures disrupt supply chains. BC introduces a provisional safer supply policy in response.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot red"></div>
+        <div class="tl-body">
+          <div class="tl-year">2021–2023</div>
+          <div class="tl-event">Deaths reach record levels: 2,224 → 2,272 → 2,511</div>
+          <div class="tl-desc">Three consecutive years of record or near-record deaths. Benzodiazepine contamination — particularly etizolam — becomes widespread, complicating naloxone responses. Carfentanil, approximately 100× more potent than fentanyl, returns to the BC supply in 2022–2023. Paramedic responses reach 42,172 in 2023. The DTES remains the geographic epicentre of the crisis.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot amber"></div>
+        <div class="tl-body">
+          <div class="tl-year">2023</div>
+          <div class="tl-event">Decriminalization pilot begins, then reversed</div>
+          <div class="tl-desc">BC begins a three-year decriminalization pilot (Jan 31, 2023), allowing adults to possess up to 2.5g of most substances without criminal penalty. In April 2024, amid political pressure, the province amends the pilot to re-criminalize public use, limiting decriminalization to private spaces. Critics argue the reversal undermines the public health rationale for the policy.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <div class="tl-year">2024–2025</div>
+          <div class="tl-event">Modest reductions — but crisis continues</div>
+          <div class="tl-desc">Paramedic responses fall from 42,172 (2023) to 40,543 (2024, -4%) and 39,592 (2025, -2%). Deaths also show a modest decline from the 2023 record. Medetomidine emerges as a new adulterant. Vancouver records 9,537 overdose events in 2025 — still more than 26 per day. The public health emergency remains in effect, now in its ninth year.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA LIMITATIONS -->
+  <div class="section-card">
+    <div class="section-eyebrow">What We Don't Know</div>
+    <div class="section-title">Data Gaps &amp; Limitations</div>
+    <div class="section-body">
+      <p>The DTES is both over-surveilled and under-counted. The people most affected are often the hardest to reach with standard research methods, and the data that exists has significant gaps:</p>
+    </div>
+
+    <div class="data-gap">
+      <strong>Homeless counts undercount.</strong> Point-in-time counts miss people who are couch-surfing, in hospital, in jail, or avoiding surveyors. The true scale of homelessness is substantially larger than reported figures.
+    </div>
+    <div class="data-gap">
+      <strong>Census undercounts marginalized populations.</strong> People in SROs, emergency shelters, and without fixed addresses are routinely missed or undercounted in the Census. DTES population figures should be understood as minimum estimates.
+    </div>
+    <div class="data-gap">
+      <strong>Indigenous identity is self-reported and under-identified.</strong> Many people in the DTES who are Indigenous do not self-identify in surveys or counts. Proportions of Indigenous residents and homeless people are likely undercounts.
+    </div>
+    <div class="data-gap">
+      <strong>Overdose death data lags.</strong> The BC Coroners Service works in a real-time database; annual figures are revised as investigations complete. The 2024 death count is provisional as of this writing.
+    </div>
+    <div class="data-gap">
+      <strong>DTES-specific overdose data is limited.</strong> BCEHS reports at the health authority and city level; neighbourhood-level data for the DTES specifically is not consistently published. Figures on this page for the DTES reflect VCH region or Vancouver city data, which includes areas outside the DTES.
+    </div>
+    <div class="data-gap">
+      <strong>Mental health prevalence is poorly measured.</strong> Studies of DTES residents consistently find very high rates of concurrent mental health and substance use conditions, but community-level prevalence data is based on clinic populations and may not represent the full community.
+    </div>
+  </div>
+
+  <!-- CITATIONS -->
+  <div class="section-card">
+    <div class="section-eyebrow">Sources</div>
+    <div class="section-title">Citations</div>
+    <div class="citations">
+      <div class="cite-item">
+        <div class="cite-num">[1]</div>
+        <div class="cite-body">City of Vancouver. <em>Downtown Eastside Local Area Profile.</em> Published periodically; most recent edition 2023. Available at: <a href="https://vancouver.ca/your-government/downtown-eastside-local-area-profile.aspx">vancouver.ca/your-government/downtown-eastside-local-area-profile.aspx</a></div>
+      </div>
+      <div class="cite-item">
+        <div class="cite-num">[2]</div>
+        <div class="cite-body">BC Coroners Service. <em>Illicit Drug Toxicity Deaths in BC.</em> Annual reports and dashboard. <a href="https://www2.gov.bc.ca/gov/content/life-events/death/coroners-service/statistical-reports">www2.gov.bc.ca/gov/content/life-events/death/coroners-service/statistical-reports</a> — Note: 2024 figure (~2,100) is provisional.</div>
+      </div>
+      <div class="cite-item">
+        <div class="cite-num">[3]</div>
+        <div class="cite-body">BC Housing / Homelessness Services Association of BC. <em>2023 Vancouver Homeless Count.</em> Methodology: point-in-time count conducted March 2023. Data via Homeless Hub: <a href="https://homelesshub.ca/community-profile/vancouver">homelesshub.ca/community-profile/vancouver</a></div>
+      </div>
+      <div class="cite-item">
+        <div class="cite-num">[4]</div>
+        <div class="cite-body">BC Emergency Health Services (BCEHS). <em>Overdose &amp; Drug Poisoning Data.</em> Annual and monthly overdose event counts. <a href="https://www.bcehs.ca/about/accountability/data/overdose-drug-poisoning-data">www.bcehs.ca/about/accountability/data/overdose-drug-poisoning-data</a></div>
+      </div>
+      <div class="cite-item">
+        <div class="cite-num">[5]</div>
+        <div class="cite-body">National Inquiry into Missing and Murdered Indigenous Women and Girls. <em>Reclaiming Power and Place: The Final Report.</em> 2019. <a href="https://www.mmiwg-ffada.ca/final-report/">www.mmiwg-ffada.ca/final-report/</a></div>
+      </div>
+      <div class="cite-item">
+        <div class="cite-num">[6]</div>
+        <div class="cite-body">BC Ministry of Social Development and Poverty Reduction. <em>Income Assistance Rate Tables.</em> <a href="https://www.gov.bc.ca/income-assistance">www.gov.bc.ca/income-assistance</a></div>
+      </div>
+      <div class="cite-item">
+        <div class="cite-num">[7]</div>
+        <div class="cite-body">Statistics Canada. <em>Census of Population, 2021.</em> Community profiles for DTES and Vancouver. <a href="https://www12.statcan.gc.ca/census-recensement/2021/">www12.statcan.gc.ca/census-recensement/2021/</a></div>
+      </div>
+      <div class="cite-item">
+        <div class="cite-num">[8]</div>
+        <div class="cite-body">BC Centre for Disease Control (BCCDC). <em>Unregulated Drug Poisoning Emergency Dashboard.</em> <a href="https://public.tableau.com/app/profile/bccdc/viz/UnregulatedDrugPoisoningEmergencyDashboard/Introduction">BCCDC Tableau Dashboard</a></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<footer style="background:var(--teal-deep);color:rgba(255,255,255,0.3);text-align:center;padding:24px 32px;font-size:11px;line-height:1.8;border-top:1px solid rgba(255,255,255,0.06);">
+  DTES Demographics · DTES Community Tools ·
+  Data from BC Coroners Service, BCEHS, Statistics Canada, BC Housing, City of Vancouver, and National Inquiry into MMIWG.
+  Last reviewed April 2026.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const TEAL = '#1A7A6E', AMBER = '#E8930A', RED = '#D94040', MUTED = 'rgba(255,255,255,0.3)';
+
+// ── BC Illicit Drug Toxicity Deaths (BC Coroners Service) ─────────────────────
+new Chart(document.getElementById('deathsChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024*'],
+    datasets: [{
+      data: [331, 529, 981, 1489, 1543, 983, 1765, 2224, 2272, 2511, 2100],
+      backgroundColor: [
+        '#1A7A6E','#1A7A6E',
+        '#D94040',  // PHE declared
+        '#D94040','#D94040',
+        '#2EA86B',  // brief reduction
+        '#D94040',  // COVID
+        '#D94040','#D94040','#D94040',
+        '#E8930A',  // provisional
+      ],
+      borderRadius: 4, borderSkipped: false,
+    }],
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.parsed.y.toLocaleString()} deaths${ctx.label === '2024*' ? ' (provisional)' : ''}`,
+        },
+      },
+    },
+    scales: {
+      x: { ticks:{ color:'#5A6E6C', font:{size:11} }, grid:{ display:false } },
+      y: { ticks:{ color:'#5A6E6C', font:{size:10} }, grid:{ color:'#E8F3F1' }, beginAtZero: true,
+           title:{ display:true, text:'deaths', color:'#5A6E6C', font:{size:10} } },
+    },
+  },
+});
+
+// ── BCEHS Paramedic Responses by Year ─────────────────────────────────────────
+new Chart(document.getElementById('eventsChart'), {
+  type: 'line',
+  data: {
+    labels: ['2020','2021','2022','2023','2024','2025'],
+    datasets: [{
+      label: 'BC paramedic OD responses',
+      data: [27068, 35585, 33654, 42172, 40543, 39592],
+      borderColor: TEAL, backgroundColor: 'rgba(26,122,110,0.08)',
+      borderWidth: 2.5, pointBackgroundColor: TEAL,
+      pointRadius: 5, fill: true, tension: 0.3,
+    }],
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.parsed.y.toLocaleString()} events`,
+        },
+      },
+    },
+    scales: {
+      x: { ticks:{ color:'#5A6E6C', font:{size:11} }, grid:{ display:false } },
+      y: { ticks:{ color:'#5A6E6C', font:{size:10} }, grid:{ color:'#E8F3F1' }, beginAtZero: false,
+           title:{ display:true, text:'paramedic responses', color:'#5A6E6C', font:{size:10} } },
+    },
+  },
+});
+</script>
+</body>
+</html>
