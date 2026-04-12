@@ -4,11 +4,20 @@
 // Active chart series — set in initAnimChart, read by plugin + updateAnimChart
 let animChartSeries = [];
 
+// Independent from the map's animColourBy — chart can show a different dimension
+let chartColourBy = 'substance';
+
 function getChartSeries() {
-  if (typeof animColourBy !== 'undefined' && animColourBy === 'outcome') {
+  if (chartColourBy === 'outcome') {
     return Object.entries(COLS).map(([key, col]) => ({ key, color: col.fill, label: col.label }));
   }
   return Object.entries(SUB_COLS).map(([key, color]) => ({ key, color, label: SUB_LABELS[key] || key }));
+}
+
+// Reinitialise the chart without touching map animation state (cells, simTime, etc.)
+function reinitChartOnly() {
+  initAnimChart();
+  if (ANIM.active) updateAnimChart(ANIM.simTime);
 }
 
 // ── Vertical cursor + hover tooltip plugin ────────────────────────────────────
@@ -133,7 +142,7 @@ function initAnimChart() {
     const i = Math.floor((e.ts - ANIM.winStart) / animChartBinMs);
     if (i >= 0 && i < numBins) {
       animChartBins[i].total++;
-      const key = animColourBy === 'outcome' ? e.outcome : e.substance;
+      const key = chartColourBy === 'outcome' ? e.outcome : e.substance;
       if (animChartBins[i][key] !== undefined) animChartBins[i][key]++;
     }
   });
@@ -228,3 +237,11 @@ function updateAnimChart(upToTs) {
 
   animChart.update('none');
 }
+
+// Chart colour-by toggle — independent of the map's colour-by
+document.querySelectorAll('#chart-colour-by-btns .speed-btn').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#chart-colour-by-btns .speed-btn').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  chartColourBy = b.dataset.chartcolourby;
+  if (animChart) reinitChartOnly();
+}));
