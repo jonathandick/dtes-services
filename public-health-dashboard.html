@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Public Health Command View · DTES Community Tools</title>
+<!-- weight=600 not in shared font import — add it here -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+/* Extra tokens not in shared.css */
+:root {
+  --amber-dark: #B56D04;
+  --red-pale:   #FDEAEA;
+  --green-pale: #E8F7EF;
+}
+
+body { background: var(--surface); }
+
+/* ── Page header ── */
+.dash-header {
+  background: linear-gradient(135deg, var(--teal-deep) 0%, var(--teal-dark) 100%);
+  padding: 28px 28px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.dash-header-inner {
+  max-width: 1280px; margin: 0 auto;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap;
+}
+.dash-header h1 { font-family: var(--font-head); font-size: 28px; color: var(--white); line-height: 1.1; margin-bottom: 4px; }
+.dash-header .subtitle { font-size: 13px; color: rgba(255,255,255,0.5); }
+.dash-eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--sky); margin-bottom: 6px; }
+.time-controls { display: flex; gap: 4px; }
+.time-btn {
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.6); border-radius: 6px; padding: 6px 14px;
+  font-size: 12px; font-weight: 500; font-family: var(--font-body); cursor: pointer; transition: all 0.15s;
+}
+.time-btn:hover { background: rgba(255,255,255,0.14); color: var(--white); }
+.time-btn.active { background: var(--teal); border-color: var(--teal); color: var(--white); }
+
+/* ── Main content ── */
+.main { max-width: 1280px; margin: 0 auto; padding: 24px 28px 48px; }
+
+/* ── Alert banner ── */
+.alert-banner {
+  background: var(--amber-pale); border: 1.5px solid var(--amber); border-radius: 10px;
+  padding: 14px 18px; margin-bottom: 24px; display: flex; align-items: flex-start; gap: 14px;
+  animation: fadeIn 0.4s ease;
+}
+@keyframes fadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+.alert-icon { font-size: 18px; margin-top: 1px; flex-shrink: 0; }
+.alert-content { flex: 1; }
+.alert-title { font-size: 14px; font-weight: 600; color: var(--amber-dark); margin-bottom: 3px; }
+.alert-body { font-size: 13px; color: #7A5200; line-height: 1.5; }
+.alert-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.alert-btn {
+  font-size: 12px; font-weight: 500; font-family: var(--font-body);
+  border-radius: 6px; padding: 5px 12px; cursor: pointer; transition: all 0.15s;
+  border: 1px solid transparent; text-decoration: none; display: inline-block;
+}
+.alert-btn-primary { background: var(--amber); color: var(--white); }
+.alert-btn-primary:hover { background: var(--amber-dark); text-decoration: none; }
+.alert-btn-secondary { background: transparent; color: var(--amber-dark); border-color: var(--amber); }
+.alert-btn-secondary:hover { text-decoration: none; }
+.alert-dismiss { background: none; border: none; color: var(--amber-dark); font-size: 18px; cursor: pointer; padding: 0 4px; flex-shrink: 0; opacity: 0.6; }
+.alert-dismiss:hover { opacity: 1; }
+
+/* ── Metric cards ── */
+.metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.metric-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px 20px; position: relative; overflow: hidden; transition: box-shadow 0.15s;
+}
+.metric-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.metric-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:12px 12px 0 0; }
+.metric-card.teal::before  { background: var(--teal); }
+.metric-card.amber::before { background: var(--amber); }
+.metric-card.red::before   { background: var(--red); }
+.metric-card.green::before { background: var(--green); }
+.metric-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 10px; }
+.metric-value { font-family: var(--font-head); font-size: 38px; line-height: 1; color: var(--ink); margin-bottom: 6px; }
+.metric-sub   { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+.trend-up   { color: var(--red); }
+.trend-down { color: var(--green); }
+
+/* ── Layouts ── */
+.two-col   { display: grid; grid-template-columns: 2fr 1fr;      gap: 18px; margin-bottom: 18px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+
+/* ── Panel ── */
+.panel { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.panel-head {
+  padding: 16px 20px 14px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.panel-title { font-size: 13px; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+.panel-title-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.panel-meta  { font-size: 11px; color: var(--muted); }
+.panel-body  { padding: 18px 20px; }
+.chart-wrap  { position: relative; width: 100%; }
+
+/* ── Hotspot list ── */
+.hotspot-list { list-style: none; }
+.hotspot-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.hotspot-item:last-child { border-bottom: none; padding-bottom: 0; }
+.hotspot-rank   { font-family: var(--font-head); font-size: 20px; color: var(--border); width: 24px; flex-shrink: 0; }
+.hotspot-info   { flex: 1; }
+.hotspot-name   { font-size: 13px; font-weight: 500; color: var(--ink); }
+.hotspot-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.hotspot-count  { font-family: var(--font-head); font-size: 20px; }
+.hotspot-bar-wrap { margin-top: 4px; height: 4px; background: var(--surface); border-radius: 2px; overflow: hidden; }
+.hotspot-bar { height: 100%; border-radius: 2px; }
+
+/* ── Coverage zones ── */
+.zone-list { list-style: none; }
+.zone-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); gap: 12px; }
+.zone-item:last-child { border-bottom: none; }
+.zone-dot  { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.zone-name { font-size: 13px; color: var(--ink); flex: 1; }
+.zone-badge { font-size: 11px; font-weight: 500; border-radius: 20px; padding: 2px 10px; white-space: nowrap; }
+.zone-covered { background: var(--green-pale); color: #1A6B45; }
+.zone-partial  { background: var(--amber-pale); color: var(--amber-dark); }
+.zone-gap      { background: var(--red-pale); color: #992020; }
+
+/* ── Substance table ── */
+.sub-table { width: 100%; font-size: 13px; border-collapse: collapse; }
+.sub-table th {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--muted); font-weight: 500; text-align: left;
+  padding: 0 0 10px; border-bottom: 1px solid var(--border);
+}
+.sub-table th:not(:first-child) { text-align: right; }
+.sub-table td { padding: 9px 0; border-bottom: 1px solid var(--border); vertical-align: middle; color: var(--ink); }
+.sub-table tr:last-child td { border-bottom: none; }
+.sub-table td:not(:first-child) { text-align: right; }
+.sub-swatch { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 7px; vertical-align: middle; }
+.chg-pos { color: var(--red); font-size: 12px; }
+.chg-neg { color: var(--green); font-size: 12px; }
+
+/* ── Action feed ── */
+.action-feed { list-style: none; }
+.action-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.action-item:last-child { border-bottom: none; }
+.action-icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.action-icon.amber { background: var(--amber-pale); }
+.action-icon.teal  { background: var(--teal-pale); }
+.action-icon.red   { background: var(--red-pale); }
+.action-icon.green { background: var(--green-pale); }
+.action-body  { flex: 1; }
+.action-text  { font-size: 13px; color: var(--ink); line-height: 1.45; }
+.action-time  { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.action-cta   { display: inline-block; font-size: 11px; font-weight: 500; color: var(--teal); text-decoration: none; margin-top: 5px; border-bottom: 1px solid var(--teal-pale); transition: border-color 0.15s; }
+.action-cta:hover { border-color: var(--teal); text-decoration: none; }
+
+/* ── Mock notice ── */
+.mock-notice {
+  background: rgba(232,147,10,0.08); border: 1px solid rgba(232,147,10,0.25);
+  border-radius: 8px; padding: 10px 16px; margin-bottom: 20px;
+  font-size: 12px; color: #7A5200; display: flex; align-items: center; gap: 8px;
+}
+
+/* ── Inline legend dots ── */
+.legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; vertical-align: middle; }
+
+/* ── Insight callout ── */
+.callout { border-radius: 8px; padding: 9px 12px; margin-top: 12px; font-size: 12px; line-height: 1.4; }
+.callout-amber { background: var(--amber-pale); color: #7A5200; }
+.callout-teal  { background: var(--teal-pale);  color: #0D3D35; }
+.callout-green { background: var(--green-pale); color: #1A6B45; }
+
+/* ── Dashboard footer ── */
+.dash-footer {
+  border-top: 1px solid var(--border); margin-top: 32px; padding-top: 18px;
+  font-size: 11px; color: var(--muted); display: flex; align-items: center; justify-content: space-between;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .metrics-row { grid-template-columns: repeat(2, 1fr); }
+  .two-col, .three-col { grid-template-columns: 1fr; }
+  .dash-header { padding: 20px 16px; }
+  .main { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<script src="nav.js"></script>
+
+<div class="dash-header">
+  <div class="dash-header-inner">
+    <div>
+      <div class="dash-eyebrow">Vancouver Coastal Health · DTES Overdose Response</div>
+      <h1>Public Health Command View</h1>
+      <div class="subtitle">Real-time overdose surveillance · Powered by OD Watch community data</div>
+    </div>
+    <div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:8px;text-align:right;">Time window</div>
+      <div class="time-controls">
+        <button class="time-btn">1h</button>
+        <button class="time-btn">6h</button>
+        <button class="time-btn active">24h</button>
+        <button class="time-btn">7d</button>
+        <button class="time-btn">30d</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="mock-notice">
+    ⚠ All data shown is computer-generated and entirely fictional. Modelled on published BCCDC figures (~2,000 events/month in Vancouver) to illustrate what a live public health dashboard could look like.
+  </div>
+
+  <!-- ACTIVE ALERT -->
+  <div class="alert-banner" id="alert1">
+    <div class="alert-icon">⚠</div>
+    <div class="alert-content">
+      <div class="alert-title">Contamination alert — suspected new batch · Hastings &amp; Main corridor</div>
+      <div class="alert-body">6 events logged in 90 minutes within a 2-block radius (E Hastings between Columbia &amp; Main). Unusually high rate of EMS calls (67% vs. 23% baseline). Pattern consistent with a new, highly potent or benzo-adulterated batch in circulation. Drug checking deployment recommended.</div>
+      <div class="alert-actions">
+        <a href="#" class="alert-btn alert-btn-primary">Notify outreach teams</a>
+        <a href="#" class="alert-btn alert-btn-secondary">Issue public advisory</a>
+        <a href="#" class="alert-btn alert-btn-secondary">Deploy drug checking</a>
+      </div>
+    </div>
+    <button class="alert-dismiss" onclick="document.getElementById('alert1').style.display='none'">×</button>
+  </div>
+
+  <!-- METRIC CARDS -->
+  <div class="metrics-row">
+    <div class="metric-card teal">
+      <div class="metric-label">Total events (24h)</div>
+      <div class="metric-value">47</div>
+      <div class="metric-sub"><span class="trend-up">↑ +12%</span>&nbsp;vs. prior 24h</div>
+    </div>
+    <div class="metric-card amber">
+      <div class="metric-label">EMS-required rate</div>
+      <div class="metric-value">23%</div>
+      <div class="metric-sub"><span class="trend-up">↑ +5pts</span>&nbsp;vs. 7-day avg</div>
+    </div>
+    <div class="metric-card red">
+      <div class="metric-label">Active coverage gaps</div>
+      <div class="metric-value">2</div>
+      <div class="metric-sub">Zones with no active outreach</div>
+    </div>
+    <div class="metric-card green">
+      <div class="metric-label">Community-resolved</div>
+      <div class="metric-value">77%</div>
+      <div class="metric-sub"><span class="trend-down">EMS not needed</span> — naloxone effective</div>
+    </div>
+  </div>
+
+  <!-- ROW 1: Hourly demand + Coverage zones -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title"><span class="panel-title-dot" style="background:var(--teal)"></span>Hourly event distribution (rolling 7-day average)</div>
+        <div class="panel-meta">Shift planning guide</div>
+      </div>
+      <div class="panel-body">
+        <div class="chart-wrap" style="height:200px;"><canvas id="hourlyChart"></canvas></div>
+        <div style="display:flex;gap:20px;margin-top:14px;font-size:12px;color:var(--muted);">
+          <span><span class="legend-dot" style="background:var(--teal)"></span> Avg events/hour</span>
+          <span><span class="legend-dot" style="background:var(--amber)"></span> Current staffing window</span>
+        </div>
+        <div class="callout callout-amber" style="margin-top:14px;">
+          <strong>Staffing gap identified:</strong> Event volume 10pm–2am averages 3.2× the daytime rate, but outreach coverage drops by 60% after midnight. Recommend extending 2 outreach teams to 3am.
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title"><span class="panel-title-dot" style="background:var(--red)"></span>Coverage zone status</div>
+        <div class="panel-meta">Live · 6 zones</div>
+      </div>
+      <div class="panel-body">
+        <ul class="zone-list">
+          <li class="zone-item">
+            <span class="zone-dot" style="background:var(--green)"></span>
+            <span class="zone-name">Insite / 100 block E Hastings</span>
+            <span class="zone-badge zone-covered">Covered</span>
+          </li>
+          <li class="zone-item">
+            <span class="zone-dot" style="background:var(--green)"></span>
+            <span class="zone-name">Carnegie Centre / Main &amp; Hastings</span>
+            <span class="zone-badge zone-covered">Covered</span>
+          </li>
+          <li class="zone-item">
+            <span class="zone-dot" style="background:var(--amber)"></span>
+            <span class="zone-name">Oppenheimer Park area</span>
+            <span class="zone-badge zone-partial">Partial</span>
+          </li>
+          <li class="zone-item">
+            <span class="zone-dot" style="background:var(--amber)"></span>
+            <span class="zone-name">Gastown / Powell St corridor</span>
+            <span class="zone-badge zone-partial">Partial</span>
+          </li>
+          <li class="zone-item">
+            <span class="zone-dot" style="background:var(--red)"></span>
+            <span class="zone-name">Strathcona / Prior St alleys</span>
+            <span class="zone-badge zone-gap">Coverage gap</span>
+          </li>
+          <li class="zone-item">
+            <span class="zone-dot" style="background:var(--red)"></span>
+            <span class="zone-name">Gore Ave SRO cluster</span>
+            <span class="zone-badge zone-gap">Coverage gap</span>
+          </li>
+        </ul>
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+          <a href="#" style="font-size:12px;font-weight:500;">Dispatch outreach to gap zones →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: 7-day trend + Substance mix + Response type -->
+  <div class="three-col">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title"><span class="panel-title-dot" style="background:var(--teal)"></span>7-day event trend</div>
+        <div class="panel-meta">Daily totals</div>
+      </div>
+      <div class="panel-body">
+        <div class="chart-wrap" style="height:160px;"><canvas id="trendChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title"><span class="panel-title-dot" style="background:var(--amber)"></span>Substance mix (24h)</div>
+        <div class="panel-meta">If known</div>
+      </div>
+      <div class="panel-body">
+        <div class="chart-wrap" style="height:120px;"><canvas id="substanceChart"></canvas></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin-top:12px;font-size:12px;color:var(--muted);">
+          <span><span class="legend-dot" style="background:#1A7A6E"></span> Fentanyl 51%</span>
+          <span><span class="legend-dot" style="background:var(--amber)"></span> Benzo 26%</span>
+          <span><span class="legend-dot" style="background:var(--sky)"></span> Meth 9%</span>
+          <span><span class="legend-dot" style="background:#B4B2A9"></span> Unknown 14%</span>
+        </div>
+        <div class="callout callout-teal">
+          Benzo-adulterated share up 8pts vs. 7-day avg. Naloxone may be insufficient — double doses needed.
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title"><span class="panel-title-dot" style="background:var(--green)"></span>Response type (24h)</div>
+        <div class="panel-meta">EMS efficiency</div>
+      </div>
+      <div class="panel-body">
+        <div class="chart-wrap" style="height:120px;"><canvas id="responseChart"></canvas></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin-top:12px;font-size:12px;color:var(--muted);">
+          <span><span class="legend-dot" style="background:var(--green)"></span> Peer-resolved 77%</span>
+          <span><span class="legend-dot" style="background:var(--amber)"></span> EMS called 23%</span>
+        </div>
+        <div class="callout callout-green">
+          36 events resolved without ambulance. Est. <strong>$72,000</strong> in EMS cost avoided this week.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3: Hotspots + Recommended actions -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title"><span class="panel-title-dot" style="background:var(--red)"></span>Active hotspots (last 6 hours)</div>
+        <div class="panel-meta">Ranked by event density</div>
+      </div>
+      <div class="panel-body">
+        <ul class="hotspot-list">
+          <li class="hotspot-item">
+            <div class="hotspot-rank">01</div>
+            <div class="hotspot-info">
+              <div class="hotspot-name">E Hastings &amp; Main (100 block)</div>
+              <div class="hotspot-detail">6 events · 67% EMS · Active contamination alert</div>
+              <div class="hotspot-bar-wrap"><div class="hotspot-bar" style="width:100%;background:var(--red)"></div></div>
+            </div>
+            <div class="hotspot-count" style="color:var(--red)">6</div>
+          </li>
+          <li class="hotspot-item">
+            <div class="hotspot-rank">02</div>
+            <div class="hotspot-info">
+              <div class="hotspot-name">Oppenheimer Park / E Cordova</div>
+              <div class="hotspot-detail">4 events · 25% EMS · Peer coverage present</div>
+              <div class="hotspot-bar-wrap"><div class="hotspot-bar" style="width:66%;background:var(--amber)"></div></div>
+            </div>
+            <div class="hotspot-count" style="color:var(--amber)">4</div>
+          </li>
+          <li class="hotspot-item">
+            <div class="hotspot-rank">03</div>
+            <div class="hotspot-info">
+              <div class="hotspot-name">Strathcona / Prior St alleys</div>
+              <div class="hotspot-detail">3 events · 33% EMS · No outreach present</div>
+              <div class="hotspot-bar-wrap"><div class="hotspot-bar" style="width:50%;background:var(--amber)"></div></div>
+            </div>
+            <div class="hotspot-count" style="color:var(--amber)">3</div>
+          </li>
+          <li class="hotspot-item">
+            <div class="hotspot-rank">04</div>
+            <div class="hotspot-info">
+              <div class="hotspot-name">Carnegie Centre / Main &amp; Hastings</div>
+              <div class="hotspot-detail">2 events · 0% EMS · Well-covered</div>
+              <div class="hotspot-bar-wrap"><div class="hotspot-bar" style="width:33%;background:var(--teal)"></div></div>
+            </div>
+            <div class="hotspot-count" style="color:var(--teal)">2</div>
+          </li>
+          <li class="hotspot-item">
+            <div class="hotspot-rank">05</div>
+            <div class="hotspot-info">
+              <div class="hotspot-name">Gore Ave SRO cluster</div>
+              <div class="hotspot-detail">2 events · 50% EMS · Coverage gap zone</div>
+              <div class="hotspot-bar-wrap"><div class="hotspot-bar" style="width:33%;background:var(--red)"></div></div>
+            </div>
+            <div class="hotspot-count" style="color:var(--red)">2</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title"><span class="panel-title-dot" style="background:var(--sky)"></span>Recommended actions</div>
+        <div class="panel-meta">System-generated · Review before acting</div>
+      </div>
+      <div class="panel-body">
+        <ul class="action-feed">
+          <li class="action-item">
+            <div class="action-icon amber">⚡</div>
+            <div class="action-body">
+              <div class="action-text">Deploy mobile drug checking to E Hastings &amp; Main — 6 events in 90 min suggests new batch</div>
+              <div class="action-time">Generated 4 min ago · High priority</div>
+              <a href="#" class="action-cta">Initiate deployment →</a>
+            </div>
+          </li>
+          <li class="action-item">
+            <div class="action-icon red">📍</div>
+            <div class="action-body">
+              <div class="action-text">Redirect 1 outreach team from Carnegie (low activity) to Gore Ave SRO cluster (2 events, no coverage)</div>
+              <div class="action-time">Generated 12 min ago · Medium priority</div>
+              <a href="#" class="action-cta">Approve redeployment →</a>
+            </div>
+          </li>
+          <li class="action-item">
+            <div class="action-icon teal">🏥</div>
+            <div class="action-body">
+              <div class="action-text">Alert St. Paul's ED charge nurse: elevated volume expected — benzo-adulterated supply may require extended resuscitation</div>
+              <div class="action-time">Generated 18 min ago · Medium priority</div>
+              <a href="#" class="action-cta">Send notification →</a>
+            </div>
+          </li>
+          <li class="action-item">
+            <div class="action-icon green">📦</div>
+            <div class="action-body">
+              <div class="action-text">Restock naloxone at Strathcona outreach kit — 3 events logged with no responder on-site</div>
+              <div class="action-time">Generated 31 min ago · Low priority</div>
+              <a href="#" class="action-cta">Assign to logistics →</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBSTANCE TREND TABLE -->
+  <div class="panel" style="margin-bottom:18px;">
+    <div class="panel-head">
+      <div class="panel-title"><span class="panel-title-dot" style="background:var(--amber)"></span>Substance trend (7-day rolling comparison)</div>
+      <div class="panel-meta">Early warning signal for new batches</div>
+    </div>
+    <div class="panel-body">
+      <table class="sub-table">
+        <thead>
+          <tr>
+            <th>Substance</th>
+            <th>Events (24h)</th>
+            <th>7-day avg</th>
+            <th>Change</th>
+            <th>EMS rate</th>
+            <th>Signal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="sub-swatch" style="background:var(--teal)"></span>Fentanyl</td>
+            <td>24</td><td>21</td>
+            <td class="chg-pos">↑ +14%</td>
+            <td>18%</td>
+            <td style="font-size:12px;color:var(--muted);">Normal range</td>
+          </tr>
+          <tr>
+            <td><span class="sub-swatch" style="background:var(--amber)"></span>Benzo-adulterated</td>
+            <td>12</td><td>7</td>
+            <td class="chg-pos" style="font-weight:600;">↑ +71% ⚠</td>
+            <td>42%</td>
+            <td style="font-size:12px;color:var(--amber-dark);font-weight:500;">Elevated — monitor</td>
+          </tr>
+          <tr>
+            <td><span class="sub-swatch" style="background:var(--sky)"></span>Methamphetamine</td>
+            <td>4</td><td>5</td>
+            <td class="chg-neg">↓ −20%</td>
+            <td>25%</td>
+            <td style="font-size:12px;color:var(--muted);">Normal range</td>
+          </tr>
+          <tr>
+            <td><span class="sub-swatch" style="background:#B4B2A9"></span>Unknown</td>
+            <td>7</td><td>9</td>
+            <td class="chg-neg">↓ −22%</td>
+            <td>14%</td>
+            <td style="font-size:12px;color:var(--muted);">Normal range</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="dash-footer">
+    <span>DTES OD Watch Public Health Dashboard · Data is community-sourced and computer-generated for prototype purposes</span>
+    <span>Last updated: <span id="lastUpdate">just now</span> · Auto-refreshes every 60 seconds</span>
+  </div>
+
+</div><!-- /main -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const TEAL = '#1A7A6E', AMBER = '#E8930A', RED = '#D94040', GREEN = '#2EA86B', SKY = '#7EC8C0', MUTED = '#B4B2A9';
+
+/* Hourly demand */
+const hourlyData = [2.1,1.4,0.8,0.6,0.5,0.7,1.0,1.4,1.8,2.2,2.5,2.6,2.3,2.1,2.0,2.2,2.5,2.8,3.1,3.5,3.9,4.2,3.8,3.1];
+new Chart(document.getElementById('hourlyChart'), {
+  type: 'bar',
+  data: {
+    labels: Array.from({length:24}, (_, i) => i===0?'12a': i<12?`${i}a`: i===12?'12p':`${i-12}p`),
+    datasets: [
+      { data: hourlyData, backgroundColor: hourlyData.map(v => v>3?RED:v>2.5?AMBER:TEAL), borderRadius: 3, borderSkipped: false },
+      { data: hourlyData.map((v,i) => i>=8&&i<=23?2.0:null), type:'line', borderColor:AMBER, backgroundColor:'rgba(232,147,10,0.06)', borderWidth:1.5, borderDash:[4,3], pointRadius:0, fill:true, tension:0 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display:false } },
+    scales: {
+      x: { ticks:{ font:{size:10}, color:'#5A6E6C', maxRotation:0, autoSkip:true, maxTicksLimit:12 }, grid:{ display:false } },
+      y: { ticks:{ font:{size:10}, color:'#5A6E6C' }, grid:{ color:'#E8F3F1' } }
+    }
+  }
+});
+
+/* 7-day trend */
+new Chart(document.getElementById('trendChart'), {
+  type: 'line',
+  data: {
+    labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Today'],
+    datasets: [{ data:[38,42,35,44,39,51,47], borderColor:TEAL, backgroundColor:'rgba(26,122,110,0.08)', borderWidth:2, pointBackgroundColor:TEAL, pointRadius:4, fill:true, tension:0.3 }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend:{ display:false } },
+    scales: {
+      x: { ticks:{ font:{size:11}, color:'#5A6E6C' }, grid:{ display:false } },
+      y: { ticks:{ font:{size:10}, color:'#5A6E6C' }, grid:{ color:'#E8F3F1' }, min:0 }
+    }
+  }
+});
+
+/* Substance donut */
+new Chart(document.getElementById('substanceChart'), {
+  type: 'doughnut',
+  data: { labels:['Fentanyl','Benzo','Meth','Unknown'], datasets:[{ data:[51,26,9,14], backgroundColor:[TEAL,AMBER,SKY,MUTED], borderWidth:0 }] },
+  options: { responsive:true, maintainAspectRatio:false, cutout:'70%', plugins:{ legend:{ display:false } } }
+});
+
+/* Response donut */
+new Chart(document.getElementById('responseChart'), {
+  type: 'doughnut',
+  data: { labels:['Peer-resolved','EMS called'], datasets:[{ data:[77,23], backgroundColor:[GREEN,AMBER], borderWidth:0 }] },
+  options: { responsive:true, maintainAspectRatio:false, cutout:'70%', plugins:{ legend:{ display:false } } }
+});
+
+/* Time buttons */
+document.querySelectorAll('.time-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}));
+
+/* Timestamp */
+function updateTime() {
+  document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('en-CA', {hour:'2-digit',minute:'2-digit'});
+}
+updateTime();
+setInterval(updateTime, 60000);
+</script>
+</body>
+</html>

@@ -15,7 +15,8 @@
   const NAV_LINKS = [
     { href: "index.html",              label: "Home" },
     { href: "dtes-services.html",      label: "Services Map" },
-    { href: "overdose-watch.html",     label: "OD Watch" },
+    { href: "overdose-watch.html",          label: "OD Watch" },
+    { href: "public-health-dashboard.html", label: "PH Dashboard" },
     { href: "treatment-programs.html", label: "Treatment" },
     { href: "vancouver-shelters.html", label: "Shelters" },
     { href: "social-housing.html",     label: "Social Housing" },
