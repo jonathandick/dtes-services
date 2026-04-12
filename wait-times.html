@@ -70,16 +70,8 @@ table.wt-table td { padding: 11px 14px; vertical-align: middle; font-size: 13px;
 .td-beds     { min-width: 100px; }
 .td-discharge { font-size: 12px; color: var(--ink); min-width: 80px; }
 .td-reported { font-size: 11px; color: var(--muted); min-width: 110px; }
-.td-coord    { min-width: 140px; }
+.td-coord    { min-width: 120px; }
 .td-actions  { min-width: 70px; }
-.coord-name  { font-size: 12px; font-weight: 500; color: var(--ink); display: block; }
-.coord-links { display: flex; gap: 6px; margin-top: 2px; }
-.coord-links a {
-  font-size: 11px; color: var(--teal); text-decoration: none;
-  background: var(--teal-pale); padding: 1px 7px; border-radius: 10px;
-  transition: background 0.12s;
-}
-.coord-links a:hover { background: var(--teal-mist); text-decoration: none; }
 
 .btn-report {
   font-size: 11px; font-weight: 500; color: var(--teal);
@@ -166,35 +158,6 @@ table.wt-table td { padding: 11px 14px; vertical-align: middle; font-size: 13px;
 }
 .form-success.show { display: block; }
 
-/* ── Survey modal ── */
-.survey-list { list-style: none; margin: 0; padding: 0; }
-.survey-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 0; border-bottom: 1px solid var(--border); gap: 12px;
-}
-.survey-item:last-child { border-bottom: none; }
-.survey-item-name { font-size: 13px; font-weight: 500; color: var(--ink); }
-.survey-item-email { font-size: 11px; color: var(--muted); }
-.btn-send-one {
-  font-size: 11px; color: var(--teal); border: 1px solid var(--teal-mist);
-  background: var(--white); padding: 4px 12px; border-radius: 6px;
-  cursor: pointer; white-space: nowrap; flex-shrink: 0;
-  transition: all 0.12s;
-}
-.btn-send-one:hover { background: var(--teal-pale); }
-.survey-copy-area {
-  font-family: monospace; font-size: 11px; background: var(--surface);
-  border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px;
-  white-space: pre-wrap; word-break: break-all; max-height: 120px; overflow-y: auto;
-  margin-top: 12px;
-}
-.btn-copy-emails {
-  font-size: 12px; font-weight: 500; color: var(--white);
-  background: var(--teal-dark); border: none; padding: 8px 18px;
-  border-radius: 7px; cursor: pointer; margin-top: 12px;
-  transition: background 0.15s;
-}
-.btn-copy-emails:hover { background: var(--teal); }
 
 /* ── Summary bar ── */
 .summary-bar {
@@ -252,9 +215,6 @@ table.wt-table td { padding: 11px 14px; vertical-align: middle; font-size: 13px;
       <button class="filter-btn" id="btn-report-open" style="background:var(--teal);color:#fff;border-color:var(--teal);">
         + Report availability
       </button>
-      <button class="filter-btn" id="btn-survey-open">
-        Survey coordinators
-      </button>
     </div>
   </div>
 </div>
@@ -278,7 +238,7 @@ table.wt-table td { padding: 11px 14px; vertical-align: middle; font-size: 13px;
           <th>Beds</th>
           <th>Discharges<br><span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:9px;opacity:0.6">expected this week</span></th>
           <th class="sortable" data-col="reported">Last Report</th>
-          <th>Coordinator</th>
+          <th>Contact</th>
           <th></th>
         </tr>
       </thead>
@@ -337,21 +297,6 @@ table.wt-table td { padding: 11px 14px; vertical-align: middle; font-size: 13px;
   </div>
 </div>
 
-<!-- ── Survey coordinators modal ─────────────────────────────────── -->
-<div class="modal-overlay" id="survey-modal">
-  <div class="modal-box" style="max-width:560px;">
-    <button class="modal-close" id="survey-modal-close">✕</button>
-    <div class="modal-title">Survey Coordinators</div>
-    <div class="modal-subtitle">Send a standard availability update request to each program coordinator. Click "Send email" to open your mail client pre-filled, or copy all addresses to send a group message.</div>
-    <div style="margin:12px 0 8px;display:flex;align-items:center;gap:8px;">
-      <input type="text" id="survey-search" class="search-input" placeholder="Filter by name…" style="max-width:220px;padding:6px 10px;font-size:12px;">
-      <button class="btn-copy-emails" id="btn-copy-all-emails">Copy all email addresses</button>
-    </div>
-    <ul class="survey-list" id="survey-list"></ul>
-    <div class="form-hint" style="margin-top:12px;">Tip — paste all addresses into your email client's BCC field with the template below to batch-request updates.</div>
-    <div class="survey-copy-area" id="survey-template"></div>
-  </div>
-</div>
 
 <script src="data/treatment-programs.js"></script>
 <script src="data/wait-times.js"></script>
@@ -386,11 +331,10 @@ function reportedLabel(snap) {
   const age = daysSince(snap.reportedAt);
   const dateStr = new Date(snap.reportedAt + 'T00:00:00')
     .toLocaleDateString('en-CA', { month:'short', day:'numeric' });
-  const byLine = snap.reporterName ? `<span style="display:block;font-size:10px;color:var(--muted);margin-top:1px;">by ${snap.reporterName}</span>` : '';
   if (age > 7) {
-    return `${dateStr} <span class="stale-warn">⚠ ${age}d ago</span>${byLine}`;
+    return `${dateStr} <span class="stale-warn">⚠ ${age}d ago</span>`;
   }
-  return `${dateStr}${byLine}`;
+  return dateStr;
 }
 
 function bedsHtml(snap, prog) {
@@ -425,13 +369,14 @@ let searchQ = '';
 function buildRow(prog) {
   const snap = WAIT_SNAPSHOTS[prog.id] || null;
   const age  = snap ? daysSince(snap.reportedAt) : Infinity;
-  const coordHtml = prog.coord
-    ? `<span class="coord-name">${prog.coord.name}</span>
-       <div class="coord-links">
-         <a href="mailto:${prog.coord.email}">${prog.coord.email}</a>
-         ${prog.coord.phone ? `<a href="tel:${prog.coord.phone.replace(/\D/g,'')}">${prog.coord.phone}</a>` : ''}
-       </div>`
-    : '<span style="color:var(--muted);font-size:12px;">—</span>';
+  const rawPhone = (prog.coord && prog.coord.phone) || prog.phone || '';
+  // Only linkify if it looks like a dialable number (starts with digit, +, or 1-)
+  const isDialable = /^[\d\+1]/.test(rawPhone);
+  const coordHtml = rawPhone
+    ? (isDialable
+        ? `<a href="tel:${rawPhone.replace(/\D/g,'')}" style="font-size:12px;">${rawPhone}</a>`
+        : `<span style="font-size:12px;color:var(--muted);">${rawPhone}</span>`)
+    : '<span style="font-size:12px;color:var(--muted);">—</span>';
 
   const notesAttr = (snap && snap.notes)
     ? ` title="${snap.notes.replace(/"/g,'&quot;')}"` : '';
@@ -576,15 +521,12 @@ function openReportModal(id) {
   if (id) rfFacility.value = id;
   // Pre-fill coordinator name if known
   if (id) {
-    const prog = funded.find(p => p.id === id);
-    if (prog && prog.coord) document.getElementById('rf-reporter').value = prog.coord.name;
     const snap = WAIT_SNAPSHOTS[id];
     if (snap) {
       if (snap.waitDays !== null && snap.waitDays !== undefined) document.getElementById('rf-wait').value = snap.waitDays;
       if (snap.bedsAvail !== null && snap.bedsAvail !== undefined) document.getElementById('rf-beds').value = snap.bedsAvail;
       if (snap.expectedDischarges !== null && snap.expectedDischarges !== undefined) document.getElementById('rf-discharges').value = snap.expectedDischarges;
       if (snap.notes) document.getElementById('rf-notes').value = snap.notes;
-      if (snap.reporterName) document.getElementById('rf-reporter').value = snap.reporterName;
     }
   }
   reportModal.classList.add('open');
@@ -623,65 +565,6 @@ document.getElementById('report-form').addEventListener('submit', e => {
   setTimeout(() => reportModal.classList.remove('open'), 1800);
 });
 
-// ── Survey modal ──────────────────────────────────────────────────────────────
-const surveyModal = document.getElementById('survey-modal');
-document.getElementById('btn-survey-open').addEventListener('click', () => {
-  buildSurveyList('');
-  surveyModal.classList.add('open');
-});
-document.getElementById('survey-modal-close').addEventListener('click', () => surveyModal.classList.remove('open'));
-surveyModal.addEventListener('click', e => { if (e.target === surveyModal) surveyModal.classList.remove('open'); });
-
-document.getElementById('survey-search').addEventListener('input', e => {
-  buildSurveyList(e.target.value.toLowerCase());
-});
-
-const SURVEY_SUBJECT = encodeURIComponent('Treatment Availability Update Request – DTES Community Tools');
-const SURVEY_BODY = encodeURIComponent(
-`Hi,
-
-We're updating the DTES Community Tools wait-times dashboard and would appreciate a quick availability report for your program.
-
-Could you please provide:
-  • Current estimated wait time (days from referral to intake)
-  • Beds or spaces currently available
-  • Expected discharges / openings this week
-  • Any intake conditions or priority populations to note
-
-You can submit directly at: https://dtes-community-tools.ca/wait-times.html
-
-Thank you for your time. Reports help clinicians make timely and appropriate referrals.
-
-— DTES Community Tools`
-);
-
-function buildSurveyList(q) {
-  const list = document.getElementById('survey-list');
-  const progs = funded.filter(p => p.coord && (!q || p.name.toLowerCase().includes(q) || p.coord.name.toLowerCase().includes(q)));
-
-  list.innerHTML = progs.map(p => `
-    <li class="survey-item">
-      <div>
-        <div class="survey-item-name">${p.name}</div>
-        <div class="survey-item-email">${p.coord.name} · ${p.coord.email}</div>
-      </div>
-      <a class="btn-send-one" href="mailto:${p.coord.email}?subject=${SURVEY_SUBJECT}&body=${SURVEY_BODY}" target="_blank">Send email</a>
-    </li>
-  `).join('');
-
-  document.getElementById('survey-template').textContent =
-    `To: ${progs.map(p => `${p.coord.name} <${p.coord.email}>`).join(', ')}`;
-}
-
-document.getElementById('btn-copy-all-emails').addEventListener('click', () => {
-  const progs = funded.filter(p => p.coord);
-  const text = progs.map(p => p.coord.email).join(', ');
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('btn-copy-all-emails');
-    btn.textContent = 'Copied!';
-    setTimeout(() => { btn.textContent = 'Copy all email addresses'; }, 2000);
-  });
-});
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 // Default sort: shortest wait first
