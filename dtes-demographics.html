@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 body { min-height: 100vh; display: flex; flex-direction: column; }
 .page-content { flex: 1; background: var(--surface); }
@@ -163,6 +165,24 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
 
 sup { font-size: 9px; color: var(--teal); font-weight: 600; vertical-align: super; }
 
+/* ── Sub-areas map ── */
+.subarea-map-wrap {
+  height: 340px; border-radius: 10px; overflow: hidden;
+  margin: 18px 0 16px; border: 1px solid var(--border);
+  position: relative;
+}
+.subarea-map-wrap .leaflet-container { background: #0d2b26; }
+.subarea-legend {
+  display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 14px;
+}
+.subarea-legend-item {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12px; color: var(--muted);
+}
+.subarea-dot {
+  width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0;
+}
+
 @media (max-width: 640px) {
   .page-header { padding: 32px 20px 28px; }
   .content-wrap { padding: 28px 16px 60px; }
@@ -228,6 +248,22 @@ sup { font-size: 9px; color: var(--teal); font-weight: 600; vertical-align: supe
     </div>
     <div class="callout callout-teal">
       <strong>Boundary note:</strong> Different institutions define the DTES differently. Population and income figures vary significantly depending on whether "DTES" refers to the core Oppenheimer/Hastings sub-area only, or the broader local area including Strathcona and Chinatown. This page uses the City of Vancouver Local Area definition where possible and notes when a narrower boundary applies.
+    </div>
+  </div>
+
+  <!-- SUB-AREAS MAP -->
+  <div class="section-card">
+    <div class="section-eyebrow">Geography</div>
+    <div class="section-title">DTES Sub-areas</div>
+    <div class="section-body">
+      <p>The City of Vancouver divides the DTES into six planning sub-areas. Each has a distinct character, housing stock, and level of gentrification pressure.</p>
+    </div>
+    <div class="subarea-map-wrap">
+      <div id="subarea-map" style="width:100%;height:100%;"></div>
+    </div>
+    <div class="subarea-legend" id="subarea-legend"></div>
+    <div class="section-body" style="margin-top:14px;">
+      <p><strong>Oppenheimer</strong> and <strong>Hastings Crossing</strong> contain the highest concentration of social services, shelters, and street-involved residents. <strong>Gastown</strong> and parts of <strong>Chinatown</strong> have seen the most acute gentrification, with boutique hotels and market-rate development displacing SRO stock. <strong>Strathcona</strong> retains the strongest established residential community and has an active neighbourhood association. <strong>Victory Square</strong> anchors the western edge and includes the arts district.</p>
     </div>
   </div>
 
@@ -571,6 +607,102 @@ sup { font-size: 9px; color: var(--teal); font-weight: 600; vertical-align: supe
   Data from BC Coroners Service, BCEHS, Statistics Canada, BC Housing, City of Vancouver, and National Inquiry into MMIWG.
   Last reviewed April 2026.
 </footer>
+
+<!-- Sub-areas map init -->
+<script>
+(function () {
+  const SUBAREAS = [
+    {
+      name: 'Victory Square',
+      color: '#7EC8C0',
+      desc: 'Arts district & western gateway; heritage buildings, civic square',
+      coords: [[49.2802,-123.1130],[49.2802,-123.1048],[49.2838,-123.1048],[49.2838,-123.1130]],
+    },
+    {
+      name: 'Gastown',
+      color: '#E8930A',
+      desc: 'Historic district north of Hastings; significant gentrification pressure',
+      coords: [[49.2822,-123.1048],[49.2822,-123.1003],[49.2852,-123.1003],[49.2852,-123.1048]],
+    },
+    {
+      name: 'Chinatown',
+      color: '#c084fc',
+      desc: 'Historic Chinese-Canadian neighbourhood; displacement and heritage loss ongoing',
+      coords: [[49.2720,-123.1048],[49.2720,-123.1003],[49.2822,-123.1003],[49.2822,-123.1048]],
+    },
+    {
+      name: 'Oppenheimer',
+      color: '#60a5fa',
+      desc: 'Core DTES; Oppenheimer Park, highest concentration of services and homelessness',
+      coords: [[49.2798,-123.1003],[49.2798,-123.0965],[49.2852,-123.0965],[49.2852,-123.1003]],
+    },
+    {
+      name: 'Hastings Crossing',
+      color: '#f87171',
+      desc: 'East Hastings corridor; emerging community hub, peer-led harm reduction',
+      coords: [[49.2788,-123.0965],[49.2788,-123.0695],[49.2840,-123.0695],[49.2840,-123.0965]],
+    },
+    {
+      name: 'Strathcona',
+      color: '#34d399',
+      desc: 'Oldest residential neighbourhood; strong community association, mixed income',
+      coords: [[49.2720,-123.1003],[49.2720,-123.0695],[49.2788,-123.0695],[49.2788,-123.1003]],
+    },
+  ];
+
+  const map = L.map('subarea-map', {
+    center: [49.2785, -123.0885],
+    zoom: 14,
+    zoomControl: true,
+    scrollWheelZoom: false,
+    attributionControl: false,
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19,
+  }).addTo(map);
+
+  const legend = document.getElementById('subarea-legend');
+
+  SUBAREAS.forEach(sa => {
+    const poly = L.polygon(sa.coords, {
+      color: sa.color,
+      fillColor: sa.color,
+      fillOpacity: 0.22,
+      weight: 2,
+      opacity: 0.75,
+    }).addTo(map);
+
+    poly.bindTooltip(`<strong style="color:${sa.color}">${sa.name}</strong><br><span style="font-size:11px;color:rgba(255,255,255,0.65)">${sa.desc}</span>`, {
+      sticky: true,
+      opacity: 0.97,
+      className: 'subarea-tooltip',
+    });
+
+    // Label in centre of polygon
+    const bounds = poly.getBounds();
+    const centre = bounds.getCenter();
+    L.marker(centre, {
+      icon: L.divIcon({
+        className: '',
+        html: `<div style="color:${sa.color};font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;white-space:nowrap;text-shadow:0 1px 3px #000,0 0 6px #000;pointer-events:none;">${sa.name}</div>`,
+        iconAnchor: [0, 8],
+      }),
+    }).addTo(map);
+
+    // Legend entry
+    const item = document.createElement('div');
+    item.className = 'subarea-legend-item';
+    item.innerHTML = `<span class="subarea-dot" style="background:${sa.color}"></span>${sa.name}`;
+    legend.appendChild(item);
+  });
+
+  // Custom tooltip styling
+  const style = document.createElement('style');
+  style.textContent = `.subarea-tooltip { background: rgba(7,31,27,0.95); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); border-radius: 7px; padding: 7px 10px; font-family: 'DM Sans',sans-serif; font-size: 12px; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.4); } .subarea-tooltip::before { display:none; }`;
+  document.head.appendChild(style);
+})();
+</script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
