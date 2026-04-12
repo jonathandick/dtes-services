@@ -64,6 +64,15 @@ function gen() {
   events.sort((a, b) => b.ts - a.ts);
 }
 
+function timeAgo(ts) {
+  const d = Date.now() - ts, m = Math.floor(d / 6e4);
+  if (m < 1)  return 'just now';
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+
 // Average events per 30-min slot for the current hour-of-day across the full dataset
 function getBaselineRate() {
   const hour = new Date().getHours();

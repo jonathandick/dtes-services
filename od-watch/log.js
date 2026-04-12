@@ -1,14 +1,5 @@
 // ── Event log ─────────────────────────────────────────────────────────────
-// Depends on: data.js (events, COLS)
-
-function timeAgo(ts) {
-  const d = Date.now() - ts, m = Math.floor(d / 6e4);
-  if (m < 1)  return 'just now';
-  if (m < 60) return `${m}m ago`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
-  return `${Math.floor(h / 24)}d ago`;
-}
+// Depends on: data.js (events, COLS, timeAgo)
 
 function renderLog() {
   document.getElementById('log-pane').innerHTML = events.slice(0, 100).map(e => {

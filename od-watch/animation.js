@@ -180,20 +180,18 @@ function animCellCenter(lat, lng) {
   return [Math.round(lat / CELL_SIZE) * CELL_SIZE, Math.round(lng / CELL_SIZE) * CELL_SIZE];
 }
 
-function animDominantSub(subCounts) {
-  let top = "Unknown", max = 0;
-  for (const [k, v] of Object.entries(subCounts)) {
+function animDominant(counts, fallback) {
+  let top = fallback, max = 0;
+  for (const [k, v] of Object.entries(counts)) {
     if (v > max) { max = v; top = k; }
   }
   return top;
 }
 
-function animDominantOut(outcomeCounts) {
-  let top = "Naloxone administered", max = 0;
-  for (const [k, v] of Object.entries(outcomeCounts)) {
-    if (v > max) { max = v; top = k; }
-  }
-  return top;
+function cellColour(cell) {
+  return animColourBy === 'outcome'
+    ? (COLS[animDominant(cell.outcomeCounts, 'Naloxone administered')] || COLS['Naloxone administered']).fill
+    : SUB_COLS[animDominant(cell.subCounts, 'Unknown')] || '#7EC8C0';
 }
 
 function animCellRadius(count) {
@@ -240,9 +238,7 @@ function animUpsertCell(e, isNew) {
   cell.subCounts[e.substance]  = (cell.subCounts[e.substance]  || 0) + 1;
   cell.outcomeCounts[e.outcome] = (cell.outcomeCounts[e.outcome] || 0) + 1;
 
-  const col = animColourBy === 'outcome'
-    ? (COLS[animDominantOut(cell.outcomeCounts)] || COLS["Naloxone administered"]).fill
-    : (SUB_COLS[animDominantSub(cell.subCounts)] || '#7EC8C0');
+  const col = cellColour(cell);
   const r   = animCellRadius(cell.count);
 
   if (!cell.circle) {
@@ -453,10 +449,7 @@ document.querySelectorAll('#colour-by-btns .speed-btn').forEach(b => b.addEventL
     // Cell mode: recolour existing circles in place — no animation reset needed
     animCells.forEach(cell => {
       if (!cell.circle) return;
-      const col = animColourBy === 'outcome'
-        ? (COLS[animDominantOut(cell.outcomeCounts)] || COLS["Naloxone administered"]).fill
-        : (SUB_COLS[animDominantSub(cell.subCounts)] || '#7EC8C0');
-      cell.circle.setStyle({ fillColor: col });
+      cell.circle.setStyle({ fillColor: cellColour(cell) });
     });
   }
   updateMapOverlay();
