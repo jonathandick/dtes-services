@@ -45,7 +45,7 @@
   height: 44px;
   position: sticky;
   top: 0;
-  z-index: 300;
+  z-index: 1000;
   border-bottom: 1px solid rgba(255,255,255,0.06);
   flex-shrink: 0;
 }
@@ -157,7 +157,7 @@
   border-radius: 8px;
   padding: 4px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.35);
-  z-index: 400;
+  z-index: 1100;
 }
 #site-nav .sn-dropdown:hover .sn-menu,
 #site-nav .sn-dropdown:focus-within .sn-menu {
