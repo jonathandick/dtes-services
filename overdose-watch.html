@@ -309,6 +309,14 @@ body {
 }
 .anim-est strong { color: var(--teal-dark); }
 
+/* ── Marker pop animation (CSS, not JS — fires on DOM insert) ── */
+@keyframes marker-pop {
+  0%   { transform: scale(0);   opacity: 0; }
+  55%  { transform: scale(1.7); opacity: 1; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+.mp { animation: marker-pop 0.32s cubic-bezier(0.34, 1.4, 0.64, 1) forwards; }
+
 /* ── Animation map overlay ── */
 #anim-map-overlay {
   display: none; position: absolute; bottom: 40px; left: 50%;
@@ -913,7 +921,7 @@ function animPlay() {
   document.getElementById('btn-play').classList.add('active');
   document.getElementById('anim-map-overlay').classList.add('show');
   // Clear to 0 events immediately before the first rAF fires
-  renderAnim(ANIM.simTime);
+  renderAnimFull(ANIM.simTime);
   animUpdateProgress();
   ANIM.raf = requestAnimationFrame(animFrame);
 }
@@ -958,14 +966,14 @@ function animFrame(realNow) {
 
   if (ANIM.simTime >= ANIM.winEnd) {
     ANIM.simTime = ANIM.winEnd;
-    renderAnim(ANIM.simTime);
+    renderAnimAdditive(ANIM.simTime);
     animUpdateProgress();
     animPause();
     document.getElementById('btn-play').textContent = '▶ Replay';
     return;
   }
 
-  renderAnim(ANIM.simTime);
+  renderAnimAdditive(ANIM.simTime);
   animUpdateProgress();
   ANIM.raf = requestAnimationFrame(animFrame);
 }
@@ -979,44 +987,102 @@ function animUpdateProgress() {
   document.getElementById('amo-time').textContent   = label;
 }
 
+// ── Additive animation rendering ──────────────────────────────────────────
+// Instead of clear+rebuild every frame, only add NEW markers each frame.
+// Markers are never removed during playback — only on reset or scrub.
+// CSS @keyframes handles the pop-in; no per-frame SVG rebuilds needed.
+
+let animRenderedUpTo = 0;          // sim-timestamp of last additive render
+let animCounts = { total:0, nal:0, rev:0, ems:0, fat:0 };
+
+function mkIconAnimNew(outcome) {
+  const c = COLS[outcome] || COLS["Naloxone administered"];
+  const r = outcome === "Fatal" ? 8 : 6;
+  const d = r * 2;
+  return L.divIcon({
+    html: `<div class="mp" style="width:${d}px;height:${d}px;border-radius:50%;background:${c.fill};border:2px solid rgba(255,255,255,0.9);box-shadow:0 1px 6px rgba(0,0,0,0.35);"></div>`,
+    className: '', iconSize: [d, d], iconAnchor: [r, r],
+  });
+}
+
+function mkIconAnimOld(outcome) {
+  // Static icon for already-placed markers (no animation)
+  const c = COLS[outcome] || COLS["Naloxone administered"];
+  const r = outcome === "Fatal" ? 7 : 5;
+  const d = r * 2;
+  return L.divIcon({
+    html: `<div style="width:${d}px;height:${d}px;border-radius:50%;background:${c.fill};opacity:0.7;border:1.5px solid rgba(255,255,255,0.8);box-shadow:0 1px 4px rgba(0,0,0,0.25);"></div>`,
+    className: '', iconSize: [d, d], iconAnchor: [r, r],
+  });
+}
+
+function animUpdateCounts() {
+  document.getElementById('s-total').textContent = animCounts.total.toLocaleString();
+  document.getElementById('s-nal').textContent   = animCounts.nal.toLocaleString();
+  document.getElementById('s-ems').textContent   = animCounts.ems.toLocaleString();
+  document.getElementById('s-fatal').textContent = animCounts.fat.toLocaleString();
+  document.getElementById('mo-nal').textContent  = animCounts.nal.toLocaleString();
+  document.getElementById('mo-rev').textContent  = animCounts.rev.toLocaleString();
+  document.getElementById('mo-ems').textContent  = animCounts.ems.toLocaleString();
+  document.getElementById('mo-fat').textContent  = animCounts.fat.toLocaleString();
+}
+
+/// Additive: only add markers for events that just entered the window.
+// Called every rAF tick — must be very cheap.
+function renderAnimAdditive(upToTs) {
+  const newEvents = events.filter(e =>
+    e.ts > animRenderedUpTo &&
+    e.ts <= upToTs &&
+    e.ts >= ANIM.winStart &&
+    activeO.has(e.outcome)
+  );
+  newEvents.forEach(e => {
+    const m = L.marker([e.lat, e.lng], { icon: mkIconAnimNew(e.outcome) });
+    m.bindPopup(popup(e), { maxWidth: 220 });
+    markers.addLayer(m);
+    animCounts.total++;
+    if (e.outcome === "Naloxone administered") animCounts.nal++;
+    if (e.outcome === "Revived - no EMS")      animCounts.rev++;
+    if (e.outcome === "EMS called")            animCounts.ems++;
+    if (e.outcome === "Fatal")                 animCounts.fat++;
+  });
+  if (newEvents.length) animUpdateCounts();
+  animRenderedUpTo = upToTs;
+}
+
+// Full rebuild — used only for reset and scrub.
+// Renders all events up to upToTs without the pop animation.
+function renderAnimFull(upToTs) {
+  markers.clearLayers();
+  animCounts = { total:0, nal:0, rev:0, ems:0, fat:0 };
+  animRenderedUpTo = ANIM.winStart;
+  if (upToTs <= ANIM.winStart) { animUpdateCounts(); return; }
+  const f = events.filter(e => e.ts >= ANIM.winStart && e.ts <= upToTs && activeO.has(e.outcome));
+  f.forEach(e => {
+    const m = L.marker([e.lat, e.lng], { icon: mkIconAnimOld(e.outcome) });
+    m.bindPopup(popup(e), { maxWidth: 220 });
+    markers.addLayer(m);
+    animCounts.total++;
+    if (e.outcome === "Naloxone administered") animCounts.nal++;
+    if (e.outcome === "Revived - no EMS")      animCounts.rev++;
+    if (e.outcome === "EMS called")            animCounts.ems++;
+    if (e.outcome === "Fatal")                 animCounts.fat++;
+  });
+  animRenderedUpTo = upToTs;
+  animUpdateCounts();
+}
+
 // Click on progress track to scrub
 document.getElementById('anim-track').addEventListener('click', function(e) {
   if (!ANIM.active) return;
   const rect = this.getBoundingClientRect();
   const pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-  ANIM.simTime = ANIM.winStart + pct * (ANIM.winEnd - ANIM.winStart);
+  ANIM.simTime  = ANIM.winStart + pct * (ANIM.winEnd - ANIM.winStart);
   ANIM.realRef  = performance.now();
   ANIM.simRef   = ANIM.simTime;
-  renderAnim(ANIM.simTime);
+  renderAnimFull(ANIM.simTime);   // full rebuild on scrub
   animUpdateProgress();
 });
-
-function renderAnim(upToTs) {
-  markers.clearLayers();
-  // "New" = within last 300ms of real playback time worth of sim time
-  const newWindow = ANIM.speed * 300;
-  const f = events.filter(e => e.ts >= ANIM.winStart && e.ts <= upToTs && activeO.has(e.outcome));
-  f.forEach(e => {
-    const isNew = e.ts >= upToTs - newWindow;
-    const age   = (upToTs - e.ts) / (ANIM.winEnd - ANIM.winStart);
-    const op    = isNew ? 1 : Math.max(0.18, 1 - age * 0.75);
-    const m     = L.marker([e.lat, e.lng], { icon: mkIconAnim(e.outcome, op, isNew) });
-    m.bindPopup(popup(e), { maxWidth: 220 });
-    markers.addLayer(m);
-  });
-  // Update counters
-  const nal = f.filter(e => e.outcome === "Naloxone administered").length;
-  const rev = f.filter(e => e.outcome === "Revived - no EMS").length;
-  const ems = f.filter(e => e.outcome === "EMS called").length;
-  const fat = f.filter(e => e.outcome === "Fatal").length;
-  document.getElementById('s-total').textContent = f.length.toLocaleString();
-  document.getElementById('s-nal').textContent   = nal.toLocaleString();
-  document.getElementById('s-ems').textContent   = ems.toLocaleString();
-  document.getElementById('s-fatal').textContent = fat.toLocaleString();
-  document.getElementById('mo-nal').textContent  = nal.toLocaleString();
-  document.getElementById('mo-rev').textContent  = rev.toLocaleString();
-  document.getElementById('mo-ems').textContent  = ems.toLocaleString();
-  document.getElementById('mo-fat').textContent  = fat.toLocaleString();
 }
 
 function mkIconAnim(outcome, opacity, isNew) {
