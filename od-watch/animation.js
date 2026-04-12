@@ -132,7 +132,7 @@ function animFrame(realNow) {
     ANIM.simRef  = ANIM.simTime;
   }
   const realElapsed = realNow - ANIM.realRef;
-  ANIM.simTime = ANIM.simRef + realElapsed * ANIM.speed;
+  ANIM.simTime = ANIM.simRef + (realElapsed / 1000) * ANIM.speed;
 
   if (ANIM.simTime >= ANIM.winEnd) {
     ANIM.simTime = ANIM.winEnd;
@@ -465,8 +465,8 @@ document.querySelectorAll('#cell-size-btns .speed-btn').forEach(b => b.addEventL
 
 // Speed buttons
 // ── Speed slider (log scale: 1 ms/s real-time → 86 400 000 ms/s = 1 day/s) ────
-const SPEED_MIN_LOG = Math.log(1);
-const SPEED_MAX_LOG = Math.log(86400000);
+const SPEED_MIN_LOG = Math.log(1000);    // 1 sec/s = real time
+const SPEED_MAX_LOG = Math.log(86400000); // 1 day/s
 
 function speedFromSlider(val) {
   return Math.round(Math.exp(SPEED_MIN_LOG + (val / 1000) * (SPEED_MAX_LOG - SPEED_MIN_LOG)));
