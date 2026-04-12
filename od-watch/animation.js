@@ -74,6 +74,7 @@ function animPlay() {
     animSetBounds();
     ANIM.simTime = ANIM.winStart;
     animClearCells();
+    markers.clearLayers(); // hide live-view dots while animating
     animCounts = { total:0, nal:0, rev:0, ems:0, fat:0 };
     animRenderedUpTo = ANIM.winStart;
     animUpdateCounts();
