@@ -427,7 +427,6 @@ body {
       <div class="tab" data-pane="animate">Animate</div>
       <div class="tab" data-pane="record">Record</div>
       <div class="tab" data-pane="log">Log</div>
-      <div class="tab" data-pane="charts">Charts</div>
     </div>
 
     <!-- FILTER PANE -->
@@ -624,31 +623,6 @@ body {
     <!-- LOG PANE -->
     <div id="log-pane" class="pane"></div>
 
-    <!-- CHARTS PANE -->
-    <div id="charts-pane" class="pane">
-      <div style="padding:14px 16px 0;">
-        <div class="sec-label">Date range</div>
-        <div class="anim-date-row">
-          <div class="anim-date-field">
-            <label class="anim-date-label">From</label>
-            <input type="datetime-local" id="chart-date-start" class="anim-date-input">
-          </div>
-          <div class="anim-date-field">
-            <label class="anim-date-label">To</label>
-            <input type="datetime-local" id="chart-date-end" class="anim-date-input">
-          </div>
-        </div>
-        <div class="time-btns" id="chart-window-btns" style="margin-top:8px;">
-          <button class="time-btn" data-h="24">24 hrs</button>
-          <button class="time-btn" data-h="168">7 days</button>
-          <button class="time-btn active" data-h="720">30 days</button>
-          <button class="time-btn" data-h="1440">60 days</button>
-        </div>
-      </div>
-      <div style="flex:1;min-height:0;padding:12px 10px 10px;display:flex;align-items:stretch;">
-        <canvas id="od-chart"></canvas>
-      </div>
-    </div>
 
   </div><!-- /panel -->
 
@@ -803,8 +777,7 @@ document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () =>
   document.querySelectorAll('.pane').forEach(x => x.classList.remove('active'));
   t.classList.add('active');
   document.getElementById(t.dataset.pane + '-pane').classList.add('active');
-  if (t.dataset.pane === 'log')    renderLog();
-  if (t.dataset.pane === 'charts') renderChart();
+  if (t.dataset.pane === 'log') renderLog();
   if (t.dataset.pane !== 'animate' && ANIM.active) {
     // Keep overlay visible but don't interfere with normal tab use
   }
@@ -1342,7 +1315,6 @@ function initAnimChart() {
     return b;
   });
 
-  // Pre-bucket all events (we reveal them progressively)
   events.forEach(e => {
     if (e.ts < ANIM.winStart || e.ts >= ANIM.winEnd) return;
     if (!ANIM.filterOuts.has(e.outcome) || !ANIM.filterSubs.has(e.substance)) return;
@@ -1364,19 +1336,29 @@ function initAnimChart() {
 
   animChartLastBin = -1;
 
-  const nullData = () => Array(numBins).fill(null);
+  // Dataset layout: [0..N-1] per-bin (left axis y), [N..2N-1] cumulative (right axis y2)
+  // where N = 1 (total) + CHART_SUBS.length
+  const nd = () => Array(numBins).fill(null);
   const datasets = [
-    { label:'Total', data: nullData(), borderColor:'#FFFFFF', backgroundColor:'rgba(255,255,255,0.06)',
-      borderWidth:2, pointRadius:0, tension:0.4, fill:false, order:0 },
+    // ── Per-bin (solid, left axis) ──
+    { label:'Total', data:nd(), borderColor:'#FFFFFF', borderWidth:2,
+      pointRadius:0, tension:0.4, fill:false, yAxisID:'y', order:0 },
     ...CHART_SUBS.map(s => ({
-      label: s.key, data: nullData(),
-      borderColor: s.color, backgroundColor: s.color + '15',
-      borderWidth:1.5, pointRadius:0, tension:0.4, fill:false, order:1,
+      label:s.key, data:nd(), borderColor:s.color, borderWidth:1.5,
+      pointRadius:0, tension:0.4, fill:false, yAxisID:'y', order:1,
+    })),
+    // ── Cumulative (dashed, right axis) ──
+    { label:'Total (cumul.)', data:nd(), borderColor:'rgba(255,255,255,0.45)', borderWidth:1.5,
+      borderDash:[5,3], pointRadius:0, tension:0.4, fill:false, yAxisID:'y2', order:2 },
+    ...CHART_SUBS.map(s => ({
+      label:s.key+' (cumul.)', data:nd(), borderColor:s.color+'99', borderWidth:1,
+      borderDash:[4,3], pointRadius:0, tension:0.4, fill:false, yAxisID:'y2', order:3,
     })),
   ];
 
   if (animChart) { animChart.destroy(); animChart = null; }
 
+  const N = 1 + CHART_SUBS.length; // number of keys (total + subs)
   const ctx = document.getElementById('anim-od-chart').getContext('2d');
   animChart = new Chart(ctx, {
     type: 'line',
@@ -1386,21 +1368,39 @@ function initAnimChart() {
       interaction: { mode:'index', intersect:false },
       plugins: {
         legend: {
-          labels: { color:'rgba(255,255,255,0.55)', font:{ family:"'DM Sans',sans-serif", size:10 },
-                    boxWidth:8, padding:8 },
+          labels: {
+            // Only show per-bin datasets in legend (not cumulative duplicates)
+            filter: (item) => item.datasetIndex < N,
+            color:'rgba(255,255,255,0.55)', font:{ family:"'DM Sans',sans-serif", size:10 },
+            boxWidth:8, padding:8,
+          },
         },
         tooltip: {
           backgroundColor:'rgba(7,31,27,0.95)', borderColor:'rgba(255,255,255,0.1)', borderWidth:1,
           titleColor:'#fff', bodyColor:'rgba(255,255,255,0.7)',
           titleFont:{ family:"'DM Sans',sans-serif", size:11 },
           bodyFont: { family:"'DM Sans',sans-serif", size:11 },
+          callbacks: {
+            label: ctx => {
+              const isCumul = ctx.datasetIndex >= N;
+              const v = ctx.raw;
+              if (v === null) return null;
+              return ` ${ctx.dataset.label}: ${v}${isCumul ? ' (running total)' : ''}`;
+            }
+          }
         },
       },
       scales: {
-        x: { ticks:{ color:'rgba(255,255,255,0.3)', font:{size:9}, maxRotation:30, maxTicksLimit:8 },
-             grid: { color:'rgba(255,255,255,0.04)' } },
-        y: { ticks:{ color:'rgba(255,255,255,0.3)', font:{size:9} },
-             grid: { color:'rgba(255,255,255,0.04)' }, beginAtZero:true },
+        x:  { ticks:{ color:'rgba(255,255,255,0.3)', font:{size:9}, maxRotation:30, maxTicksLimit:8 },
+               grid:{ color:'rgba(255,255,255,0.04)' } },
+        y:  { position:'left', beginAtZero:true,
+               ticks:{ color:'rgba(255,255,255,0.3)', font:{size:9} },
+               grid:{ color:'rgba(255,255,255,0.04)' },
+               title:{ display:true, text:'per period', color:'rgba(255,255,255,0.2)', font:{size:9} } },
+        y2: { position:'right', beginAtZero:true,
+               ticks:{ color:'rgba(255,255,255,0.2)', font:{size:9} },
+               grid:{ drawOnChartArea:false },
+               title:{ display:true, text:'running total', color:'rgba(255,255,255,0.2)', font:{size:9} } },
       },
     },
   });
@@ -1417,17 +1417,21 @@ function updateAnimChart(upToTs) {
   if (bin === animChartLastBin || bin < 0) return;
   animChartLastBin = bin;
 
-  animChart.data.datasets.forEach((ds, di) => {
-    const key = di === 0 ? 'total' : CHART_SUBS[di - 1].key;
-    for (let i = 0; i <= bin; i++) {
-      ds.data[i] = animChartBins[i][key];
-    }
+  const allKeys = ['total', ...CHART_SUBS.map(s => s.key)];
+  const N = allKeys.length;
+
+  allKeys.forEach((key, ki) => {
+    // Per-bin dataset
+    const perDs = animChart.data.datasets[ki];
+    for (let i = 0; i <= bin; i++) perDs.data[i] = animChartBins[i][key];
+    // Cumulative dataset
+    const cumDs = animChart.data.datasets[ki + N];
+    let sum = 0;
+    for (let i = 0; i <= bin; i++) { sum += animChartBins[i][key]; cumDs.data[i] = sum; }
   });
+
   animChart.update('none');
 }
-
-// ── Charts tab (static explorer) ──────────────────────────────────────────
-let odChart = null;
 
 const CHART_SUBS = [
   { key: "Fentanyl",                color: "#D94040" },
@@ -1438,141 +1442,6 @@ const CHART_SUBS = [
   { key: "Unknown",                 color: "#7EC8C0" },
 ];
 
-function chartGetRange() {
-  const s = document.getElementById('chart-date-start');
-  const e = document.getElementById('chart-date-end');
-  if (s.value && e.value) {
-    return { start: new Date(s.value).getTime(), end: new Date(e.value).getTime() };
-  }
-  const end   = Date.now();
-  const start = end - 720 * 3600000; // default 30d
-  return { start, end };
-}
-
-function renderChart() {
-  const { start, end } = chartGetRange();
-  const span = end - start;
-
-  // Choose bin size based on span
-  let binMs;
-  if      (span <= 2  * 86400000) binMs = 3600000;        // ≤2d → 1h bins
-  else if (span <= 14 * 86400000) binMs = 6 * 3600000;    // ≤14d → 6h bins
-  else if (span <= 60 * 86400000) binMs = 86400000;       // ≤60d → 1d bins
-  else                             binMs = 7 * 86400000;   // >60d → 1w bins
-
-  const numBins = Math.ceil(span / binMs);
-  const labels  = [];
-  const bins    = Array.from({ length: numBins }, () => ({ total: 0 }));
-  CHART_SUBS.forEach(s => bins.forEach(b => { b[s.key] = 0; }));
-
-  for (let i = 0; i < numBins; i++) {
-    const ts = start + i * binMs;
-    const d  = new Date(ts);
-    if      (binMs < 86400000)     labels.push(d.toLocaleString('en-CA', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }));
-    else if (binMs === 86400000)   labels.push(d.toLocaleString('en-CA', { month:'short', day:'numeric' }));
-    else                            labels.push(d.toLocaleString('en-CA', { month:'short', day:'numeric' }));
-  }
-
-  events.forEach(e => {
-    if (e.ts < start || e.ts >= end) return;
-    const i = Math.floor((e.ts - start) / binMs);
-    if (i < 0 || i >= numBins) return;
-    bins[i].total++;
-    if (bins[i][e.substance] !== undefined) bins[i][e.substance]++;
-  });
-
-  const datasets = [
-    {
-      label: 'Total',
-      data: bins.map(b => b.total),
-      borderColor: '#FFFFFF',
-      backgroundColor: 'rgba(255,255,255,0.08)',
-      borderWidth: 2,
-      pointRadius: 0,
-      tension: 0.3,
-      fill: false,
-      order: 0,
-    },
-    ...CHART_SUBS.map(s => ({
-      label: s.key,
-      data: bins.map(b => b[s.key]),
-      borderColor: s.color,
-      backgroundColor: s.color + '22',
-      borderWidth: 1.5,
-      pointRadius: 0,
-      tension: 0.3,
-      fill: false,
-      order: 1,
-    })),
-  ];
-
-  if (odChart) {
-    odChart.data.labels   = labels;
-    odChart.data.datasets = datasets;
-    odChart.update('none');
-    return;
-  }
-
-  const ctx = document.getElementById('od-chart').getContext('2d');
-  odChart = new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: {
-          labels: {
-            color: 'rgba(255,255,255,0.6)',
-            font: { family: "'DM Sans', sans-serif", size: 10 },
-            boxWidth: 10, padding: 8,
-          },
-        },
-        tooltip: {
-          backgroundColor: 'rgba(7,31,27,0.95)',
-          borderColor: 'rgba(255,255,255,0.1)',
-          borderWidth: 1,
-          titleColor: '#fff',
-          bodyColor: 'rgba(255,255,255,0.7)',
-          titleFont: { family: "'DM Sans', sans-serif", size: 11 },
-          bodyFont:  { family: "'DM Sans', sans-serif", size: 11 },
-        },
-      },
-      scales: {
-        x: {
-          ticks: { color: 'rgba(255,255,255,0.35)', font: { size: 9 }, maxRotation: 45, maxTicksLimit: 10 },
-          grid:  { color: 'rgba(255,255,255,0.05)' },
-        },
-        y: {
-          ticks: { color: 'rgba(255,255,255,0.35)', font: { size: 9 } },
-          grid:  { color: 'rgba(255,255,255,0.05)' },
-          beginAtZero: true,
-        },
-      },
-    },
-  });
-}
-
-// Chart date/window controls
-document.querySelectorAll('#chart-window-btns .time-btn').forEach(b => b.addEventListener('click', () => {
-  document.querySelectorAll('#chart-window-btns .time-btn').forEach(x => x.classList.remove('active'));
-  b.classList.add('active');
-  const h   = +b.dataset.h;
-  const end = new Date();
-  const start = new Date(end.getTime() - h * 3600000);
-  const toLocal = d => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-  document.getElementById('chart-date-start').value = toLocal(start);
-  document.getElementById('chart-date-end').value   = toLocal(end);
-  renderChart();
-}));
-['chart-date-start', 'chart-date-end'].forEach(id => {
-  document.getElementById(id).addEventListener('change', () => {
-    document.querySelectorAll('#chart-window-btns .time-btn').forEach(b => b.classList.remove('active'));
-    renderChart();
-  });
-});
 
 // ── Init ──────────────────────────────────────────────────────────────────
 gen();
