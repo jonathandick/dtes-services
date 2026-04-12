@@ -63,3 +63,11 @@ function gen() {
   }
   events.sort((a, b) => b.ts - a.ts);
 }
+
+// Average events per 30-min slot for the current hour-of-day across the full dataset
+function getBaselineRate() {
+  const hour = new Date().getHours();
+  const sameHour = events.filter(e => new Date(e.ts).getHours() === hour);
+  // 60 days × 2 half-hour slots per hour = 120 historical slots
+  return sameHour.length / 120;
+}

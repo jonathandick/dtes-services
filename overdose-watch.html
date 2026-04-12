@@ -15,6 +15,13 @@
 
 <script src="nav.js"></script>
 
+<!-- ── Spike alert banner ── -->
+<div id="spike-banner">
+  <span class="spike-icon">⚡</span>
+  <span id="spike-msg"></span>
+  <button class="spike-dismiss" onclick="document.getElementById('spike-banner').classList.remove('show')">Dismiss</button>
+</div>
+
 <!-- ── Mock data banner ── -->
 <div id="mock-banner">
   <span class="mock-chip">⚠ Mock Data</span>
@@ -87,6 +94,18 @@
         </div>
       </div>
 
+      <div>
+        <div class="sec-label">Coverage layer</div>
+        <label class="layer-toggle" id="gap-chip">
+          <input type="checkbox" id="gap-toggle" onchange="showGaps=this.checked;document.getElementById('gap-chip').classList.toggle('on',this.checked);render()">
+          <span class="layer-dots">
+            <span class="chip-dot" style="background:#D94040;opacity:0.75"></span>
+            <span class="chip-dot" style="background:#2EA86B;opacity:0.75"></span>
+          </span>
+          Show SCS coverage gaps on map
+        </label>
+      </div>
+
       <hr class="divider">
 
       <div>
@@ -98,6 +117,20 @@
           <div class="stat-box red"><div class="n" id="s-fatal">—</div><div class="l">Fatal</div></div>
         </div>
       </div>
+
+      <div>
+        <div class="sec-label">Hot blocks</div>
+        <div class="hot-blocks-panel">
+          <div id="hot-blocks-list"><div class="hot-empty">—</div></div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <button class="briefing-btn" onclick="showBriefing()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Generate shift briefing
+      </button>
 
       <hr class="divider">
 
@@ -293,7 +326,21 @@
 
 </div><!-- /app-body -->
 
+<!-- ── Briefing modal ── -->
+<div id="briefing-modal" onclick="if(event.target===this)closeBriefing()">
+  <div class="briefing-box">
+    <div class="briefing-head">Shift Briefing</div>
+    <p class="briefing-note">Plain-language summary of the current filter window. Copy into a shift handover message or read aloud.</p>
+    <textarea id="briefing-text" readonly></textarea>
+    <div class="briefing-actions">
+      <button class="briefing-close" onclick="closeBriefing()">Close</button>
+      <button id="copy-btn" onclick="copyBriefing()">Copy to clipboard</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="data/services.js"></script>
 <script src="od-watch/data.js"></script>
 <script src="od-watch/map.js"></script>
 <script src="od-watch/record.js"></script>
@@ -306,6 +353,8 @@ gen();
 render();
 animSetBounds();
 animUpdateEst();
+checkForSpike();
+setInterval(checkForSpike, 60000);
 </script>
 </body>
 </html>
