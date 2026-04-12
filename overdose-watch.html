@@ -209,8 +209,18 @@ body {
 .log-time { font-size: 11px; color: var(--muted); white-space: nowrap; }
 
 /* ── Map ── */
-#map-wrap { flex: 1; position: relative; }
-#map { width: 100%; height: 100%; }
+#map-wrap { flex: 1; position: relative; display: flex; flex-direction: column; }
+#map { width: 100%; flex: 1; min-height: 0; }
+
+/* ── Animated chart panel ── */
+#anim-chart-panel {
+  height: 0; overflow: hidden; flex-shrink: 0;
+  background: rgba(4,20,18,0.97);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  transition: height 0.25s ease;
+}
+#anim-chart-panel.show { height: 200px; }
+#anim-chart-panel canvas { display: block; }
 .leaflet-container { font-family: var(--font-body); }
 .leaflet-popup-content-wrapper { border-radius: 10px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important; border: 1px solid var(--border); }
 .leaflet-popup-content { margin: 12px 14px !important; font-family: var(--font-body); }
@@ -646,6 +656,9 @@ body {
   <div id="map-wrap">
     <div id="pick-hint">📍 Click anywhere on the map to place the event marker</div>
     <div id="map"></div>
+    <div id="anim-chart-panel">
+      <canvas id="anim-od-chart"></canvas>
+    </div>
     <div id="anim-map-overlay">
       <div class="amo-label">▶ Animating</div>
       <div class="amo-time" id="amo-time">—</div>
@@ -1044,6 +1057,7 @@ function animPlay() {
   document.getElementById('btn-play').textContent = '⏸ Pause';
   document.getElementById('btn-play').classList.add('active');
   document.getElementById('anim-map-overlay').classList.add('show');
+  initAnimChart();
   // Clear to 0 events immediately before the first rAF fires
   renderAnimFull(ANIM.simTime);
   animUpdateProgress();
@@ -1073,6 +1087,8 @@ function animReset() {
   document.getElementById('anim-current-time').innerHTML = '—<span>current time</span>';
   document.getElementById('amo-time').textContent   = '—';
   document.getElementById('anim-map-overlay').classList.remove('show');
+  document.getElementById('anim-chart-panel').classList.remove('show');
+  if (animChart) { animChart.destroy(); animChart = null; }
   animSetBounds();
   render();
 }
@@ -1091,6 +1107,7 @@ function animFrame(realNow) {
   if (ANIM.simTime >= ANIM.winEnd) {
     ANIM.simTime = ANIM.winEnd;
     renderAnimAdditive(ANIM.simTime);
+    updateAnimChart(ANIM.simTime);
     animUpdateProgress();
     animPause();
     document.getElementById('btn-play').textContent = '▶ Replay';
@@ -1098,6 +1115,7 @@ function animFrame(realNow) {
   }
 
   renderAnimAdditive(ANIM.simTime);
+  updateAnimChart(ANIM.simTime);
   animUpdateProgress();
   ANIM.raf = requestAnimationFrame(animFrame);
 }
@@ -1304,7 +1322,111 @@ document.querySelectorAll('#speed-btns .speed-btn').forEach(b => b.addEventListe
   animUpdateEst();
 }));
 
-// ── Charts ────────────────────────────────────────────────────────────────
+// ── Animated chart (live, alongside the map) ──────────────────────────────
+let animChart     = null;
+let animChartBinMs  = 3600000;
+let animChartLastBin = -1;
+let animChartBins   = [];
+
+function initAnimChart() {
+  const span = ANIM.winEnd - ANIM.winStart;
+  if      (span <= 2  * 86400000) animChartBinMs = 3600000;
+  else if (span <= 14 * 86400000) animChartBinMs = 6 * 3600000;
+  else                             animChartBinMs = 86400000;
+
+  const numBins = Math.ceil(span / animChartBinMs);
+  const labels  = [];
+  animChartBins = Array.from({ length: numBins }, () => {
+    const b = { total: 0 };
+    CHART_SUBS.forEach(s => { b[s.key] = 0; });
+    return b;
+  });
+
+  // Pre-bucket all events (we reveal them progressively)
+  events.forEach(e => {
+    if (e.ts < ANIM.winStart || e.ts >= ANIM.winEnd) return;
+    if (!ANIM.filterOuts.has(e.outcome) || !ANIM.filterSubs.has(e.substance)) return;
+    const i = Math.floor((e.ts - ANIM.winStart) / animChartBinMs);
+    if (i >= 0 && i < numBins) {
+      animChartBins[i].total++;
+      if (animChartBins[i][e.substance] !== undefined) animChartBins[i][e.substance]++;
+    }
+  });
+
+  for (let i = 0; i < numBins; i++) {
+    const ts = ANIM.winStart + i * animChartBinMs;
+    const d  = new Date(ts);
+    labels.push(animChartBinMs < 86400000
+      ? d.toLocaleString('en-CA', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })
+      : d.toLocaleString('en-CA', { month:'short', day:'numeric' })
+    );
+  }
+
+  animChartLastBin = -1;
+
+  const nullData = () => Array(numBins).fill(null);
+  const datasets = [
+    { label:'Total', data: nullData(), borderColor:'#FFFFFF', backgroundColor:'rgba(255,255,255,0.06)',
+      borderWidth:2, pointRadius:0, tension:0.4, fill:false, order:0 },
+    ...CHART_SUBS.map(s => ({
+      label: s.key, data: nullData(),
+      borderColor: s.color, backgroundColor: s.color + '15',
+      borderWidth:1.5, pointRadius:0, tension:0.4, fill:false, order:1,
+    })),
+  ];
+
+  if (animChart) { animChart.destroy(); animChart = null; }
+
+  const ctx = document.getElementById('anim-od-chart').getContext('2d');
+  animChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      interaction: { mode:'index', intersect:false },
+      plugins: {
+        legend: {
+          labels: { color:'rgba(255,255,255,0.55)', font:{ family:"'DM Sans',sans-serif", size:10 },
+                    boxWidth:8, padding:8 },
+        },
+        tooltip: {
+          backgroundColor:'rgba(7,31,27,0.95)', borderColor:'rgba(255,255,255,0.1)', borderWidth:1,
+          titleColor:'#fff', bodyColor:'rgba(255,255,255,0.7)',
+          titleFont:{ family:"'DM Sans',sans-serif", size:11 },
+          bodyFont: { family:"'DM Sans',sans-serif", size:11 },
+        },
+      },
+      scales: {
+        x: { ticks:{ color:'rgba(255,255,255,0.3)', font:{size:9}, maxRotation:30, maxTicksLimit:8 },
+             grid: { color:'rgba(255,255,255,0.04)' } },
+        y: { ticks:{ color:'rgba(255,255,255,0.3)', font:{size:9} },
+             grid: { color:'rgba(255,255,255,0.04)' }, beginAtZero:true },
+      },
+    },
+  });
+
+  document.getElementById('anim-chart-panel').classList.add('show');
+}
+
+function updateAnimChart(upToTs) {
+  if (!animChart) return;
+  const bin = Math.min(
+    Math.floor((upToTs - ANIM.winStart) / animChartBinMs),
+    animChartBins.length - 1
+  );
+  if (bin === animChartLastBin || bin < 0) return;
+  animChartLastBin = bin;
+
+  animChart.data.datasets.forEach((ds, di) => {
+    const key = di === 0 ? 'total' : CHART_SUBS[di - 1].key;
+    for (let i = 0; i <= bin; i++) {
+      ds.data[i] = animChartBins[i][key];
+    }
+  });
+  animChart.update('none');
+}
+
+// ── Charts tab (static explorer) ──────────────────────────────────────────
 let odChart = null;
 
 const CHART_SUBS = [
