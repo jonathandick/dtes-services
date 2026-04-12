@@ -464,13 +464,58 @@ document.querySelectorAll('#cell-size-btns .speed-btn').forEach(b => b.addEventL
 }));
 
 // Speed buttons
-document.querySelectorAll('#speed-btns .speed-btn').forEach(b => b.addEventListener('click', () => {
-  document.querySelectorAll('#speed-btns .speed-btn').forEach(x => x.classList.remove('active'));
-  b.classList.add('active');
-  ANIM.speed = +b.dataset.speed;
+// ── Speed slider (log scale: 1 ms/s real-time → 86 400 000 ms/s = 1 day/s) ────
+const SPEED_MIN_LOG = Math.log(1);
+const SPEED_MAX_LOG = Math.log(86400000);
+
+function speedFromSlider(val) {
+  return Math.round(Math.exp(SPEED_MIN_LOG + (val / 1000) * (SPEED_MAX_LOG - SPEED_MIN_LOG)));
+}
+function sliderFromSpeed(speed) {
+  return Math.round(((Math.log(speed) - SPEED_MIN_LOG) / (SPEED_MAX_LOG - SPEED_MIN_LOG)) * 1000);
+}
+function speedLabel(ms) {
+  if (ms < 1000)       return `${ms} ms/s`;
+  if (ms < 60000)      return `${Math.round(ms/1000)} sec/s`;
+  if (ms < 3600000)    return `${Math.round(ms/60000)} min/s`;
+  if (ms < 86400000)   return `${+(ms/3600000).toFixed(1)} hr/s`;
+  return '1 day/s';
+}
+
+function applySpeed(speed) {
+  ANIM.speed = speed;
   if (ANIM.active && !ANIM.paused) {
     ANIM.realRef = performance.now();
     ANIM.simRef  = ANIM.simTime;
   }
+  // Sync slider
+  const slider = document.getElementById('speed-slider');
+  if (slider) {
+    slider.value = sliderFromSpeed(speed);
+    const lbl = document.getElementById('speed-slider-label');
+    if (lbl) lbl.textContent = speedLabel(speed);
+  }
   animUpdateEst();
+}
+
+const speedSlider = document.getElementById('speed-slider');
+if (speedSlider) {
+  speedSlider.addEventListener('input', () => {
+    const speed = speedFromSlider(+speedSlider.value);
+    document.getElementById('speed-slider-label').textContent = speedLabel(speed);
+    // Deactivate all speed buttons — slider is now in control
+    document.querySelectorAll('#speed-btns .speed-btn').forEach(x => x.classList.remove('active'));
+    ANIM.speed = speed;
+    if (ANIM.active && !ANIM.paused) {
+      ANIM.realRef = performance.now();
+      ANIM.simRef  = ANIM.simTime;
+    }
+    animUpdateEst();
+  });
+}
+
+document.querySelectorAll('#speed-btns .speed-btn').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#speed-btns .speed-btn').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  applySpeed(+b.dataset.speed);
 }));

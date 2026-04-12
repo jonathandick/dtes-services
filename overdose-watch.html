@@ -285,6 +285,13 @@
           <button class="speed-btn" data-speed="21600000">6 hr/s</button>
           <button class="speed-btn" data-speed="86400000">1 day/s</button>
         </div>
+        <div style="margin-top:10px;">
+          <input type="range" id="speed-slider" min="0" max="1000" step="1" value="788"
+            style="width:100%;accent-color:var(--teal);cursor:pointer;">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:2px;">
+            <span>real-time</span><span id="speed-slider-label" style="color:var(--teal);font-weight:500;">30 min/s</span><span>1 day/s</span>
+          </div>
+        </div>
         <div class="anim-est" id="anim-est" style="margin-top:8px;">—</div>
       </div>
 
