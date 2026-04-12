@@ -446,8 +446,20 @@ document.querySelectorAll('#colour-by-btns .speed-btn').forEach(b => b.addEventL
   document.querySelectorAll('#colour-by-btns .speed-btn').forEach(x => x.classList.remove('active'));
   b.classList.add('active');
   animColourBy = b.dataset.colourby;
-  if (ANIM.active) animReset();
-  else updateMapOverlay();
+  if (CELL_SIZE === 0) {
+    // Individual mode: markers carry no event reference, must rebuild to recolour
+    renderAnimFull(ANIM.simTime);
+  } else {
+    // Cell mode: recolour existing circles in place — no animation reset needed
+    animCells.forEach(cell => {
+      if (!cell.circle) return;
+      const col = animColourBy === 'outcome'
+        ? (COLS[animDominantOut(cell.outcomeCounts)] || COLS["Naloxone administered"]).fill
+        : (SUB_COLS[animDominantSub(cell.subCounts)] || '#7EC8C0');
+      cell.circle.setStyle({ fillColor: col });
+    });
+  }
+  updateMapOverlay();
 }));
 
 // Cell size buttons
