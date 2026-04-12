@@ -1,11 +1,33 @@
 // ── Animated chart (live, alongside the map) ──────────────────────────────
-// Depends on: Chart.js (global), data.js (events), animation.js (ANIM)
+// Depends on: Chart.js (global), data.js (events, COLS), animation.js (ANIM, SUB_COLS, SUB_LABELS, animColourBy)
 
-// Derive from SUB_COLS defined in animation.js (loaded first)
-const CHART_SUBS = Object.entries(SUB_COLS).map(([key, color]) => ({ key, color }));
+// Active chart series — set in initAnimChart, read by plugin + updateAnimChart
+let animChartSeries = [];
 
-// ── Vertical cursor plugin ────────────────────────────────────────────────────
-// Replaces the blocking tooltip popup with a dashed cursor line + compact label.
+function getChartSeries() {
+  if (typeof animColourBy !== 'undefined' && animColourBy === 'outcome') {
+    return Object.entries(COLS).map(([key, col]) => ({ key, color: col.fill, label: col.label }));
+  }
+  return Object.entries(SUB_COLS).map(([key, color]) => ({ key, color, label: SUB_LABELS[key] || key }));
+}
+
+// ── Vertical cursor + hover tooltip plugin ────────────────────────────────────
+// Draws a dashed cursor line at the hovered index, then a compact floating box
+// with one row per series showing "period count · running total".
+function rrect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
 const verticalCursorPlugin = {
   id: 'verticalCursor',
   afterDraw(chart) {
@@ -27,20 +49,58 @@ const verticalCursorPlugin = {
     ctx.stroke();
     ctx.restore();
 
-    // Single combined label: "N this period · N total"
+    // Build one row per series + total header
     const datasets = chart.data.datasets;
-    const N = 1 + CHART_SUBS.length; // per-bin dataset count
-    const perBin = datasets[0].data[idx];
-    const cumul  = datasets[N].data[idx];
-    if (perBin === null || cumul === null) return;
+    const N = 1 + animChartSeries.length; // total + per-series per-bin datasets
+    const rows = [];
 
-    const label = `${perBin} this period  ·  ${cumul} total`;
+    const totalPerBin = datasets[0].data[idx];
+    const totalCumul  = datasets[N].data[idx];
+    if (totalPerBin !== null && totalCumul !== null) {
+      rows.push({ color: '#FFFFFF', label: 'Total', perBin: totalPerBin, cumul: totalCumul });
+    }
+    animChartSeries.forEach((s, i) => {
+      const perBin = datasets[i + 1].data[idx];
+      const cumul  = datasets[N + i + 1].data[idx];
+      if (perBin !== null && cumul !== null) {
+        rows.push({ color: s.color, label: s.label, perBin, cumul });
+      }
+    });
+    if (!rows.length) return;
+
+    const lineH = 14, padX = 8, padY = 5;
+    const boxW  = 175;
+    const boxH  = rows.length * lineH + padY * 2;
+    const toRight = x + boxW + 12 < right;
+    const bx = toRight ? x + 8 : x - boxW - 8;
+    const by = top + 4;
+
     ctx.save();
-    ctx.font = "500 10px 'DM Sans', sans-serif";
-    ctx.fillStyle = 'rgba(255,255,255,0.72)';
-    const rightAligned = x > right - 130;
-    ctx.textAlign = rightAligned ? 'right' : 'left';
-    ctx.fillText(label, rightAligned ? x - 6 : x + 6, top + 11);
+
+    // Background box
+    ctx.fillStyle = 'rgba(7,31,27,0.93)';
+    rrect(ctx, bx, by, boxW, boxH, 5);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.09)';
+    ctx.lineWidth = 1;
+    rrect(ctx, bx, by, boxW, boxH, 5);
+    ctx.stroke();
+
+    // Rows
+    ctx.font = "10px 'DM Sans', sans-serif";
+    rows.forEach((row, i) => {
+      const cy = by + padY + i * lineH + 9;
+      // Colour dot
+      ctx.fillStyle = row.color;
+      ctx.beginPath();
+      ctx.arc(bx + padX + 3, cy - 3, 3, 0, Math.PI * 2);
+      ctx.fill();
+      // Label + combined counts: "N · N total"
+      ctx.fillStyle = i === 0 ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.72)';
+      ctx.textAlign = 'left';
+      ctx.fillText(`${row.label}: ${row.perBin} · ${row.cumul} total`, bx + padX + 11, cy);
+    });
+
     ctx.restore();
   },
 };
@@ -56,11 +116,13 @@ function initAnimChart() {
   else if (span <= 14 * 86400000) animChartBinMs = 6 * 3600000;
   else                             animChartBinMs = 86400000;
 
-  const numBins = Math.ceil(span / animChartBinMs);
-  const labels  = [];
+  animChartSeries = getChartSeries();
+  const numBins   = Math.ceil(span / animChartBinMs);
+  const labels    = [];
+
   animChartBins = Array.from({ length: numBins }, () => {
     const b = { total: 0 };
-    CHART_SUBS.forEach(s => { b[s.key] = 0; });
+    animChartSeries.forEach(s => { b[s.key] = 0; });
     return b;
   });
 
@@ -71,7 +133,8 @@ function initAnimChart() {
     const i = Math.floor((e.ts - ANIM.winStart) / animChartBinMs);
     if (i >= 0 && i < numBins) {
       animChartBins[i].total++;
-      if (animChartBins[i][e.substance] !== undefined) animChartBins[i][e.substance]++;
+      const key = animColourBy === 'outcome' ? e.outcome : e.substance;
+      if (animChartBins[i][key] !== undefined) animChartBins[i][key]++;
     }
   });
 
@@ -87,30 +150,27 @@ function initAnimChart() {
   animChartLastBin = -1;
 
   // Dataset layout: [0..N-1] per-bin (left axis y), [N..2N-1] cumulative (right axis y2)
-  // where N = 1 (total) + CHART_SUBS.length
   const nd = () => Array(numBins).fill(null);
   const datasets = [
-    // Per-bin (solid, left axis)
     { label:'Total', data:nd(), borderColor:'#FFFFFF', borderWidth:2,
       pointRadius:0, tension:0.4, fill:false, yAxisID:'y', order:0 },
-    ...CHART_SUBS.map(s => ({
-      label:s.key, data:nd(), borderColor:s.color, borderWidth:1.5,
+    ...animChartSeries.map(s => ({
+      label: s.label, data:nd(), borderColor:s.color, borderWidth:1.5,
       pointRadius:0, tension:0.4, fill:false, yAxisID:'y', order:1,
     })),
-    // Cumulative (dashed, right axis)
     { label:'Total (cumul.)', data:nd(), borderColor:'rgba(255,255,255,0.45)', borderWidth:1.5,
       borderDash:[5,3], pointRadius:0, tension:0.4, fill:false, yAxisID:'y2', order:2 },
-    ...CHART_SUBS.map(s => ({
-      label:s.key+' (cumul.)', data:nd(), borderColor:s.color+'99', borderWidth:1,
+    ...animChartSeries.map(s => ({
+      label: s.label+' (cumul.)', data:nd(), borderColor:s.color+'99', borderWidth:1,
       borderDash:[4,3], pointRadius:0, tension:0.4, fill:false, yAxisID:'y2', order:3,
     })),
   ];
 
   if (animChart) { animChart.destroy(); animChart = null; }
 
-  const N   = 1 + CHART_SUBS.length;
-  const ctx = document.getElementById('anim-od-chart').getContext('2d');
-  animChart = new Chart(ctx, {
+  const N     = 1 + animChartSeries.length;
+  const ctxEl = document.getElementById('anim-od-chart').getContext('2d');
+  animChart = new Chart(ctxEl, {
     type: 'line',
     data: { labels, datasets },
     plugins: [verticalCursorPlugin],
@@ -154,7 +214,7 @@ function updateAnimChart(upToTs) {
   if (bin === animChartLastBin || bin < 0) return;
   animChartLastBin = bin;
 
-  const allKeys = ['total', ...CHART_SUBS.map(s => s.key)];
+  const allKeys = ['total', ...animChartSeries.map(s => s.key)];
   const N = allKeys.length;
 
   allKeys.forEach((key, ki) => {
