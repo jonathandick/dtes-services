@@ -77,9 +77,11 @@ const verticalCursorPlugin = {
     });
     if (!rows.length) return;
 
+    const dateLabel = chart.data.labels[idx] || '';
     const lineH = 14, padX = 8, padY = 5;
+    const dateH = 16; // extra height for date header
     const boxW  = 175;
-    const boxH  = rows.length * lineH + padY * 2;
+    const boxH  = dateH + rows.length * lineH + padY * 2;
     const toRight = x + boxW + 12 < right;
     const bx = toRight ? x + 8 : x - boxW - 8;
     const by = top + 4;
@@ -95,10 +97,25 @@ const verticalCursorPlugin = {
     rrect(ctx, bx, by, boxW, boxH, 5);
     ctx.stroke();
 
+    // Date header
+    ctx.font = "500 10px 'DM Sans', sans-serif";
+    ctx.fillStyle = 'rgba(126,200,192,0.85)';
+    ctx.textAlign = 'left';
+    ctx.fillText(dateLabel, bx + padX, by + padY + 9);
+
+    // Divider
+    ctx.beginPath();
+    ctx.moveTo(bx + padX, by + dateH);
+    ctx.lineTo(bx + boxW - padX, by + dateH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([]);
+    ctx.stroke();
+
     // Rows
     ctx.font = "10px 'DM Sans', sans-serif";
     rows.forEach((row, i) => {
-      const cy = by + padY + i * lineH + 9;
+      const cy = by + dateH + padY + i * lineH + 9;
       // Colour dot
       ctx.fillStyle = row.color;
       ctx.beginPath();
