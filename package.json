@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "eslint": "^10.2.0",
+    "globals": "^17.5.0"
+  }
+}
