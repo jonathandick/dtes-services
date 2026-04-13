@@ -4,14 +4,10 @@ const CAT_META = {
   "SCS / OPS":                 {color:"#C0392B", icon:"💉"},
   "Primary Care / OAT":        {color:"#1A7A4A", icon:"🩺"},
   "Harm Reduction":            {color:"#D4AC0D", icon:"🧴"},
-  "Detox / WDM":               {color:"#D95F00", icon:"🏥"},
   "Peer / Indigenous":         {color:"#1655A2", icon:"🤝"},
   "Women / Sex Workers":       {color:"#A0306B", icon:"♀"},
-  "Supportive Housing":        {color:"#4A5568", icon:"🏠"},
-  "Shelter / Recovery":        {color:"#6B3FA0", icon:"🛡"},
   "Community / Drop-in":       {color:"#0A7A6B", icon:"🏢"},
   "Emergency Services":        {color:"#CC3300", icon:"🚨"},
-  "Transitional / Acute Care": {color:"#2D3A8C", icon:"🏨"},
   "System Navigation":         {color:"#1A2B6B", icon:"🔬"},
 };
 

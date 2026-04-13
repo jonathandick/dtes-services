@@ -1,6 +1,6 @@
 // services.js — DTES harm reduction & services data for DTES Community Tools
 // Categories: SCS / OPS, OAT / Addiction Medicine, Peer / Indigenous, Women / Sex Workers,
-//             Primary Care, Mental Health, Outreach, System Navigation, Supportive Housing
+//             Primary Care, Mental Health, Outreach, System Navigation, Emergency Services
 
 const BASE_ORGS = [
   // ── SCS / OPS ──────────────────────────────────────────────
@@ -141,16 +141,6 @@ const BASE_ORGS = [
    lat:49.2807, lng:-123.0923,
    desc:"Urban Indigenous primary care hub (all DTES welcome). OAT, HIV care, mental health, dietitian, Elder-led traditional healing, dental. Youth clinic Wed evenings. Formerly VNHS (Vancouver Native Health Society)."},
 
-  // ── TRANSITIONAL / ACUTE ──────────────────────────────────
-  {id:"ctct", name:"CTCT – Community Transitional Care Team", cat:"Transitional / Acute Care",
-   inst:"PHS / VCH / Providence Health Care (St. Paul's HAH)", addr:"Pennsylvania Hotel, 2nd Floor, 401 E Hastings St", phone:"Via St. Paul's / VGH referral only",
-   web:"phs.ca/program/community-transitional-care-team/", hours:"24/7 residential",
-   oat:"Yes – OAT continuation + initiation", scs:"No (harm reduction; active use permitted)", walkin:"No – clinician referral only",
-   flags:{oat:true,"24hr":true},
-   lat:49.2808, lng:-123.104,
-   desc:"Residential acute care for PWUD discharged from St. Paul's or VGH needing IV antibiotics. Private room + kitchen + bathroom in Pennsylvania Hotel. 24/7 nursing and physician coverage, OAT, psychosocial support, 3 meals/day, staff accompaniment to all appointments. Housing secured before every discharge. Nov 2025: formal partnership with St. Paul's Hospital at Home (HAH). Also co-located: Pennsylvania Supported Suites (PSS) – 10 rooms for long-term complex care.",
-   note:"Referral by PHC or VCH clinician only. Active substance use permitted (harm reduction model)."},
-
   // ── HARM REDUCTION / SUPPLY ───────────────────────────────
   {id:"needle-depot", name:"PHS Needle Depot (24/7)", cat:"Harm Reduction",
    inst:"PHS Community Services Society", addr:"Alleyway beside Maple Hotel, ~115 E Hastings", phone:"604-687-7483",
@@ -167,23 +157,6 @@ const BASE_ORGS = [
    flags:{walkin:true},
    lat:49.2807, lng:-123.0819,
    desc:"Dedicated drug checking site. FTIR spectrometer, immunoassay strips, substance ID. Drug alert info. Also available: Insite (FTIR daily), Molson OPS (FTIR Tuesdays). VCH drug alerts: text JOIN to 253787."},
-
-  // ── DETOX / WDM ──────────────────────────────────────────
-  {id:"onsite", name:"Onsite Detox (above Insite)", cat:"Detox / WDM",
-   inst:"PHS Community Services Society / VCH", addr:"137 E Hastings St, 2nd Floor", phone:"604-687-7483 ext.3",
-   web:"phs.ca", hours:"Intake 10am–4am",
-   oat:"Yes", scs:"No", walkin:"Self-referral / drop-in",
-   flags:{oat:true,walkin:true},
-   lat:49.28085, lng:-123.0984,
-   desc:"12-bed opioid detox. 12-hr nursing support. Peer Chillout Lounge. EXCLUDES: alcohol/benzo WD, pregnant, seizure history. Directly above Insite."},
-
-  {id:"van-detox", name:"Vancouver Detox – VCH Withdrawal Management", cat:"Detox / WDM",
-   inst:"Vancouver Coastal Health (VCH)", addr:"377 E 2nd Ave (south of DTES)", phone:"Access Central: 1-866-658-1221",
-   web:"vch.ca", hours:"24/7 via Access Central",
-   oat:"Yes", scs:"No", walkin:"Via Access Central phone",
-   flags:{oat:true,"24hr":true},
-   lat:49.2672, lng:-123.0975,
-   desc:"24-bed medically supervised detox. Physician daily, 24hr nursing. CORE outpatient program. Road to Recovery hub. Urgent cases: <1 day wait. Primary VCH WDM for DTES referrals."},
 
   // ── PERINATAL / YOUTH ─────────────────────────────────────
   {id:"sheway", name:"Sheway Pregnancy Outreach Program", cat:"Women / Sex Workers",
@@ -252,41 +225,6 @@ const BASE_ORGS = [
    lat:49.2810, lng:-123.1082,
    desc:"Canada's largest sex worker org. 300–350 individuals/night. Overnight drop-in, hot meals, showers, nursing, MAP Van (citywide mobile outreach daily/nightly), InReach (shelter visits), naloxone, SUD/health referrals."},
 
-  // ── SHELTER / RECOVERY ────────────────────────────────────
-  {id:"ugm-main", name:"Union Gospel Mission – Main Campus", cat:"Shelter / Recovery",
-   inst:"Union Gospel Mission (faith-based)", addr:"601 E Hastings St", phone:"604-253-3323",
-   web:"ugm.ca", hours:"Meals 1–5:45pm daily; shelter 24/7",
-   oat:"No – abstinence-based", scs:"No", walkin:"Walk-in for meals/shelter",
-   flags:{walkin:true,"24hr":true},
-   lat:49.2807, lng:-123.0858,
-   desc:"80+ yr history. Emergency shelter (92 beds), meals, pre-recovery stabilization, case management, employment, outreach. ⚠️ Does NOT accept methadone/Suboxone in recovery program (Sublocade exception only). Faith-based.",
-   note:"No OAT in recovery program. Sublocade (injectable buprenorphine) only exception."},
-
-  {id:"ugm-women", name:"UGM Women & Families Centre", cat:"Shelter / Recovery",
-   inst:"Union Gospel Mission (faith-based)", addr:"616 E Cordova St", phone:"604-253-4044",
-   web:"ugm.ca", hours:"Meals 2:30–5:45pm daily; shelter 24/7",
-   oat:"No – abstinence-based", scs:"No", walkin:"Walk-in for meals",
-   flags:{walkin:true,women:true,"24hr":true},
-   lat:49.2836, lng:-123.0908,
-   desc:"Women and families. Sanctuary pre-recovery/stabilization (must have confirmed recovery program plan). Faith-based. ⚠️ No methadone/Suboxone in program.",
-   note:"No OAT in recovery program."},
-
-  {id:"new-fountain", name:"New Fountain Shelter (PHS)", cat:"Shelter / Recovery",
-   inst:"PHS Community Services Society", addr:"356 E Hastings St", phone:"604-669-3306",
-   web:"phs.ca", hours:"Daily 7pm–9am",
-   oat:"Referrals", scs:"No", walkin:"Walk-in / low-barrier",
-   flags:{walkin:true},
-   lat:49.2807, lng:-123.0962,
-   desc:"Low-barrier PHS-operated shelter. Open daily 7pm–9am. Meals, harm reduction referrals, housing support. Adjacent to Hazelwood Hotel (also PHS)."},
-
-  {id:"osborn", name:"The Osborn – Shelter (PHS)", cat:"Shelter / Recovery",
-   inst:"PHS Community Services Society", addr:"27 W Hastings St", phone:"604-683-0073",
-   web:"phs.ca/locations/the-osborn/", hours:"24/7",
-   oat:"Referrals", scs:"No", walkin:"Low-barrier",
-   flags:{walkin:true,"24hr":true},
-   lat:49.2806, lng:-123.1075,
-   desc:"Innovative 24/7 low-barrier temporary shelter. Range of supports to enable transition from homelessness to housing. 40 beds – co-ed and women's-only sections. Meals, showers, secure storage."},
-
   // ── COMMUNITY / DROP-IN ───────────────────────────────────
   {id:"carnegie", name:"Carnegie Community Centre", cat:"Community / Drop-in",
    inst:"City of Vancouver", addr:"401 Main St", phone:"604-665-2220",
@@ -336,160 +274,6 @@ const BASE_ORGS = [
    flags:{oat:true,scs:true,walkin:true},
    lat:49.2812, lng:-123.1290,
    desc:"Research and clinical hub. HIV treatment, SAFER safe supply, iOAT research, H2H primary care + SCS. TasP (Treatment as Prevention) model. BCCSU clinical guidelines. Frontline services at H2H (611 Powell)."},
-
-  // ── SUPPORTIVE HOUSING – PHS ──────────────────────────────
-  {id:"phs-penn", name:"Pennsylvania Hotel + Supportive Suites (PHS)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"412 Carrall St", phone:"604-683-0073",
-   web:"phs.ca/locations/pennsylvania-hotel-and-supportive-suites/", hours:"24/7 staffed",
-   oat:"No (CTCT on-site)", scs:"No", walkin:"BC Housing referral",
-   flags:{"24hr":true},
-   lat:49.2802, lng:-123.1043,
-   desc:"Heritage building – founding project of PHS (1991). 44 units supportive housing. CTCT (acute care/IV antibiotics) and PSS (long-term complex care, 10 rooms with 24/7 nursing) on 2nd floor. Co-managed with VCH."},
-
-  {id:"phs-molson-hotel", name:"Molson Hotel (PHS Housing)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"166 E Hastings St", phone:"604-683-0073",
-   web:"phs.ca/locations/molson-hotel/", hours:"24/7 staffed",
-   oat:"No", scs:"Molson OPS adjacent", walkin:"BC Housing referral",
-   flags:{},
-   lat:49.2811, lng:-123.0987,
-   desc:"Built 1911 (former Molson's Bank branch). SRO supportive housing. Molson OPS operates in adjacent alley. PHS mental health workers on-site."},
-
-  {id:"phs-maple", name:"Maple Hotel (PHS Housing)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"177 E Hastings St", phone:"604-683-0073",
-   web:"phs.ca/locations/maple-hotel/", hours:"24/7 staffed",
-   oat:"No", scs:"Needle Depot adjacent", walkin:"BC Housing referral",
-   flags:{},
-   lat:49.2808, lng:-123.0980,
-   desc:"Supported social housing for diverse DTES residents. PHS Needle Depot operates in adjacent alley. Mental health workers on-site."},
-
-  {id:"phs-hazelwood", name:"Hazelwood Hotel (PHS Housing)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"344 E Hastings St", phone:"604-683-0073",
-   web:"phs.ca/locations/hazelwood-hotel/", hours:"24/7 staffed",
-   oat:"No", scs:"No", walkin:"BC Housing referral",
-   flags:{},
-   lat:49.2807, lng:-123.0948,
-   desc:"107 units low-barrier supportive housing. 24/7 PHS mental health workers. Food program (2 meals/day). Adjacent to New Fountain Shelter."},
-
-  {id:"phs-portland", name:"Portland Hotel (PHS Housing)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"20 W Hastings St", phone:"604-683-0073",
-   web:"phs.ca/locations/portland-hotel/", hours:"24/7 staffed",
-   oat:"No", scs:"No", walkin:"BC Housing referral",
-   flags:{},
-   lat:49.2807, lng:-123.1072,
-   desc:"Named after the founding hotel. Supportive housing for formerly hard-to-house individuals. PHS wraparound mental health and social supports on-site."},
-
-  {id:"phs-beacon", name:"Beacon Hotel (PHS Housing)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"7 W Hastings St", phone:"604-683-0073",
-   web:"phs.ca/locations/beacon-hotel/", hours:"24/7 staffed",
-   oat:"No", scs:"No", walkin:"BC Housing referral",
-   flags:{},
-   lat:49.2806, lng:-123.1060,
-   desc:"SRO building for individuals living with concurrent disorders. Clinical team, nurses, and social workers on-site. 40 units."},
-
-  {id:"phs-lark", name:"The Lark (PHS Housing)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"103 E Hastings St", phone:"604-683-0073",
-   web:"phs.ca/locations/the-lark/", hours:"24/7 staffed",
-   oat:"No", scs:"No", walkin:"BC Housing referral",
-   flags:{},
-   lat:49.2808, lng:-123.0986,
-   desc:"Double rooms for couples; hostel-style rooms for others. Two meals/day, laundry facilities. Close to Insite and Molson OPS."},
-
-  {id:"phs-irving", name:"Irving Hotel / Hotel Irving (PHS Housing)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"101 E Hastings St", phone:"604-683-0073",
-   web:"phs.ca/locations/irving-hotel/", hours:"24/7 staffed",
-   oat:"No", scs:"No", walkin:"BC Housing referral",
-   flags:{},
-   lat:49.28075, lng:-123.0987,
-   desc:"Formerly Sunrise Hotel. 100 units low-barrier permanent housing. Residents with concurrent physical and mental health issues and substance dependencies. Nurse and social worker on-site."},
-
-  {id:"phs-regal", name:"Regal Place Hotel (PHS Housing)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"144 W Hastings St", phone:"604-683-0073",
-   web:"phs.ca/locations/regal-place-hotel/", hours:"24/7 staffed",
-   oat:"No", scs:"No", walkin:"BC Housing referral",
-   flags:{},
-   lat:49.2805, lng:-123.1100,
-   desc:"PHS mental health workers support residents with day-to-day needs and personal health and inclusion goals. SRO-style supportive housing."},
-
-  {id:"phs-rainier", name:"Rainier Hotel (PHS Housing – Women)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"309 Carrall St", phone:"604-683-0073",
-   web:"phs.ca/locations/rainier-hotel/", hours:"24/7 staffed",
-   oat:"No", scs:"No", walkin:"BC Housing referral",
-   flags:{women:true},
-   lat:49.2803, lng:-123.1041,
-   desc:"Women-focused supportive housing. Mental health services, primary health care, medication management, detox, harm reduction and recovery-focused programming and education for women residents."},
-
-  {id:"phs-woodwards", name:"Woodwards Community Housing (PHS)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"131 W Hastings St", phone:"604-683-0073",
-   web:"phs.ca/locations/woodwards-community-housing/", hours:"24/7 staffed",
-   oat:"No", scs:"No", walkin:"BC Housing referral",
-   flags:{},
-   lat:49.2808, lng:-123.1095,
-   desc:"125 units low-income housing integrated with historic Woodwards development (market condos, retail, subsidized family units). Groundbreaking model of mixed-income inner-city housing."},
-
-  {id:"phs-tellier", name:"Tellier Tower (PHS Housing)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"16 E Hastings St", phone:"604-683-0073",
-   web:"phs.ca/locations/tellier-tower/", hours:"24/7 staffed",
-   oat:"No", scs:"No", walkin:"BC Housing referral",
-   flags:{},
-   lat:49.2807, lng:-123.1067,
-   desc:"Rent-geared-to-income building. Services to support residents with mental health, addiction and chronic disease. PHS wraparound support on-site."},
-
-  {id:"phs-smith-yuen", name:"Smith-Yuen Apartments (PHS Housing)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"475 E Hastings St", phone:"604-683-0073",
-   web:"phs.ca/locations/smith-yuen-apartments/", hours:"24/7 staffed",
-   oat:"No", scs:"No", walkin:"BC Housing referral",
-   flags:{},
-   lat:49.2807, lng:-123.0918,
-   desc:"Purpose-built social housing for senior citizens living with mental health issues. PHS support services on-site."},
-
-  {id:"phs-hugh-bird", name:"Hugh Bird Residence (PHS Housing)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"420 E Cordova St", phone:"604-683-0073",
-   web:"phs.ca/locations/hugh-bird-residence/", hours:"24/7 staffed",
-   oat:"No", scs:"No", walkin:"BC Housing referral",
-   flags:{},
-   lat:49.2832, lng:-123.0921,
-   desc:"Housing for residents who need fewer supports than higher-acuity PHS buildings. PHS managed."},
-
-  {id:"phs-stanley", name:"The Stanley (PHS Housing)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"53 W Cordova St", phone:"604-683-0073",
-   web:"phs.ca/locations/the-stanley/", hours:"24/7 staffed",
-   oat:"No", scs:"No", walkin:"BC Housing referral",
-   flags:{},
-   lat:49.2838, lng:-123.1084,
-   desc:"Old DTES hotel reconfigured and rebuilt to serve the entire community. PHS wraparound supports."},
-
-  {id:"phs-chartrand", name:"Chartrand Place (PHS Modular Housing)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"1131 Franklin St", phone:"604-683-0073",
-   web:"phs.ca/locations/chartrand-place/", hours:"24/7 staffed",
-   oat:"No", scs:"No", walkin:"BC Housing referral",
-   flags:{},
-   lat:49.2857, lng:-123.0853,
-   desc:"Modular housing building. Mental health support 24/7 with home support workers weekdays. BC government modular housing program (600-homes commitment)."},
-
-  {id:"phs-alexander", name:"Alexander Street Community (PHS Housing)", cat:"Supportive Housing",
-   inst:"PHS Community Services Society", addr:"111 Princess Ave", phone:"604-683-0073",
-   web:"phs.ca/locations/alexander-street/", hours:"24/7 staffed",
-   oat:"No", scs:"No", walkin:"BC Housing referral",
-   flags:{},
-   lat:49.2848, lng:-123.0978,
-   desc:"Low-barrier permanent housing plus clinically supported transitional housing. PHS wraparound supports. Mixed model serving range of acuity."},
-
-  // ── LOOKOUT HOUSING ───────────────────────────────────────
-  {id:"lookout-shelter", name:"Lookout Downtown Shelter", cat:"Shelter / Recovery",
-   inst:"Lookout Housing & Health Society", addr:"346 Alexander St", phone:"604-696-0011",
-   web:"lookoutsociety.ca", hours:"24/7",
-   oat:"Referrals", scs:"No", walkin:"Low-barrier",
-   flags:{walkin:true,"24hr":true},
-   lat:49.2844, lng:-123.0944,
-   desc:"24/7 low-barrier emergency shelter. 46 beds for men. Meals, medication management, wound care, home care referral, oxygen tank storage. Case planning and addiction/MH referrals. Pets welcome."},
-
-  {id:"al-mitchell", name:"Al Mitchell Place (Lookout)", cat:"Supportive Housing",
-   inst:"Lookout Housing & Health Society", addr:"70 E Cordova St", phone:"604-696-0011",
-   web:"lookoutsociety.ca", hours:"24/7 staffed",
-   oat:"No", scs:"No", walkin:"BC Housing referral",
-   flags:{},
-   lat:49.2835, lng:-123.1050,
-   desc:"Lookout supportive housing in DTES. Outreach workers based here for downtown Vancouver outreach. Tenant support, case planning, housing navigation."},
 
   // ── EMERGENCY SERVICES ────────────────────────────────────
   {id:"fire-hall-2", name:"Fire Hall #2 – Downtown Eastside (VFRS)", cat:"Emergency Services",
