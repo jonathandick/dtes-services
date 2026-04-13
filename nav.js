@@ -16,30 +16,30 @@
     {
       label: "Services",
       children: [
-        { href: "dtes-services.html",      label: "Services Map" },
+        { href: "dtes-services.html", label: "Services Map" },
         { href: "treatment-programs.html", label: "Treatment Programs" },
         { href: "vancouver-shelters.html", label: "Shelters" },
-        { href: "social-housing.html",     label: "Social Housing" },
-        { href: "ctct.html",               label: "CTCT" },
-        { href: "drug-supply.html",        label: "Drug Supply" },
-        { href: "legal-services.html",      label: "Legal Services" },
-        { href: "income-assistance.html",  label: "Income Assistance" },
-        { href: "dtes-demographics.html",  label: "Demographics" },
+        { href: "social-housing.html", label: "Social Housing" },
+        { href: "ctct.html", label: "CTCT" },
+        { href: "drug-supply.html", label: "Drug Supply" },
+        { href: "legal-services.html", label: "Legal Services" },
+        { href: "income-assistance.html", label: "Income Assistance" },
+        { href: "dtes-demographics.html", label: "Demographics" },
       ],
     },
     {
       label: "OD Response",
       children: [
-        { href: "overdose-watch.html",          label: "OD Watch" },
+        { href: "overdose-watch.html", label: "OD Watch" },
         { href: "public-health-dashboard.html", label: "PH Dashboard" },
-        { href: "pilot-plan.html",              label: "Pilot Plan" },
+        { href: "pilot-plan.html", label: "Pilot Plan" },
       ],
     },
     {
       label: "Treatment",
       children: [
         { href: "treatment-programs.html", label: "Programs" },
-        { href: "wait-times.html",         label: "Wait Times" },
+        { href: "wait-times.html", label: "Wait Times" },
       ],
     },
   ];
@@ -203,27 +203,31 @@
 
   // ── Build nav items HTML ──────────────────────────────────────
   function buildItems(items) {
-    return items.map(item => {
-      if (item.children) {
-        // Dropdown group
-        const groupActive = item.children.some(c => c.href === currentFile);
-        const toggleClass = groupActive ? ' class="sn-toggle sn-active"' : ' class="sn-toggle"';
-        const childLinks = item.children.map(c => {
-          const active = c.href === currentFile ? ' class="sn-active"' : '';
-          return `<a href="${c.href}"${active}>${c.label}</a>`;
-        }).join('\n        ');
-        return `<div class="sn-dropdown">
+    return items
+      .map((item) => {
+        if (item.children) {
+          // Dropdown group
+          const groupActive = item.children.some((c) => c.href === currentFile);
+          const toggleClass = groupActive ? ' class="sn-toggle sn-active"' : ' class="sn-toggle"';
+          const childLinks = item.children
+            .map((c) => {
+              const active = c.href === currentFile ? ' class="sn-active"' : "";
+              return `<a href="${c.href}"${active}>${c.label}</a>`;
+            })
+            .join("\n        ");
+          return `<div class="sn-dropdown">
       <button${toggleClass} tabindex="0">${item.label}</button>
       <div class="sn-menu">
         ${childLinks}
       </div>
     </div>`;
-      } else {
-        // Flat link
-        const active = item.href === currentFile ? ' class="sn-active"' : '';
-        return `<a href="${item.href}"${active}>${item.label}</a>`;
-      }
-    }).join('\n    ');
+        } else {
+          // Flat link
+          const active = item.href === currentFile ? ' class="sn-active"' : "";
+          return `<a href="${item.href}"${active}>${item.label}</a>`;
+        }
+      })
+      .join("\n    ");
   }
 
   const navHtml = `

@@ -4,6 +4,7 @@
   },
   "devDependencies": {
     "eslint": "^10.2.0",
-    "globals": "^17.5.0"
+    "globals": "^17.5.0",
+    "prettier": "^3.8.2"
   }
 }
