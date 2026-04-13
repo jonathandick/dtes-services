@@ -1,0 +1,34 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "case \"$CLAUDE_TOOL_INPUT_FILE_PATH\" in *.js) npx eslint \"$CLAUDE_TOOL_INPUT_FILE_PATH\" 2>&1;; esac",
+            "statusMessage": "Linting with ESLint..."
+          },
+          {
+            "type": "command",
+            "command": "FILE=\"$CLAUDE_TOOL_INPUT_FILE_PATH\"; case \"$FILE\" in *.js|*.html|*.css|*.json) npx prettier --write \"$FILE\" 2>&1;; esac",
+            "statusMessage": "Formatting with Prettier..."
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git commit -m ':*)",
+      "Bash(curl -s http://localhost:8765/overdose-watch.html)",
+      "Bash(curl -s http://localhost:8765/od-watch/data.js)",
+      "Bash(curl -s http://localhost:8765/od-watch/map.js)",
+      "Bash(curl -s http://localhost:8765/data/services.js)",
+      "Bash(npx eslint:*)"
+    ],
+    "additionalDirectories": [
+      "/tmp"
+    ]
+  }
+}

@@ -2,8 +2,8 @@ import globals from "globals";
 
 export default [
   {
-    files: ["**/*.js"],
-    ignores: [".claude/**", "node_modules/**"],
+    files: ["app/**/*.js"],
+    ignores: ["node_modules/**"],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "script",
