@@ -1,328 +1,1784 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Social Housing Directory – DTES Community Tools</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-<link rel="stylesheet" href="shared.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<style>
-/* ── Page-specific styles only ── */
-body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Social Housing – DTES Community Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="shared.css" />
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      .content-wrap {
+        flex: 1;
+        overflow-y: auto;
+      }
 
-/* Table columns */
-.td-name  { font-weight: 500; color: var(--ink); min-width: 150px; }
-.td-name small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; margin-top: 2px; }
-.td-addr  { color: var(--muted); min-width: 130px; font-size: 12px; }
-.td-rent  { font-weight: 600; color: var(--teal); white-space: nowrap; }
-.td-rent.market { color: var(--amber); }
-.td-rent.dev    { color: #9333EA; font-size: 11px; font-style: italic; }
-.td-units { text-align: center; font-weight: 600; color: var(--ink); }
-.td-type  { min-width: 90px; }
-.td-pop   { min-width: 90px; }
-.td-manager { color: var(--muted); font-size: 12px; min-width: 130px; }
-.td-contact { font-size: 12px; }
-.td-contact a { color: var(--teal); text-decoration: none; }
-.td-contact a:hover { text-decoration: underline; }
-.td-notes { font-size: 12px; color: var(--muted); min-width: 160px; max-width: 220px; }
-.td-apply { font-size: 11px; min-width: 100px; }
-.td-flags { white-space: nowrap; }
-.flag { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 11px; margin: 1px; }
-.flag-pet  { background: #D1FAE5; }
-.flag-elev { background: #DBEAFE; }
-.flag-supp { background: var(--teal-pale); }
-.flag-meals { background: var(--amber-pale); }
-.flag-acc  { background: #FCE7F3; }
-tbody tr.dev-row { background: #FAF5FF; }
-tbody tr.dev-row:hover { background: #F3E8FF; }
+      /* ── Section label ── */
+      .section-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        color: var(--teal);
+        margin-bottom: 14px;
+      }
+      .section-label::before {
+        content: "";
+        display: block;
+        width: 24px;
+        height: 2px;
+        background: var(--teal-mid);
+        border-radius: 1px;
+      }
 
-#map-container { border-right: 1px solid var(--border); }
-#housing-map { width: 100%; height: 100%; }
-</style>
-</head>
-<body>
+      /* ── Prose ── */
+      .prose-section {
+        padding: 48px 40px;
+        max-width: 960px;
+        margin: 0 auto;
+      }
+      .prose-section h2 {
+        font-family: var(--font-head);
+        font-size: clamp(22px, 2.8vw, 32px);
+        color: var(--ink);
+        margin-bottom: 16px;
+        line-height: 1.2;
+      }
+      .prose-section p {
+        font-size: 14px;
+        color: #3d5450;
+        line-height: 1.85;
+        margin-bottom: 16px;
+        max-width: 720px;
+      }
+      .prose-section p:last-child {
+        margin-bottom: 0;
+      }
 
-<script src="nav.js"></script>
+      /* ── Alternating backgrounds ── */
+      .section-alt {
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+      }
 
-<div class="page-header">
-  <div class="page-header-inner">
-    <div>
-      <div class="page-eyebrow">🏠 Jan 2025 Update</div>
-      <h1>Downtown Eastside <span>Social Housing</span></h1>
-      <p>Low-income, supportive, and social housing in the DTES and surrounding areas.</p>
-    </div>
-    <div class="header-meta">
-      <div class="meta-pill"><strong id="total-count">—</strong> listings</div>
-      <div class="meta-pill"><strong id="shelter-count">—</strong> at shelter rate</div>
-      <div class="meta-pill"><strong id="dev-count">—</strong> in development</div>
-    </div>
-  </div>
-</div>
+      /* ── Analysis sections ── */
+      .analysis-section {
+        padding: 48px 40px;
+        max-width: 960px;
+        margin: 0 auto;
+      }
+      .analysis-section h2 {
+        font-family: var(--font-head);
+        font-size: clamp(20px, 2.5vw, 28px);
+        color: var(--ink);
+        margin-bottom: 8px;
+        line-height: 1.2;
+      }
+      .analysis-section h3 {
+        font-family: var(--font-head);
+        font-size: clamp(16px, 1.8vw, 20px);
+        color: var(--ink);
+        margin-bottom: 12px;
+        margin-top: 36px;
+        line-height: 1.25;
+      }
+      .analysis-section .lead {
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 28px;
+        max-width: 680px;
+        line-height: 1.7;
+      }
+      .analysis-section p {
+        font-size: 14px;
+        color: #3d5450;
+        line-height: 1.8;
+        max-width: 720px;
+        margin-bottom: 16px;
+      }
 
-<div class="controls-bar">
-  <div class="controls-inner">
-    <div class="search-wrap">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="text" id="search" class="search-input" placeholder="Search by name, address, manager…">
-    </div>
-    <div class="filter-group">
-      <button class="filter-btn" data-filter="shelter">Shelter Rate ($500)</button>
-      <button class="filter-btn" data-filter="income">Income-Based</button>
-      <button class="filter-btn" data-filter="women">Women</button>
-      <button class="filter-btn" data-filter="seniors">Seniors</button>
-      <button class="filter-btn" data-filter="indigenous">Indigenous</button>
-      <button class="filter-btn" data-filter="youth">Youth</button>
-      <button class="filter-btn" data-filter="supportive">Supportive</button>
-      <button class="filter-btn" data-filter="dev">In Development</button>
-    </div>
-    <select class="sort-select" id="sort-select">
-      <option value="name">Sort: Name A–Z</option>
-      <option value="rent">Sort: Rent Low–High</option>
-      <option value="units">Sort: Units (most first)</option>
-      <option value="addr">Sort: Street Address</option>
-    </select>
-  </div>
-</div>
+      /* ── Housing spectrum table ── */
+      .spectrum-wrap {
+        overflow-x: auto;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        margin-top: 8px;
+      }
+      .spectrum-wrap table {
+        min-width: 860px;
+      }
+      .health-role-none {
+        color: var(--muted);
+        font-style: italic;
+        font-size: 12px;
+      }
+      .health-role-ref {
+        color: #7a5a00;
+        font-size: 12px;
+      }
+      .health-role-coloc {
+        color: #0e5c30;
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .intensity-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 5px;
+        vertical-align: middle;
+      }
+      .dot-none {
+        background: #d0d0d0;
+      }
+      .dot-low {
+        background: #fbbf24;
+      }
+      .dot-mid {
+        background: #f97316;
+      }
+      .dot-high {
+        background: #16a34a;
+      }
 
-<div class="main-wrap">
-  <div class="split-layout">
-    <div id="map-container">
-      <div id="housing-map"></div>
-    </div>
-    <div class="table-side">
-      <div class="results-bar"><strong id="shown-count">—</strong> of <strong id="total-shown">—</strong> listings · Click row to highlight on map</div>
-      <div class="table-scroll">
-        <table id="housing-table">
-          <thead>
-            <tr>
-              <th data-col="name">Name</th>
-              <th data-col="addr">Address</th>
-              <th data-col="rent">Rent</th>
-              <th data-col="units">Units</th>
-              <th data-col="type">Type</th>
-              <th data-col="population">For</th>
-              <th data-col="manager">Manager</th>
-              <th data-col="contact">Contact</th>
-              <th data-col="features">Features</th>
-              <th data-col="apply">Apply via</th>
-              <th data-col="notes">Notes</th>
-            </tr>
-          </thead>
-          <tbody id="table-body"></tbody>
-        </table>
+      /* ── Integration model cards ── */
+      .integration-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 4px;
+      }
+      .integration-card {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 20px;
+        background: var(--white);
+      }
+      .integration-card .card-icon {
+        font-size: 22px;
+        margin-bottom: 10px;
+      }
+      .integration-card .card-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+      .integration-card.model-1 .card-label {
+        color: var(--muted);
+      }
+      .integration-card.model-2 .card-label {
+        color: #d97706;
+      }
+      .integration-card.model-3 .card-label {
+        color: #0d5c50;
+      }
+      .integration-card .card-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 8px;
+      }
+      .integration-card .card-desc {
+        font-size: 13px;
+        color: #3d5450;
+        line-height: 1.7;
+        margin-bottom: 12px;
+      }
+      .integration-card .card-examples {
+        font-size: 12px;
+        color: var(--muted);
+        border-top: 1px solid var(--border);
+        padding-top: 10px;
+        line-height: 1.6;
+      }
+      .integration-card .card-examples strong {
+        color: var(--ink);
+        display: block;
+        margin-bottom: 2px;
+        font-size: 11px;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+      }
+      .integration-card.model-3 {
+        border-color: var(--teal-mist);
+        background: #f0fdf9;
+      }
+
+      /* ── ACT/ICMT comparison ── */
+      .acticmt-compare {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 24px;
+      }
+      .compare-card {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .compare-card-head {
+        padding: 14px 18px;
+        background: var(--teal-deep);
+      }
+      .compare-card-head .ch-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: var(--sky);
+        margin-bottom: 2px;
+      }
+      .compare-card-head .ch-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--white);
+      }
+      .compare-card-body {
+        padding: 16px 18px;
+      }
+      .compare-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 7px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+        gap: 12px;
+      }
+      .compare-row:last-child {
+        border-bottom: none;
+      }
+      .compare-row .cr-label {
+        color: var(--muted);
+        font-size: 12px;
+        min-width: 140px;
+        flex-shrink: 0;
+      }
+      .compare-row .cr-val {
+        color: var(--ink);
+        text-align: right;
+        font-weight: 500;
+      }
+      .cr-val.highlight {
+        color: var(--teal);
+      }
+
+      /* ── CCH tiers ── */
+      .cch-tiers {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 24px;
+        margin-bottom: 32px;
+      }
+      .cch-tier {
+        border-radius: 10px;
+        padding: 20px;
+        border: 1px solid;
+      }
+      .cch-tier.tier-ish {
+        background: #eff6ff;
+        border-color: #bfdbfe;
+      }
+      .cch-tier.tier-trans {
+        background: #fffbeb;
+        border-color: #fde68a;
+      }
+      .cch-tier.tier-high {
+        background: #f0fdf4;
+        border-color: #bbf7d0;
+      }
+      .cch-tier-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+      .tier-ish .cch-tier-label {
+        color: #1d4ed8;
+      }
+      .tier-trans .cch-tier-label {
+        color: #d97706;
+      }
+      .tier-high .cch-tier-label {
+        color: #16a34a;
+      }
+      .cch-tier-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 6px;
+        line-height: 1.3;
+      }
+      .cch-tier-duration {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+      .cch-tier-desc {
+        font-size: 12px;
+        color: #3d5450;
+        line-height: 1.65;
+      }
+
+      /* ── CCH eligibility block ── */
+      .cch-eligibility {
+        background: var(--teal-deep);
+        border-radius: 10px;
+        padding: 24px;
+        margin-bottom: 24px;
+      }
+      .cch-eligibility h4 {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--sky);
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+      }
+      .elig-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .elig-list li {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.85);
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.07);
+        border-radius: 7px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        line-height: 1.5;
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+      }
+      .elig-list li .elig-num {
+        color: var(--sky);
+        font-weight: 700;
+        font-size: 12px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .elig-note {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.45);
+        margin-top: 12px;
+        font-style: italic;
+      }
+
+      /* ── CCH services grid ── */
+      .cch-services-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 24px;
+      }
+      .cch-service-pill {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        background: var(--white);
+        border: 1px solid var(--teal-mist);
+        border-radius: 8px;
+        font-size: 13px;
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .cch-service-pill .pill-icon {
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+
+      /* ── Priority population tags ── */
+      .priority-pops {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .priority-tag {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        background: var(--teal-pale);
+        color: var(--teal-dark);
+        border: 1px solid var(--teal-mist);
+      }
+
+      /* ── CCH delivery models ── */
+      .delivery-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+      .delivery-card {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+      }
+      .delivery-card.intensity {
+        border-color: var(--teal-mist);
+        background: #f0fdf9;
+      }
+      .delivery-card-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .delivery-card.intensity .delivery-card-label {
+        color: #0d5c50;
+      }
+      .delivery-card-title {
+        font-size: 13px;
+        color: var(--ink);
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .delivery-card-desc {
+        font-size: 12px;
+        color: #3d5450;
+        line-height: 1.6;
+      }
+
+      /* ── Evidence ── */
+      .stat-callout {
+        background: var(--teal-deep);
+        border-radius: 10px;
+        padding: 24px 28px;
+        display: flex;
+        gap: 32px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+      }
+      .stat-item {
+        flex: 1;
+        min-width: 130px;
+      }
+      .stat-num {
+        font-family: var(--font-head);
+        font-size: 34px;
+        color: var(--sky);
+        line-height: 1;
+        margin-bottom: 4px;
+      }
+      .stat-label {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        line-height: 1.5;
+      }
+      .stat-source {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.35);
+        margin-top: 3px;
+        font-style: italic;
+      }
+      .stat-divider {
+        width: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        flex-shrink: 0;
+      }
+      .evidence-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 4px;
+      }
+      .evidence-card {
+        border-radius: 10px;
+        padding: 22px;
+        border: 1px solid;
+      }
+      .evidence-card.positive {
+        background: #f0fdf4;
+        border-color: #bbf7d0;
+      }
+      .evidence-card.mixed {
+        background: #fffbeb;
+        border-color: #fde68a;
+      }
+      .evidence-card h4 {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+      }
+      .evidence-card.positive h4 {
+        color: #15803d;
+      }
+      .evidence-card.mixed h4 {
+        color: #b45309;
+      }
+      .evidence-item {
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        font-size: 13px;
+        color: #3d5450;
+        line-height: 1.65;
+      }
+      .evidence-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .evidence-item strong {
+        display: block;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 2px;
+        font-size: 13px;
+      }
+      .evidence-item .cite {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 3px;
+        font-style: italic;
+      }
+
+      /* ── Cost section ── */
+      .cost-study-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 4px;
+      }
+      .cost-card {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 22px;
+        background: var(--white);
+      }
+      .cost-card .study-ref {
+        font-size: 11px;
+        color: var(--teal);
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .cost-card h4 {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 4px;
+      }
+      .cost-card .study-design {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 14px;
+        line-height: 1.5;
+      }
+      .cost-finding {
+        padding: 9px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+        color: #3d5450;
+        line-height: 1.6;
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+      }
+      .cost-finding:last-of-type {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .cost-finding .cf-bullet {
+        color: var(--teal-mid);
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .cost-caveat {
+        margin-top: 12px;
+        padding: 10px 12px;
+        background: var(--amber-pale);
+        border-radius: 7px;
+        border: 1px solid #f0c040;
+        font-size: 12px;
+        color: #7a5a00;
+        line-height: 1.55;
+      }
+
+      /* ── Research gaps ── */
+      .gaps-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        margin-top: 4px;
+      }
+      .gap-card {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 20px;
+        background: var(--white);
+      }
+      .gap-card .gap-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .gap-card h4 {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 8px;
+        line-height: 1.3;
+      }
+      .gap-card p {
+        font-size: 13px;
+        color: #3d5450;
+        line-height: 1.7;
+      }
+
+      /* ── Bibliography ── */
+      .bib-section {
+        padding: 48px 40px;
+        max-width: 960px;
+        margin: 0 auto;
+      }
+      .bib-section h2 {
+        font-family: var(--font-head);
+        font-size: clamp(20px, 2.5vw, 28px);
+        color: var(--ink);
+        margin-bottom: 8px;
+      }
+      .bib-section .lead {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 24px;
+        max-width: 600px;
+        line-height: 1.6;
+      }
+      .bib-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .bib-item {
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--white);
+        transition: background 0.1s;
+      }
+      .bib-item:hover {
+        background: var(--teal-pale);
+      }
+      .bib-num {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--sky);
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+      }
+      .bib-citation {
+        font-size: 13px;
+        color: var(--ink);
+        line-height: 1.5;
+        margin-bottom: 4px;
+      }
+      .bib-citation em {
+        color: var(--muted);
+        font-style: italic;
+      }
+      .bib-finding {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.55;
+        padding-left: 10px;
+        border-left: 2px solid var(--teal-mist);
+      }
+
+      /* ── Insight callout ── */
+      .insight {
+        background: var(--teal-pale);
+        border: 1px solid var(--teal-mist);
+        border-left: 3px solid var(--teal-mid);
+        border-radius: 8px;
+        padding: 14px 16px;
+        font-size: 13px;
+        color: #1c4040;
+        line-height: 1.7;
+        margin: 20px 0;
+        max-width: 760px;
+      }
+      .insight strong {
+        font-weight: 600;
+        color: var(--teal-dark);
+      }
+    </style>
+  </head>
+  <body>
+    <script src="nav.js"></script>
+
+    <div class="content-wrap">
+      <!-- ── Page header ── -->
+      <div class="page-header">
+        <div class="page-eyebrow">
+          <span>Services</span>
+        </div>
+        <div class="page-header-inner">
+          <div>
+            <h1>Social <span>Housing</span> in Vancouver</h1>
+            <p>
+              A systems analysis of housing models — what each model provides, the health capacity
+              embedded in it, and what the evidence says about outcomes for the people it serves.
+            </p>
+            <div class="header-meta">
+              <div class="meta-pill"><strong>7</strong>&nbsp;distinct models</div>
+              <div class="meta-pill"><strong>3</strong>&nbsp;healthcare integration tiers</div>
+              <div class="meta-pill"><strong>15</strong>&nbsp;key citations</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Intro ── -->
+      <div class="prose-section">
+        <div class="section-label">Overview</div>
+        <h2>Housing as a health intervention</h2>
+        <p>
+          "Social housing" is not a single thing. In Vancouver it describes at least seven distinct
+          models — ranging from non-market rentals with no on-site services to Complex Care Housing
+          with co-located nurses, mental health clinicians, and addiction medicine. The model a
+          person is placed in largely determines what health capacity they can access on any given
+          day, and whether crises are caught early or escalate to emergency departments and acute
+          psychiatric care.
+        </p>
+        <p>
+          This page breaks down the spectrum, examines the three distinct models of healthcare
+          integration in housing, details BC's 2022 Complex Care Housing program, and summarizes
+          what the research evidence shows — and what it doesn't.
+        </p>
+      </div>
+
+      <!-- ── Section 1: Housing Spectrum ── -->
+      <div class="section-alt">
+        <div class="analysis-section">
+          <div class="section-label">Section 1</div>
+          <h2>The Housing Spectrum</h2>
+          <p class="lead">
+            Seven distinct models operate under the "social housing" umbrella in Vancouver. They
+            differ in operator type, rent structure, support intensity, and what health role — if
+            any — is embedded. The model determines the floor of care available, not just shelter.
+          </p>
+
+          <div class="spectrum-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Model</th>
+                  <th>Operator</th>
+                  <th>Who It Serves</th>
+                  <th>Support Intensity</th>
+                  <th>Health Role</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <strong>Non-Market Rental</strong><br />
+                    <small style="color: var(--muted); font-size: 11px">Subsidized housing</small>
+                  </td>
+                  <td>BC Housing / non-profit societies</td>
+                  <td>Low-income households who are otherwise stable or housed</td>
+                  <td><span class="intensity-dot dot-none"></span>None</td>
+                  <td class="health-role-none">
+                    None embedded; tenants access community services independently
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Rent Supplements</strong><br />
+                    <small style="color: var(--muted); font-size: 11px">SAFER / RAP</small>
+                  </td>
+                  <td>BC Housing (portable subsidy)</td>
+                  <td>Low-income tenants in private market; seniors (SAFER)</td>
+                  <td><span class="intensity-dot dot-none"></span>None</td>
+                  <td class="health-role-none">
+                    None — subsidy travels with tenant, no housing staff
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Transitional Housing</strong>
+                  </td>
+                  <td>Non-profits</td>
+                  <td>
+                    People exiting shelter; bridge to longer-term housing (typically 6–24 months)
+                  </td>
+                  <td><span class="intensity-dot dot-low"></span>Low–moderate</td>
+                  <td class="health-role-ref">
+                    Light case management; rarely embedded health; referrals to community services
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Supportive Housing</strong><br />
+                    <small style="color: var(--muted); font-size: 11px">Low-intensity</small>
+                  </td>
+                  <td>Non-profits via BC Housing contracts</td>
+                  <td>
+                    People post-homelessness who are relatively stable; SRO stock under non-profit
+                    management
+                  </td>
+                  <td><span class="intensity-dot dot-low"></span>Low</td>
+                  <td class="health-role-ref">
+                    Staff during business hours; life skills, peer support, referrals. No clinical
+                    staff on site.
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Supportive Housing</strong><br />
+                    <small style="color: var(--muted); font-size: 11px"
+                      >High-intensity / ACT-integrated</small
+                    >
+                  </td>
+                  <td>Non-profits + VCH / Providence Health</td>
+                  <td>
+                    People with serious and persistent mental illness (SPMI), concurrent disorders,
+                    high ER utilization
+                  </td>
+                  <td><span class="intensity-dot dot-mid"></span>Moderate–high</td>
+                  <td class="health-role-ref">
+                    ACT or ICM teams hold caseloads visiting the building; community health nurses
+                    on schedule. Health authority provides clinical care externally.
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Complex Care Housing</strong><br />
+                    <small style="color: var(--muted); font-size: 11px">BC, launched 2022</small>
+                  </td>
+                  <td>Health authorities + BC Housing + non-profits</td>
+                  <td>
+                    Adults 19+ with highest complexity: concurrent disorders, failed standard
+                    supportive housing, frequent ER / corrections cycling
+                  </td>
+                  <td><span class="intensity-dot dot-high"></span>High</td>
+                  <td class="health-role-coloc">
+                    Co-located: RNs, MH clinicians, addiction medicine on site. Clinical staff are
+                    part of the building's service model — not visitors.
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>SROs</strong><br />
+                    <small style="color: var(--muted); font-size: 11px"
+                      >Single Room Occupancy</small
+                    >
+                  </td>
+                  <td>Private landlords; some City of Vancouver / non-profit</td>
+                  <td>De facto bottom of private rental market; DTES concentrated</td>
+                  <td><span class="intensity-dot dot-none"></span>None guaranteed</td>
+                  <td class="health-role-none">
+                    No guaranteed services; non-profit-managed SROs may have a building manager and
+                    basic support staff
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Co-operative Housing</strong>
+                  </td>
+                  <td>Member-governed non-profit societies (CHF BC)</td>
+                  <td>
+                    Working and moderate-income households; not targeted at homeless populations
+                  </td>
+                  <td><span class="intensity-dot dot-none"></span>None</td>
+                  <td class="health-role-none">
+                    No on-site health or social supports; member-run model
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="insight" style="margin-top: 24px">
+            <strong>The vacancy problem with rent supplements:</strong> BC Housing's portable
+            subsidy programs (SAFER, RAP) work when the private market has vacancy. Metro
+            Vancouver's chronic sub-1% vacancy rate means rent supplements largely fail as a supply
+            tool — they can close affordability gaps for existing tenants but cannot house the
+            unhoused.
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Section 2: Healthcare Integration ── -->
+      <div>
+        <div class="analysis-section">
+          <div class="section-label">Section 2</div>
+          <h2>The Healthcare Integration Question</h2>
+          <p class="lead">
+            BC Housing's core supportive housing model relies on
+            <em>linkage</em> to community health services, not <em>co-location</em>. In practice,
+            the distinction determines whether a person in crisis is connected to care or cycles
+            through emergency services. Three distinct models operate across the housing spectrum.
+          </p>
+
+          <div class="integration-grid">
+            <div class="integration-card model-1">
+              <div class="card-icon">🏠</div>
+              <div class="card-label">Model 1</div>
+              <div class="card-title">Housing Only</div>
+              <div class="card-desc">
+                A unit is provided; no health connection mechanism exists. Tenants are expected to
+                independently navigate community health services. No staff present or only a
+                building manager.
+              </div>
+              <div class="card-examples">
+                <strong>Found in</strong>
+                Non-market rental, rent supplements, unmanaged SROs, co-ops
+              </div>
+            </div>
+            <div class="integration-card model-2">
+              <div class="card-icon">🔗</div>
+              <div class="card-label">Model 2</div>
+              <div class="card-title">Navigation Model</div>
+              <div class="card-desc">
+                On-site support staff (not clinical) help tenants book appointments, provide warm
+                referrals to community mental health and primary care teams, and coordinate with
+                income assistance, corrections, and child welfare. Health authority provides
+                clinical care externally.
+              </div>
+              <div class="card-examples">
+                <strong>Found in</strong>
+                Low-intensity supportive housing; transitional housing; non-profit-managed SROs
+              </div>
+            </div>
+            <div class="integration-card model-3">
+              <div class="card-icon">🏥</div>
+              <div class="card-label">Model 3</div>
+              <div class="card-title">Co-Located Clinical</div>
+              <div class="card-desc">
+                Clinical staff — nurses, mental health clinicians, addiction medicine practitioners
+                — are present in or from the building as part of the service model. ACT or ICM teams
+                visit regularly on caseload. Complex Care Housing goes furthest: dedicated clinical
+                staff on site daily.
+              </div>
+              <div class="card-examples">
+                <strong>Found in</strong>
+                High-intensity supportive housing (ACT/ICM-integrated); Complex Care Housing
+              </div>
+            </div>
+          </div>
+
+          <div class="insight">
+            <strong>The caseload bottleneck:</strong> Even in buildings designed for ACT or ICM
+            integration, health service engagement depends entirely on whether a community team has
+            the building on its caseload. VCH caseload capacity is a chronic constraint. A tenant in
+            high-intensity supportive housing without an assigned community mental health team
+            functionally receives Model 2 care regardless of the building's design intent.
+          </div>
+
+          <h3>ACT vs. ICMT: What's the Difference?</h3>
+          <p>
+            The two clinical models that interface most directly with supportive housing — Assertive
+            Community Treatment (ACT) and Intensive Case Management Teams (ICMT) — serve overlapping
+            but distinct populations. Both are defined by BC provincial standards documents.
+          </p>
+
+          <div class="acticmt-compare">
+            <div class="compare-card">
+              <div class="compare-card-head">
+                <div class="ch-label">ACT — Assertive Community Treatment</div>
+                <div class="ch-title">For the highest-needs clients</div>
+              </div>
+              <div class="compare-card-body">
+                <div class="compare-row">
+                  <span class="cr-label">Primary focus</span>
+                  <span class="cr-val"
+                    >Severe psychosis (schizophrenia, schizoaffective, bipolar)</span
+                  >
+                </div>
+                <div class="compare-row">
+                  <span class="cr-label">Severity level</span>
+                  <span class="cr-val">Severe</span>
+                </div>
+                <div class="compare-row">
+                  <span class="cr-label">Client:staff ratio</span>
+                  <span class="cr-val highlight">7–10 : 1</span>
+                </div>
+                <div class="compare-row">
+                  <span class="cr-label">Hours of service</span>
+                  <span class="cr-val">24/7 coverage</span>
+                </div>
+                <div class="compare-row">
+                  <span class="cr-label">Psychiatry</span>
+                  <span class="cr-val">0.8 FTE team member</span>
+                </div>
+                <div class="compare-row">
+                  <span class="cr-label">Service model</span>
+                  <span class="cr-val">Integrated team — all staff share all clients</span>
+                </div>
+                <div class="compare-row">
+                  <span class="cr-label">Hospital threshold</span>
+                  <span class="cr-val">&gt;50 bed days/year</span>
+                </div>
+                <div class="compare-row">
+                  <span class="cr-label">Annual budget</span>
+                  <span class="cr-val">~$1.5–1.8M (12.8 FTE)</span>
+                </div>
+              </div>
+            </div>
+            <div class="compare-card">
+              <div class="compare-card-head">
+                <div class="ch-label">ICMT — Intensive Case Management Team</div>
+                <div class="ch-title">Fills the gap below ACT</div>
+              </div>
+              <div class="compare-card-body">
+                <div class="compare-row">
+                  <span class="cr-label">Primary focus</span>
+                  <span class="cr-val"
+                    >Severe substance use with or without psychosis, mood disorders, FASD</span
+                  >
+                </div>
+                <div class="compare-row">
+                  <span class="cr-label">Severity level</span>
+                  <span class="cr-val">Moderate to severe</span>
+                </div>
+                <div class="compare-row">
+                  <span class="cr-label">Client:staff ratio</span>
+                  <span class="cr-val highlight">16–20 : 1</span>
+                </div>
+                <div class="compare-row">
+                  <span class="cr-label">Hours of service</span>
+                  <span class="cr-val">Extended hours, evenings &amp; weekends</span>
+                </div>
+                <div class="compare-row">
+                  <span class="cr-label">Psychiatry</span>
+                  <span class="cr-val">Part-time contract; addictions medicine access</span>
+                </div>
+                <div class="compare-row">
+                  <span class="cr-label">Service model</span>
+                  <span class="cr-val">Primary worker model with multidisciplinary team</span>
+                </div>
+                <div class="compare-row">
+                  <span class="cr-label">Position in system</span>
+                  <span class="cr-val"
+                    >Clients who exceed standard case mgmt but don't meet ACT criteria</span
+                  >
+                </div>
+                <div class="compare-row">
+                  <span class="cr-label">Annual budget</span>
+                  <span class="cr-val">~$1M (8 FTE)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Section 3: Complex Care Housing ── -->
+      <div class="section-alt">
+        <div class="analysis-section">
+          <div class="section-label">Section 3</div>
+          <h2>Complex Care Housing</h2>
+          <p class="lead">
+            Launched by the BC Ministry of Mental Health and Addictions in 2022, Complex Care
+            Housing (CCH) is a distinct program tier above standard supportive housing. Its defining
+            feature is the co-location of clinical health services — not referral, co-location. It
+            was explicitly designed to serve the population for whom supportive housing alone is
+            insufficient.
+          </p>
+
+          <h3
+            style="
+              margin-top: 0;
+              font-size: 14px;
+              font-weight: 600;
+              color: var(--muted);
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              font-family: var(--font-body);
+              margin-bottom: 16px;
+            "
+          >
+            Three Service Tiers
+          </h3>
+          <div class="cch-tiers">
+            <div class="cch-tier tier-ish">
+              <div class="cch-tier-label">Tier 1</div>
+              <div class="cch-tier-name">Intensive Supportive Housing</div>
+              <div class="cch-tier-duration">Not time-limited</div>
+              <div class="cch-tier-desc">
+                Wrap-around services attached to people, not buildings. Clients may be in congregate
+                or scattered-site housing. Some communities embed teams in buildings; others operate
+                outreach models connecting clients across multiple sites or market rentals with rent
+                supplements.
+              </div>
+            </div>
+            <div class="cch-tier tier-trans">
+              <div class="cch-tier-label">Tier 2</div>
+              <div class="cch-tier-name">Transitional &amp; Stabilization / Respite</div>
+              <div class="cch-tier-duration">Time-limited — up to 90 days for respite</div>
+              <div class="cch-tier-desc">
+                Two types: <strong>Transitional</strong> services bridge people discharged from
+                acute care, addictions treatment, corrections, or forensic settings back to
+                community. <strong>Stabilization / respite</strong> provides a short-term intensive
+                response during acute need, to prevent eviction. A housing plan is required for
+                respite placements.
+              </div>
+            </div>
+            <div class="cch-tier tier-high">
+              <div class="cch-tier-label">Tier 3</div>
+              <div class="cch-tier-name">Highest Intensity Housing</div>
+              <div class="cch-tier-duration">Indefinite supports</div>
+              <div class="cch-tier-desc">
+                Small, purpose-built or dedicated buildings — similar to group homes — with very low
+                client-to-staff ratios. For people who may benefit from focused care over a longer
+                term. Access to specialized services as desired. Locked units explicitly excluded.
+              </div>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 0; margin-bottom: 16px">Eligibility Criteria</h3>
+          <div class="cch-eligibility">
+            <h4>All 7 criteria must be met — MHSUSH Draft Eligibility Criteria</h4>
+            <ul class="elig-list">
+              <li>
+                <span class="elig-num">1</span>
+                Adults (19+) with significant mental health condition, substance use challenges,
+                and/or complex physical health needs — treated or untreated
+              </li>
+              <li>
+                <span class="elig-num">2</span>
+                Requires access to support services 24/7
+              </li>
+              <li>
+                <span class="elig-num">3</span>
+                At high risk of institutionalization or re-institutionalization without adequate
+                supports
+              </li>
+              <li>
+                <span class="elig-num">4</span>
+                All other housing service options have been explored and exhausted
+              </li>
+              <li>
+                <span class="elig-num">5</span>
+                Client is willing to engage with site / program supports
+              </li>
+              <li>
+                <span class="elig-num">6</span>
+                Does not require a locked unit
+              </li>
+              <li>
+                <span class="elig-num">7</span>
+                Significant support needed to maintain personal care, health conditions, and/or
+                living space safely
+              </li>
+            </ul>
+            <div class="elig-note">
+              Source: MHSUSH Complex Care Housing Eligibility and Priority Considerations (Draft).
+              Referrals come through health authorities and housing providers — not self-referral.
+            </div>
+          </div>
+
+          <h3 style="margin-top: 0; margin-bottom: 16px">Co-Located Services</h3>
+          <div class="cch-services-grid">
+            <div class="cch-service-pill">
+              <span class="pill-icon">🩺</span> Team-based primary care
+            </div>
+            <div class="cch-service-pill"><span class="pill-icon">🧠</span> Psychiatry</div>
+            <div class="cch-service-pill">
+              <span class="pill-icon">💊</span> Addictions medicine
+            </div>
+            <div class="cch-service-pill">
+              <span class="pill-icon">🛡️</span> Overdose prevention &amp; education
+            </div>
+            <div class="cch-service-pill"><span class="pill-icon">💬</span> Counselling</div>
+            <div class="cch-service-pill">
+              <span class="pill-icon">🪶</span> Indigenous cultural supports
+            </div>
+          </div>
+
+          <h3 style="margin-top: 0; margin-bottom: 12px">Priority Populations</h3>
+          <p>
+            Beyond clinical eligibility, CCH explicitly prioritizes populations that
+            disproportionately experience mental health challenges, substance use, and homelessness
+            — acknowledging structural drivers rather than treating high need as individual failure.
+          </p>
+          <div class="priority-pops">
+            <span class="priority-tag">Indigenous people</span>
+            <span class="priority-tag">BIPOC</span>
+            <span class="priority-tag">Young adults from government care</span>
+            <span class="priority-tag">Women</span>
+            <span class="priority-tag">2SLGBTQIA+</span>
+            <span class="priority-tag">Seniors 65+</span>
+          </div>
+
+          <div class="insight" style="margin-top: 24px">
+            <strong>CCH vs. standard supportive housing in one sentence:</strong>
+            Standard supportive housing provides referrals and coordination; Complex Care Housing
+            provides direct health services. The clinical staff are not visitors — they are part of
+            the building's operating model. This distinction matters most for the highest-acuity
+            individuals who disengage from referral-based systems.
+          </div>
+
+          <h3 style="margin-bottom: 14px">Three Delivery Models</h3>
+          <div class="delivery-grid">
+            <div class="delivery-card">
+              <div class="delivery-card-label">Distributed</div>
+              <div class="delivery-card-title">Outreach-based</div>
+              <div class="delivery-card-desc">
+                Teams connect with clients living across multiple supportive housing sites or in
+                market rentals with rent supplements. Services go to where people live.
+              </div>
+            </div>
+            <div class="delivery-card">
+              <div class="delivery-card-label">Multi-unit</div>
+              <div class="delivery-card-title">In supportive housing</div>
+              <div class="delivery-card-desc">
+                A dedicated number of units or a floor within a larger supportive housing building.
+                Enhanced services layered on top of existing building supports.
+              </div>
+            </div>
+            <div class="delivery-card intensity">
+              <div class="delivery-card-label">Highest intensity</div>
+              <div class="delivery-card-title">Small group homes</div>
+              <div class="delivery-card-desc">
+                Fully dedicated small buildings for people with the highest level of need. Low
+                staff-to-client ratio. Most clinical intensity.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Section 4: Evidence ── -->
+      <div>
+        <div class="analysis-section">
+          <div class="section-label">Section 4</div>
+          <h2>The Evidence: What Housing Does (and Doesn't) Fix</h2>
+          <p class="lead">
+            The At Home / Chez Soi study (MHCC, 2009–2013) is the foundational evidence base: a
+            national Housing First RCT across five Canadian cities including Vancouver. Below is a
+            synthesis of what the research consistently shows, where findings are mixed, and where
+            they are null.
+          </p>
+
+          <div class="stat-callout">
+            <div class="stat-item">
+              <div class="stat-num">73%</div>
+              <div class="stat-label">Time stably housed — Housing First arm</div>
+              <div class="stat-source">At Home/Chez Soi, n=2,285 nationally</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <div class="stat-num">32%</div>
+              <div class="stat-label">Time stably housed — Treatment as Usual</div>
+              <div class="stat-source">Same study period</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <div class="stat-num">~497</div>
+              <div class="stat-label">Participants — Vancouver site</div>
+              <div class="stat-source">Two streams: ACT (high needs), ICM (moderate needs)</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <div class="stat-num">24%</div>
+              <div class="stat-label">Reduction in ED visits — housed group</div>
+              <div class="stat-source">Sadowski et al., JAMA 2009 — Chicago RCT, n=407</div>
+            </div>
+          </div>
+
+          <div class="evidence-grid">
+            <div class="evidence-card positive">
+              <h4>✓ Reliably Improves</h4>
+              <div class="evidence-item">
+                <strong>Housing stability</strong>
+                The largest and most consistent effect across all Housing First studies. At
+                Home/Chez Soi found 73% vs 32% time stably housed over two years. Effect holds
+                across all five Canadian cities.
+                <div class="cite">
+                  Aubry et al., Psychiatric Services 2016; Goering et al., MHCC 2014
+                </div>
+              </div>
+              <div class="evidence-item">
+                <strong>Emergency department utilization</strong>
+                Reductions in ED visits documented for high-complexity individuals in Housing First
+                with ACT. Sadowski et al.'s Chicago RCT (n=407) found 24% reduction in ED visits and
+                29% fewer hospital days.
+                <div class="cite">Sadowski et al., JAMA 2009</div>
+              </div>
+              <div class="evidence-item">
+                <strong>Psychiatric hospitalization</strong>
+                ACT-stream Housing First participants showed meaningful reductions in psychiatric
+                inpatient days compared to TAU. Effect strongest for highest-acuity individuals.
+                <div class="cite">At Home/Chez Soi ACT arm; Stergiopoulos et al., JAMA 2015</div>
+              </div>
+              <div class="evidence-item">
+                <strong>HIV treatment outcomes</strong>
+                VIDUS and ACCESS cohort data (BC Centre for Excellence in HIV/AIDS, Vancouver) show
+                housing stability associated with improved ART adherence, reduced viral load, and
+                lower transmission risk behaviours. Among the strongest Vancouver-specific findings
+                in this literature.
+                <div class="cite">
+                  Wood, Kerr, Milloy, Palepu et al. — multiple VIDUS/ACCESS publications
+                </div>
+              </div>
+              <div class="evidence-item">
+                <strong>Quality of life</strong>
+                Consistent improvements in subjective quality of life across Housing First studies,
+                independent of psychiatric symptom changes.
+                <div class="cite">
+                  Patterson et al., Soc Psychiatry Psychiatr Epidemiol 2013 (Vancouver site)
+                </div>
+              </div>
+            </div>
+
+            <div class="evidence-card mixed">
+              <h4>~ Mixed or Null Findings</h4>
+              <div class="evidence-item">
+                <strong>Psychiatric symptom scores</strong>
+                Housing First reliably improves stability and quality of life but improvements in
+                psychiatric symptom scores are modest and inconsistent. Stable housing is necessary
+                but not sufficient for psychiatric recovery in people with SPMI.
+                <div class="cite">Goering et al., MHCC 2014</div>
+              </div>
+              <div class="evidence-item">
+                <strong>Substance use</strong>
+                Harm-reduction-oriented housing does not reduce substance use per se — it reduces
+                harms (overdose, disease transmission). Studies using reduced use as an outcome
+                frequently find null results. This is arguably a misspecification: harm reduction is
+                not designed for abstinence.
+                <div class="cite">Multiple Housing First follow-up studies</div>
+              </div>
+              <div class="evidence-item">
+                <strong>Primary care utilization</strong>
+                Mixed. Some studies find increased primary care contact (interpreted positively —
+                previously disengaged people accessing care). Others find no change. Co-located
+                clinical services appear to matter; pure referral models show smaller effects.
+                <div class="cite">At Home/Chez Soi Vancouver site analyses</div>
+              </div>
+              <div class="evidence-item">
+                <strong>ICM-stream service utilization offsets</strong>
+                Cost reductions are concentrated in the ACT (high-needs) stream. Moderate-needs ICM
+                participants showed housing stability gains but not equivalent reductions in acute
+                service use — meaning no cost offset. Net additional cost of ~$14,000 per
+                participant over two years nationally.
+                <div class="cite">Latimer et al., Psychiatric Services 2017</div>
+              </div>
+              <div class="evidence-item">
+                <strong>Selection effects and comparison challenges</strong>
+                Observational studies comparing housed vs. unhoused populations carry severe
+                selection bias. Even across RCTs, Treatment as Usual conditions vary enormously.
+                Cross-study comparison is difficult.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Section 5: Cost ── -->
+      <div class="section-alt">
+        <div class="analysis-section">
+          <div class="section-label">Section 5</div>
+          <h2>The Cost Picture</h2>
+          <p class="lead">
+            The policy argument for permanent supportive housing has always rested partly on cost
+            offsets — the claim that reductions in acute service use partially or fully offset
+            housing costs. The evidence base is real but more nuanced than advocacy materials
+            typically suggest.
+          </p>
+
+          <div class="cost-study-grid">
+            <div class="cost-card">
+              <div class="study-ref">Culhane, Metraux &amp; Hadley (2002)</div>
+              <h4>Public Service Reductions in NYC</h4>
+              <div class="study-design">
+                Administrative data linkage, New York City. 4,679 individuals placed in supportive
+                housing. Pre-post comparison of annual public service costs.
+                <em>Housing Policy Debate</em>, 13(1).
+              </div>
+              <div class="cost-finding">
+                <span class="cf-bullet">→</span>
+                Before housing: approximately $40,451/person/year in public services (shelter,
+                hospital, criminal justice, Medicaid) — 1999 USD
+              </div>
+              <div class="cost-finding">
+                <span class="cf-bullet">→</span>
+                After housing: approximately $16,282/person/year — a reduction of ~$16,282
+              </div>
+              <div class="cost-finding">
+                <span class="cf-bullet">→</span>
+                Supportive housing cost ~$17,277/year, producing a net additional cost of
+                ~$995/person/year after offsets
+              </div>
+              <div class="cost-finding">
+                <span class="cf-bullet">→</span>
+                Cost savings concentrated in shelter use and inpatient hospitalization
+              </div>
+              <div class="cost-caveat">
+                <strong>Caveat:</strong> Pre-post design without control group. Regression to the
+                mean is a real confound — placement often occurs at a crisis peak. NYC-to-Vancouver
+                translation requires significant adjustment.
+              </div>
+            </div>
+
+            <div class="cost-card">
+              <div class="study-ref">Latimer et al. (2017)</div>
+              <h4>At Home / Chez Soi Cost Analysis</h4>
+              <div class="study-design">
+                National RCT cost study, Canada. All five At Home/Chez Soi sites including
+                Vancouver. ACT and ICM streams analyzed separately. <em>Psychiatric Services</em>,
+                68(9).
+              </div>
+              <div class="cost-finding">
+                <span class="cf-bullet">→</span>
+                ACT stream (high-needs): Housing First approached cost-neutrality — hospitalizations
+                and emergency service reductions largely offset housing costs including rent
+                supplements
+              </div>
+              <div class="cost-finding">
+                <span class="cf-bullet">→</span>
+                ICM stream (moderate-needs): Net additional cost of approximately $14,000 per
+                participant over two years — no equivalent healthcare offset
+              </div>
+              <div class="cost-finding">
+                <span class="cf-bullet">→</span>
+                Vancouver site pattern consistent with national findings
+              </div>
+              <div class="cost-caveat">
+                <strong>Important context:</strong> Cost-neutrality for the ACT stream means that
+                for the highest-complexity individuals, acute service reductions are large enough to
+                substantially offset housing costs — making housing financially defensible on system
+                terms alone, independent of humanitarian arguments.
+              </div>
+            </div>
+          </div>
+
+          <div class="insight" style="margin-top: 20px">
+            <strong>BC government cost estimates:</strong> Government documents and advocacy reports
+            cite $50,000–$100,000+ per year as the annual public cost of leaving a high-complexity
+            person in chronic homelessness in Vancouver (ER, hospital, shelter, corrections),
+            compared to $25,000–$40,000 for supportive housing with services. The gap is consistent
+            with the Culhane framework, but the methodology behind BC-specific figures varies —
+            verify against primary sources before formal citation.
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Section 6: Research Gaps ── -->
+      <div>
+        <div class="analysis-section">
+          <div class="section-label">Section 6</div>
+          <h2>What the Evidence Doesn't Tell Us</h2>
+          <p class="lead">
+            The research base is real and growing, but concentrated in specific outcome domains and
+            time horizons. Several critical gaps remain that matter for system planning in the
+            Vancouver context.
+          </p>
+
+          <div class="gaps-grid">
+            <div class="gap-card">
+              <div class="gap-label">Research gap</div>
+              <h4>Long-term outcomes beyond two years</h4>
+              <p>
+                Almost no published literature follows supportive housing residents beyond 24
+                months. At Home/Chez Soi ended at two years. We do not know with confidence what
+                happens to housing stability, health outcomes, and service utilization over 5–10+
+                years. Concerns about "stagnation" — people housed but not progressing — are
+                anecdotal and under-studied.
+              </p>
+            </div>
+            <div class="gap-card">
+              <div class="gap-label">Research gap</div>
+              <h4>Indigenous-specific housing models</h4>
+              <p>
+                Indigenous people represent approximately 33–38% of Metro Vancouver's homeless
+                population versus ~3% of the regional population. At Home/Chez Soi's Indigenous
+                sub-study found standard Western Housing First models did not adequately address
+                cultural safety, land connection, intergenerational trauma, and community-based
+                conceptions of housing. What an adapted model looks like at scale, with outcome
+                evidence, remains largely unanswered.
+              </p>
+            </div>
+            <div class="gap-card">
+              <div class="gap-label">Research gap</div>
+              <h4>Chronic disease management</h4>
+              <p>
+                The research base is heavily weighted toward acute and crisis service utilization
+                (ER, psychiatric inpatient). There is relatively little evidence on how chronic
+                disease management outcomes — diabetes, hypertension, COPD, dental health — change
+                with housing stability and co-located health services.
+              </p>
+            </div>
+            <div class="gap-card">
+              <div class="gap-label">Research gap</div>
+              <h4>Traumatic brain injury intersection</h4>
+              <p>
+                TBI prevalence in the chronically homeless population in Vancouver is estimated at
+                30–50%. TBI substantially complicates standard supportive housing models —
+                challenges with executive function, impulse control, and memory affect tenancy
+                maintenance. This intersection is not well-addressed in either housing or
+                neurorehabilitation literature.
+              </p>
+            </div>
+            <div class="gap-card">
+              <div class="gap-label">Research gap</div>
+              <h4>Care quality in co-located settings</h4>
+              <p>
+                Studies typically measure whether health services are present and whether
+                utilization changes — not whether care quality is adequate. We know little about the
+                clinical quality of nursing and medical care delivered in supportive housing
+                settings, including medication management, continuity of prescribing, or diagnostic
+                appropriateness.
+              </p>
+            </div>
+            <div class="gap-card">
+              <div class="gap-label">Research gap</div>
+              <h4>Women-specific and gender-diverse models</h4>
+              <p>
+                The literature has largely treated supportive housing as a unitary intervention.
+                Women experiencing chronic homelessness often have distinct needs: trauma from
+                gender-based violence, parenting responsibilities, and different substance use
+                patterns. Specialized women's supportive housing models are substantially
+                under-studied.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Bibliography ── -->
+      <div class="section-alt">
+        <div class="bib-section">
+          <div class="section-label">Bibliography</div>
+          <h2>Key Sources</h2>
+          <p class="lead">
+            Peer-reviewed papers and key government reports. Verify volume, issue, and page numbers
+            against primary sources before formal citation.
+          </p>
+
+          <ol class="bib-list">
+            <li class="bib-item">
+              <div class="bib-num">01</div>
+              <div class="bib-citation">
+                Culhane, D.P., Metraux, S., &amp; Hadley, T. (2002). Public service reductions
+                associated with placement of homeless persons with severe mental illness in
+                supportive housing.
+                <em>Housing Policy Debate</em>, 13(1), 107–163.
+              </div>
+              <div class="bib-finding">
+                Foundational US cost-offset study. 4,679 NYC participants; supportive housing
+                produced near-dollar-for-dollar reductions in shelter and inpatient costs (~$995 net
+                annual cost after offsets).
+              </div>
+            </li>
+            <li class="bib-item">
+              <div class="bib-num">02</div>
+              <div class="bib-citation">
+                Goering, P., Veldhuizen, S., Watson, A., et al. (2014).
+                <em>National At Home / Chez Soi Final Report.</em> Calgary: Mental Health Commission
+                of Canada.
+              </div>
+              <div class="bib-finding">
+                Definitive national report of the Canadian Housing First RCT (n=2,285 across 5
+                cities). Housing stability, health, quality of life, and cost data. Available free
+                from MHCC.
+              </div>
+            </li>
+            <li class="bib-item">
+              <div class="bib-num">03</div>
+              <div class="bib-citation">
+                Latimer, E.A., Rabouin, D., Cao, Z., et al. (2017). Cost-effectiveness of Housing
+                First intervention with Assertive Community Treatment: Quasi-experimental study.
+                <em>Psychiatric Services</em>, 68(9), 959–966.
+              </div>
+              <div class="bib-finding">
+                Canadian cost-effectiveness analysis. ACT-stream Housing First approaches
+                cost-neutrality for high-needs participants; ICM stream carries net additional cost.
+              </div>
+            </li>
+            <li class="bib-item">
+              <div class="bib-num">04</div>
+              <div class="bib-citation">
+                Aubry, T., Goering, P., Veldhuizen, S., et al. (2016). A multiple-city RCT of
+                Housing First with assertive community treatment for homeless Canadians with serious
+                mental illness.
+                <em>Psychiatric Services</em>, 67(3), 275–281.
+              </div>
+              <div class="bib-finding">
+                Key outcome paper from At Home/Chez Soi showing superior housing stability and
+                comparable or better quality-of-life outcomes for Housing First versus Treatment as
+                Usual.
+              </div>
+            </li>
+            <li class="bib-item">
+              <div class="bib-num">05</div>
+              <div class="bib-citation">
+                Sadowski, L.S., Kee, R.A., VanderWeele, T.J., &amp; Buchanan, D. (2009). Effect of a
+                housing and case management program on emergency department visits and
+                hospitalizations among chronically ill homeless adults: a randomized trial.
+                <em>JAMA</em>, 301(17), 1771–1778.
+              </div>
+              <div class="bib-finding">
+                Chicago RCT, n=407. 29% reduction in hospital days and 24% reduction in ED visits
+                for housed group versus controls.
+              </div>
+            </li>
+            <li class="bib-item">
+              <div class="bib-num">06</div>
+              <div class="bib-citation">
+                Patterson, M., Moniruzzaman, A., Palepu, A., et al. (2013). Housing First improves
+                subjective quality of life among homeless adults with mental illness: 12-month
+                findings from a randomized controlled trial in Vancouver, British Columbia.
+                <em>Social Psychiatry and Psychiatric Epidemiology</em>, 48(8), 1245–1259.
+              </div>
+              <div class="bib-finding">
+                Vancouver-site At Home/Chez Soi paper documenting quality of life improvements in
+                the Housing First arm at 12 months.
+              </div>
+            </li>
+            <li class="bib-item">
+              <div class="bib-num">07</div>
+              <div class="bib-citation">
+                Stergiopoulos, V., Hwang, S.W., Gozdzik, A., et al. (2015). Effect of scattered-site
+                housing using rent supplements and intensive case management on housing stability
+                among homeless adults with mental illness.
+                <em>JAMA</em>, 313(9), 905–915.
+              </div>
+              <div class="bib-finding">
+                Toronto site of At Home/Chez Soi. ICM-stream Housing First produced superior housing
+                outcomes versus TAU, with smaller effect sizes than the ACT stream.
+              </div>
+            </li>
+            <li class="bib-item">
+              <div class="bib-num">08</div>
+              <div class="bib-citation">
+                Tsemberis, S., Gulcur, L., &amp; Nakae, M. (2004). Housing First, consumer choice,
+                and harm reduction for homeless individuals with a dual diagnosis.
+                <em>American Journal of Public Health</em>, 94(4), 651–656.
+              </div>
+              <div class="bib-finding">
+                Seminal Pathways to Housing RCT establishing Housing First model superiority to
+                treatment-first approaches. Conceptual foundation for At Home/Chez Soi.
+              </div>
+            </li>
+            <li class="bib-item">
+              <div class="bib-num">09</div>
+              <div class="bib-citation">
+                Wood, E., Kerr, T., Lloyd-Smith, E., et al. Vancouver Injection Drug Users Study
+                (VIDUS) and AIDS Care Cohort to Evaluate Access to Survival Services (ACCESS) —
+                multiple publications, BC Centre for Excellence in HIV/AIDS.
+              </div>
+              <div class="bib-finding">
+                Strongest Vancouver-specific empirical base on housing, substance use, HIV, and
+                health outcomes. Search PubMed: Kerr T, Wood E, Milloy MJ, Palepu A + "housing" +
+                "Vancouver."
+              </div>
+            </li>
+            <li class="bib-item">
+              <div class="bib-num">10</div>
+              <div class="bib-citation">
+                Hwang, S.W., Weaver, J., Aubry, T., &amp; Hoch, J.S. (2011). Hospital costs and
+                length of stay among homeless patients admitted to an inner-city hospital.
+                <em>Journal of Health Politics, Policy and Law</em>, 36(4), 733–754.
+              </div>
+              <div class="bib-finding">
+                Canadian study documenting excess hospital costs for homeless individuals. Provides
+                cost baseline for housing cost-offset arguments in the Canadian context.
+              </div>
+            </li>
+            <li class="bib-item">
+              <div class="bib-num">11</div>
+              <div class="bib-citation">
+                Frankish, C.J., Hwang, S.W., &amp; Quantz, D. (2005). Homelessness and health in
+                Canada: Research lessons and priorities.
+                <em>Canadian Journal of Public Health</em>, 96(Suppl 2), S23–S29.
+              </div>
+              <div class="bib-finding">
+                Canadian epidemiological framing on health consequences of homelessness. Contextual
+                foundation for housing-as-health arguments.
+              </div>
+            </li>
+            <li class="bib-item">
+              <div class="bib-num">12</div>
+              <div class="bib-citation">
+                Mental Health Commission of Canada. At Home / Chez Soi Indigenous sub-study
+                (Vancouver site). Multiple publications and reports.
+              </div>
+              <div class="bib-finding">
+                Qualitative documentation that standard Western Housing First models are inadequate
+                for Indigenous clients — failing to address cultural safety, land connection,
+                intergenerational trauma, and community-based housing concepts.
+              </div>
+            </li>
+            <li class="bib-item">
+              <div class="bib-num">13</div>
+              <div class="bib-citation">
+                Pauly, B., Lowen, C., Perkin, K., &amp; Jackson, N. (2014).
+                <em>Intensive Case Management Team Model of Care: Standards and Guidelines.</em>
+                BC Ministry of Health, Victoria.
+              </div>
+              <div class="bib-finding">
+                BC provincial ICMT standards. Defines target population, client:staff ratios
+                (16–20:1), service model, team composition, and relationship to ACT in the continuum
+                of care.
+              </div>
+            </li>
+            <li class="bib-item">
+              <div class="bib-num">14</div>
+              <div class="bib-citation">
+                BC Ministry of Health Services. (2008).
+                <em>BC Program Standards for Assertive Community Treatment (ACT) Teams.</em>
+                Victoria.
+              </div>
+              <div class="bib-finding">
+                Provincial ACT standards. Defines admission criteria, 7–10:1 client:staff ratio,
+                24/7 coverage, 0.8 FTE psychiatrist requirement, and target population (&gt;50
+                hospital bed days/year).
+              </div>
+            </li>
+            <li class="bib-item">
+              <div class="bib-num">15</div>
+              <div class="bib-citation">
+                Province of British Columbia / Ministry of Mental Health and Addictions. (2021;
+                2022). Complex Care Housing: Draft Strategic Framework (Aug 30, 2021); Q&amp;A and
+                Fact Sheet (October 2022); Eligibility and Priority Considerations (Draft).
+              </div>
+              <div class="bib-finding">
+                Primary government sources for CCH design, eligibility criteria, three service
+                tiers, delivery models, and priority populations. Access via
+                gov.bc.ca/complexcarehousing.
+              </div>
+            </li>
+          </ol>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-
-<div class="source-note">
-  <strong>Source:</strong> Downtown/Downtown Eastside Low-Income Housing list, updated January 2025.
-  Corrections: <a href="mailto:DTEShousing@gmail.com">DTEShousing@gmail.com</a> ·
-  For applications, always contact the managing agency directly.
-</div>
-
-<script src="data/housing.js"></script>
-<script>
-// ── RENDER ────────────────────────────────────────────────────────────────────
-let sortCol = "name", sortDir = 1;
-let activeFilters = new Set();
-
-function approxCoords(addr) {
-  const a = addr.toLowerCase();
-  if (a.includes("w hastings") || a.includes("west hastings")) return [49.2808 + Math.random()*0.001-0.0005, -123.107 + Math.random()*0.002-0.001];
-  if (a.includes("e hastings") || a.includes("east hastings")) return [49.2808 + Math.random()*0.001-0.0005, -123.098 + Math.random()*0.003-0.0015];
-  if (a.includes("hastings")) return [49.2808 + Math.random()*0.001-0.0005, -123.100 + Math.random()*0.004-0.002];
-  if (a.includes("powell"))   return [49.283  + Math.random()*0.002-0.001,  -123.097 + Math.random()*0.004-0.002];
-  if (a.includes("cordova"))  return [49.283  + Math.random()*0.002-0.001,  -123.101 + Math.random()*0.004-0.002];
-  if (a.includes("alexander"))return [49.285  + Math.random()*0.001-0.0005, -123.097 + Math.random()*0.003-0.0015];
-  if (a.includes("pender"))   return [49.280  + Math.random()*0.001-0.0005, -123.105 + Math.random()*0.003-0.0015];
-  if (a.includes("main"))     return [49.281  + Math.random()*0.002-0.001,  -123.100 + Math.random()*0.001-0.0005];
-  if (a.includes("columbia")) return [49.281  + Math.random()*0.001-0.0005, -123.102 + Math.random()*0.001-0.0005];
-  if (a.includes("carrall"))  return [49.282  + Math.random()*0.001-0.0005, -123.104 + Math.random()*0.001-0.0005];
-  if (a.includes("dunlevy"))  return [49.282  + Math.random()*0.001-0.0005, -123.093 + Math.random()*0.001-0.0005];
-  if (a.includes("princess")) return [49.283  + Math.random()*0.001-0.0005, -123.091 + Math.random()*0.001-0.0005];
-  if (a.includes("jackson"))  return [49.284  + Math.random()*0.001-0.0005, -123.088 + Math.random()*0.001-0.0005];
-  if (a.includes("homer"))    return [49.280  + Math.random()*0.001-0.0005, -123.116 + Math.random()*0.001-0.0005];
-  if (a.includes("granville"))return [49.279  + Math.random()*0.002-0.001,  -123.119 + Math.random()*0.002-0.001];
-  if (a.includes("burrard"))  return [49.280  + Math.random()*0.001-0.0005, -123.127 + Math.random()*0.001-0.0005];
-  if (a.includes("terminal")) return [49.274  + Math.random()*0.001-0.0005, -123.102 + Math.random()*0.001-0.0005];
-  if (a.includes("kingsway")) return [49.266  + Math.random()*0.001-0.0005, -123.080 + Math.random()*0.001-0.0005];
-  if (a.includes("vernon"))   return [49.278  + Math.random()*0.001-0.0005, -123.068 + Math.random()*0.001-0.0005];
-  if (a.includes("howe"))     return [49.280  + Math.random()*0.001-0.0005, -123.118 + Math.random()*0.001-0.0005];
-  if (a.includes("keefer"))   return [49.279  + Math.random()*0.001-0.0005, -123.100 + Math.random()*0.001-0.0005];
-  return [49.281 + Math.random()*0.006-0.003, -123.100 + Math.random()*0.008-0.004];
-}
-
-const map = L.map('housing-map', {zoomControl:true}).setView([49.281, -123.100], 14);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
-  attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com">CARTO</a>',
-  maxZoom:19
-}).addTo(map);
-setTimeout(() => map.invalidateSize(), 200);
-
-const rentColor = {shelter:"#1A7A6E", income:"#3A56A0", market:"#E8930A", dev:"#9333EA"};
-const housingMarkers = {};
-
-HOUSING.forEach(h => {
-  const [lat, lng] = approxCoords(h.addr);
-  h._lat = lat; h._lng = lng;
-  const color = rentColor[h.rentType] || "#666";
-  const icon = L.divIcon({
-    html:`<div style="background:${color};width:10px;height:10px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>`,
-    className:'', iconSize:[10,10], iconAnchor:[5,5], popupAnchor:[0,-8]
-  });
-  const m = L.marker([lat,lng], {icon}).addTo(map);
-  m.bindPopup(`<div class="popup-name">${h.name}</div><div class="popup-addr">${h.addr}</div>${h.units ? `<div style="font-size:12px;color:#1A7A6E;font-weight:600;margin-top:4px">${h.units} units · ${h.rentLabel}</div>` : `<div style="font-size:12px;color:#9333EA;margin-top:4px">${h.rentLabel}</div>`}`);
-  housingMarkers[h.name] = m;
-});
-
-function rentOrder(r) {
-  if (r.rentType === "dev")    return 9999;
-  if (r.rentType === "income") return 9998;
-  return parseInt(r.rentLabel.replace(/[^0-9]/g,"")) || 9997;
-}
-
-function sortData(arr) {
-  return [...arr].sort((a, b) => {
-    let av, bv;
-    if      (sortCol === "name")  { av = a.name.toLowerCase(); bv = b.name.toLowerCase(); }
-    else if (sortCol === "addr")  { av = a.addr.toLowerCase(); bv = b.addr.toLowerCase(); }
-    else if (sortCol === "rent")  { av = rentOrder(a); bv = rentOrder(b); }
-    else if (sortCol === "units") { av = -(a.units||0); bv = -(b.units||0); }
-    else                          { av = a.name.toLowerCase(); bv = b.name.toLowerCase(); }
-    return av < bv ? -sortDir : av > bv ? sortDir : 0;
-  });
-}
-
-function matchFilters(h) {
-  if (activeFilters.size === 0) return true;
-  for (const f of activeFilters) {
-    let match = false;
-    if      (f === "shelter")    match = h.rentType === "shelter";
-    else if (f === "income")     match = h.rentType === "income";
-    else if (f === "women")      match = h.pop.includes("women");
-    else if (f === "seniors")    match = h.pop.includes("seniors");
-    else if (f === "indigenous") match = h.pop.includes("indigenous");
-    else if (f === "youth")      match = h.pop.includes("youth");
-    else if (f === "supportive") match = !!(h.features.supportive || h.features.transitional);
-    else if (f === "dev")        match = !!h.dev;
-    if (!match) return false;
-  }
-  return true;
-}
-
-function matchSearch(h, q) {
-  if (!q) return true;
-  const s = (h.name+" "+h.addr+" "+h.manager+" "+h.notes+" "+h.type+" "+(h.apply||"")).toLowerCase();
-  return q.toLowerCase().split(" ").every(w => s.includes(w));
-}
-
-function rentBadge(h) {
-  if (h.rentType === "dev")     return `<span class="badge badge-dev">In dev</span>`;
-  if (h.rentType === "income")  return `<span class="badge badge-income">Income-based</span>`;
-  if (h.rentType === "shelter") return `<span class="badge badge-shelter">${h.rentLabel}</span>`;
-  return `<span class="badge badge-market">${h.rentLabel}</span>`;
-}
-
-function popBadges(h) {
-  const map = {women:["badge-women","Women"],seniors:["badge-senior","Seniors"],indigenous:["badge-indig","Indig."],youth:["badge-youth","Youth"],families:["badge-senior","Families"]};
-  return h.pop.map(p => { const [cls,label] = map[p]||[""]; return cls ? `<span class="badge ${cls}">${label}</span>` : ""; }).join(" ");
-}
-
-function featureIcons(f) {
-  let out = "";
-  if (f.pets)        out += `<span title="Pets OK" class="flag flag-pet">🐾</span>`;
-  if (f.elev)        out += `<span title="Elevator" class="flag flag-elev">🛗</span>`;
-  if (f.meals)       out += `<span title="Meals" class="flag flag-meals">🍽</span>`;
-  if (f.accessible)  out += `<span title="Accessible" class="flag flag-acc">♿</span>`;
-  if (f.supportive)  out += `<span title="Supportive" class="flag flag-supp">🤝</span>`;
-  if (f.lowbarrier)  out += `<span title="Low-barrier" class="flag">🟢</span>`;
-  if (f.transitional)out += `<span title="Transitional" class="flag">🔄</span>`;
-  return out;
-}
-
-let selectedHousing = null;
-function selectHousing(name) {
-  selectedHousing = name;
-  document.querySelectorAll("#table-body tr").forEach(r => r.classList.remove("row-selected"));
-  const row = document.getElementById("hrow-"+CSS.escape(name));
-  if (row) row.classList.add("row-selected");
-  const m = housingMarkers[name];
-  if (m) { map.setView(m.getLatLng(), 16, {animate:true}); m.openPopup(); }
-}
-
-function renderTable() {
-  const q = document.getElementById("search").value;
-  const filtered = sortData(HOUSING.filter(h => matchFilters(h) && matchSearch(h, q)));
-  const tbody = document.getElementById("table-body");
-
-  document.getElementById("total-count").textContent  = HOUSING.length;
-  document.getElementById("shelter-count").textContent = HOUSING.filter(h=>h.rentType==="shelter").length;
-  document.getElementById("dev-count").textContent     = HOUSING.filter(h=>h.dev).length;
-  document.getElementById("shown-count").textContent   = filtered.length;
-  document.getElementById("total-shown").textContent   = HOUSING.length;
-
-  HOUSING.forEach(h => {
-    const m = housingMarkers[h.name];
-    if (!m) return;
-    const show = filtered.some(f => f.name === h.name);
-    if (show) { if (!map.hasLayer(m)) m.addTo(map); }
-    else      { if (map.hasLayer(m)) map.removeLayer(m); }
-  });
-
-  if (filtered.length === 0) {
-    tbody.innerHTML = `<tr class="no-results-row"><td colspan="11">🏘️ No listings match — try removing some filters.</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = filtered.map(h => `
-    <tr id="hrow-${h.name.replace(/[^a-zA-Z0-9]/g,'_')}" class="${h.dev ? 'dev-row' : ''}" onclick="selectHousing('${h.name.replace(/'/g,"\\'")}')">
-      <td class="td-name">${h.name}${h.dev ? '<br><small style="color:#9333EA">🔨 In development</small>' : ''}</td>
-      <td class="td-addr">${h.addr}</td>
-      <td class="td-rent">${rentBadge(h)}</td>
-      <td class="td-units">${h.units || "—"}</td>
-      <td class="td-type"><span style="font-size:12px;color:var(--muted)">${h.type}</span></td>
-      <td class="td-pop"><div class="tag-row">${popBadges(h)}</div></td>
-      <td class="td-manager">${h.manager}</td>
-      <td class="td-contact">${h.contact ? `<a href="tel:${h.contact.replace(/[^0-9]/g,'')}">${h.contact}</a>` : "—"}</td>
-      <td class="td-flags">${featureIcons(h.features)}</td>
-      <td class="td-apply" style="font-size:11px;color:var(--muted)">${h.apply || "—"}</td>
-      <td class="td-notes">${h.notes || ""}</td>
-    </tr>
-  `).join("");
-}
-
-document.getElementById("search").addEventListener("input", renderTable);
-
-document.querySelectorAll(".filter-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const f = btn.dataset.filter;
-    if (activeFilters.has(f)) { activeFilters.delete(f); btn.classList.remove("active"); }
-    else                       { activeFilters.add(f);    btn.classList.add("active"); }
-    renderTable();
-  });
-});
-
-document.getElementById("sort-select").addEventListener("change", e => {
-  sortCol = e.target.value;
-  renderTable();
-});
-
-document.querySelectorAll("thead th[data-col]").forEach(th => {
-  th.addEventListener("click", () => {
-    const col = th.dataset.col;
-    if (sortCol === col) sortDir *= -1;
-    else { sortCol = col; sortDir = 1; }
-    document.querySelectorAll("thead th").forEach(t => t.classList.remove("sort-asc","sort-desc"));
-    th.classList.add(sortDir === 1 ? "sort-asc" : "sort-desc");
-    renderTable();
-  });
-});
-
-renderTable();
-</script>
-</body>
+  </body>
 </html>
