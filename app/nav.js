@@ -24,6 +24,7 @@
         { href: "drug-supply.html", label: "Drug Supply" },
         { href: "legal-services.html", label: "Legal Services" },
         { href: "income-assistance.html", label: "Income Assistance" },
+        { href: "outreach-teams.html", label: "Outreach Teams" },
         { href: "dtes-demographics.html", label: "Demographics" },
       ],
     },

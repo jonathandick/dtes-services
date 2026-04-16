@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outreach Teams – DTES Community Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+body { display: flex; flex-direction: column; min-height: 100vh; }
+.content-wrap { flex: 1; overflow-y: auto; }
+
+/* ── Shared prose helpers ── */
+.section-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 600; letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--teal); margin-bottom: 14px;
+}
+.section-label::before {
+  content: ''; display: block; width: 24px; height: 2px;
+  background: var(--teal-mid); border-radius: 1px;
+}
+
+/* ── Purpose section ── */
+.prose-section { padding: 48px 40px; max-width: 960px; margin: 0 auto; }
+.prose-section h2 {
+  font-family: var(--font-head); font-size: clamp(22px, 2.8vw, 32px);
+  color: var(--ink); margin-bottom: 16px; line-height: 1.2;
+}
+.prose-section p {
+  font-size: 14px; color: #3d5450; line-height: 1.85;
+  margin-bottom: 16px; max-width: 680px;
+}
+.prose-section p:last-child { margin-bottom: 0; }
+
+/* ── Pathway diagram ── */
+.pathway-section {
+  background: var(--surface);
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  padding: 48px 40px;
+}
+.pathway-section h3 {
+  font-family: var(--font-head); font-size: clamp(18px, 2vw, 24px);
+  color: var(--ink); text-align: center; margin-bottom: 6px;
+}
+.pathway-section .subtitle {
+  font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 40px;
+}
+.pathway {
+  max-width: 680px; margin: 0 auto;
+  display: flex; flex-direction: column; align-items: stretch; gap: 0;
+}
+.path-tier {
+  border-radius: 10px; padding: 18px 22px; border: 1px solid;
+}
+.path-tier.t1 { background: #FFF0F0; border-color: #FECACA; }
+.path-tier.t2 { background: #FFFBEB; border-color: #FDE68A; }
+.path-tier.t3 { background: #F0FDF4; border-color: #BBF7D0; }
+.path-tier-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+  text-transform: uppercase; margin-bottom: 3px;
+}
+.t1 .path-tier-label { color: #DC2626; }
+.t2 .path-tier-label { color: #D97706; }
+.t3 .path-tier-label { color: #16A34A; }
+.path-tier-name { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+.path-tier-duration { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+.path-tier-teams { font-size: 12px; color: #3d5450; line-height: 1.65; }
+.path-tier-teams strong { font-weight: 600; color: var(--ink); }
+.path-connector {
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 0; position: relative;
+}
+.path-connector-line {
+  width: 2px; background: var(--teal-mist); height: 28px; margin: 0 auto; flex-shrink: 0;
+  margin-left: 24px;
+}
+.path-connector-line.danger { background: #FECACA; }
+.path-connector-arrow { font-size: 14px; color: var(--teal-mid); text-align: center; margin-left: 18px; }
+.path-connector-arrow.danger { color: #DC2626; }
+.path-connector-note {
+  font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 4px;
+  border: 1px solid; white-space: nowrap;
+}
+.path-connector-note.normal { color: var(--muted); border-color: var(--border); background: var(--white); }
+.path-connector-note.warning { color: #DC2626; border-color: #FECACA; background: #FFF0F0; }
+
+/* ── Analysis sections ── */
+.analysis-section { padding: 52px 40px; border-top: 1px solid var(--border); }
+.analysis-section.alt { background: var(--surface); }
+.analysis-inner { max-width: 960px; margin: 0 auto; }
+.analysis-num {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--teal-mid); margin-bottom: 10px;
+}
+.analysis-inner h2 {
+  font-family: var(--font-head); font-size: clamp(20px, 2.5vw, 28px);
+  color: var(--ink); margin-bottom: 16px; line-height: 1.25; max-width: 680px;
+}
+.analysis-inner p {
+  font-size: 14px; color: #3d5450; line-height: 1.85;
+  margin-bottom: 14px; max-width: 680px;
+}
+.analysis-inner p:last-child { margin-bottom: 0; }
+.analysis-inner p strong { color: var(--ink); }
+
+.insight {
+  border-left: 3px solid var(--teal-mid); background: #F0FDF9;
+  padding: 14px 18px; border-radius: 0 8px 8px 0;
+  margin: 28px 0; max-width: 680px;
+}
+.insight p { font-size: 13px; color: #0D3D35; margin: 0; line-height: 1.75; }
+.insight p strong { color: #0D3D35; }
+
+/* ── Police grid ── */
+.police-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin: 28px 0; max-width: 680px;
+}
+.police-card {
+  border: 1px solid; border-radius: 10px; padding: 16px; background: var(--white);
+}
+.police-card.has { border-color: #FECACA; background: #FFFAFA; }
+.police-card.no  { border-color: #BBF7D0; background: #F8FFF8; }
+.police-tag-pill {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 6px; display: inline-block; margin-bottom: 8px;
+}
+.police-tag-pill.has { background: #FECACA; color: #991B1B; }
+.police-tag-pill.no  { background: #BBF7D0; color: #166534; }
+.pc-name { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+.pc-tier { font-size: 11px; color: var(--muted); margin-bottom: 7px; }
+.pc-body { font-size: 12px; color: #3d5450; line-height: 1.6; }
+
+/* ── Streams table ── */
+.data-table {
+  width: 100%; max-width: 760px; border-collapse: collapse;
+  margin: 28px 0; font-size: 13px;
+}
+.data-table th {
+  text-align: left; padding: 10px 14px;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); border-bottom: 2px solid var(--border);
+}
+.data-table td {
+  padding: 11px 14px; border-bottom: 1px solid var(--border);
+  vertical-align: top; color: #3d5450; line-height: 1.65;
+}
+.data-table td:first-child { font-weight: 600; color: var(--ink); white-space: nowrap; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table strong { color: var(--ink); }
+.gap-cell { color: #B91C1C; font-style: italic; font-size: 12px; }
+.em-dash { color: var(--border); }
+
+/* ── Team reference ── */
+.team-ref-section {
+  padding: 48px 40px; border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+.team-ref-inner { max-width: 960px; margin: 0 auto; }
+.team-ref-inner h2 {
+  font-family: var(--font-head); font-size: clamp(18px, 2vw, 24px);
+  color: var(--ink); margin-bottom: 6px;
+}
+.team-ref-inner .intro { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+.team-ref-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px;
+}
+.trc {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px;
+}
+.trc-name { font-size: 12px; font-weight: 700; color: var(--ink); margin-bottom: 5px; line-height: 1.3; }
+.trc-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+.trc-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+
+/* ── Tag colours ── */
+.tt { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 6px; }
+.geo-dtes  { background: #D4EFEA; color: #0D5C50; }
+.geo-van   { background: #DBEAFE; color: #1E40AF; }
+.geo-reg   { background: #F1F5F9; color: #475569; }
+.geo-ind   { background: #FEF3DC; color: #7A4A00; }
+.geo-multi { background: #F3E8FF; color: #6B21A8; }
+.tier-t1   { background: #FFF0F0; color: #991B1B; }
+.tier-t2   { background: #FFFBEB; color: #92400E; }
+.tier-t3   { background: #F0FDF4; color: #166534; }
+
+/* ── Responsive ── */
+@media (max-width: 700px) {
+  .prose-section, .analysis-section, .team-ref-section, .pathway-section { padding: 32px 16px; }
+  .police-grid { grid-template-columns: 1fr; }
+  .team-ref-grid { grid-template-columns: 1fr; }
+  .data-table { font-size: 12px; }
+  .data-table td:first-child { white-space: normal; }
+}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div>
+      <div class="page-eyebrow">🚶 Street-Level Care</div>
+      <h1>DTES <span>Outreach Teams</span></h1>
+      <p>How 20 teams across three tiers work together — and where the system breaks down.</p>
+    </div>
+    <div class="header-meta">
+      <div class="meta-pill"><strong>20</strong> active teams</div>
+      <div class="meta-pill"><strong>3 tiers</strong> of intensity</div>
+      <div class="meta-pill"><strong>4</strong> analytical lenses</div>
+    </div>
+  </div>
+</div>
+
+<div class="content-wrap">
+
+  <!-- ── PURPOSE ── -->
+  <div class="prose-section">
+    <div class="section-label">The System</div>
+    <h2>What this network is built to do</h2>
+    <p>
+      The VCH inner-city outreach network exists to prevent three things: unnecessary emergency room visits,
+      preventable deaths, and cycles through the correctional system. It is not a treatment system in the
+      conventional sense — most of its clients are not going to achieve clinical recovery in the near term.
+      The network's real mandate is harm reduction at the system level: keeping people alive and loosely
+      connected to care so that stabilization becomes possible over time.
+    </p>
+    <p>
+      The organizing premise is that formal institutions — hospitals, psychiatric wards, jails, detox
+      centres — are both harmful and expensive for people with complex concurrent disorders, chronic
+      homelessness, and long histories of trauma. The economic case for outreach is well-established;
+      a sustained community-based relationship costs far less than repeated ER visits or psychiatric
+      admissions. What remains contested is how much funding, and which models work best.
+    </p>
+    <p>
+      The three tiers reflect three different phases of engagement. Tier 1 responds to acute crises —
+      the goal is assessment and diversion, not treatment. Tier 2 is the bridge: short-term intensive
+      engagement to connect someone to a longer-term service. Tier 3 is where sustained change becomes
+      possible — housing stability, medication adherence, reduced hospitalization. The org chart
+      presents a clean funnel. The four analyses below explain why reality is more complicated.
+    </p>
+  </div>
+
+  <!-- ── PATHWAY ── -->
+  <div class="pathway-section">
+    <h3>The care pathway</h3>
+    <p class="subtitle">How someone is supposed to move through the system — and where the friction is</p>
+
+    <div class="pathway">
+
+      <div class="path-tier t1">
+        <div class="path-tier-label">Tier 1 — Urgent Response</div>
+        <div class="path-tier-name">Crisis response</div>
+        <div class="path-tier-duration">Hours to days · treat &amp; refer</div>
+        <div class="path-tier-teams">
+          <strong>Car 87/88 · MoDe · PPOT · ICRT</strong><br>
+          On-scene assessment, de-escalation, diversion from ER and arrest.
+          Goal: refer to a Tier 2 service or discharge with a follow-up plan.
+        </div>
+      </div>
+
+      <div class="path-connector">
+        <div style="display:flex;flex-direction:column;align-items:center;margin-left:24px;">
+          <div class="path-connector-line"></div>
+          <div class="path-connector-arrow">▼</div>
+        </div>
+        <div class="path-connector-note normal">Referral · days to weeks</div>
+      </div>
+
+      <div class="path-tier t2">
+        <div class="path-tier-label">Tier 2 — Short-term Transitional</div>
+        <div class="path-tier-name">Engage &amp; refer</div>
+        <div class="path-tier-duration">1 week – 6 months</div>
+        <div class="path-tier-teams">
+          <strong>IHOT · AHBT · OOT · IHO · AOT</strong><br>
+          Healthcare access, acute psychiatric stabilization, overdose follow-up.
+          Intended to stabilize and transfer to Tier 3 within 6 months.
+        </div>
+      </div>
+
+      <div class="path-connector">
+        <div style="display:flex;flex-direction:column;align-items:center;margin-left:24px;">
+          <div class="path-connector-line danger"></div>
+          <div class="path-connector-arrow danger">▼</div>
+        </div>
+        <div class="path-connector-note warning">⚠ Bottleneck — Tier 3 capacity is fixed</div>
+      </div>
+
+      <div class="path-tier t3">
+        <div class="path-tier-label">Tier 3 — Medium-to-long term</div>
+        <div class="path-tier-name">Engage, stabilize &amp; transfer</div>
+        <div class="path-tier-duration">6 months – 2+ years · ACT is indefinite</div>
+        <div class="path-tier-teams">
+          <strong>ACT · ICMT · R2R ICMT · VISU · DCC · Sheway</strong><br>
+          <strong>YOT · YICMT · Youth Assertive MH · Primary Care Outreach · STOP</strong><br>
+          Sustained case management. Goal: housing stability, fewer hospitalizations,
+          reduced overdose risk, recovery pathway where possible.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── ANALYSIS 1: THE POLICE QUESTION ── -->
+  <div class="analysis-section">
+    <div class="analysis-inner">
+      <div class="analysis-num">Analysis · 01</div>
+      <h2>The police question — four simultaneous answers</h2>
+      <p>
+        Four teams address crisis response, each representing a different position on whether police
+        should be present. This isn't the result of coherent planning — it's the result of four decades
+        of contested decisions, each one responding to a failure of the previous model.
+      </p>
+      <p>
+        Car 87/88 was designed in 1978 to reduce unnecessary arrests by placing a clinician in the police
+        vehicle. MoDe was created post-2016 because Car 87/88 was still dispatching police to people for
+        whom that contact was itself harmful — people with trauma from police violence, those with
+        outstanding warrants, situations where a uniform arriving escalated rather than resolved the crisis.
+        ICRT was created for Indigenous people specifically, for whom police contact carries particular
+        historical weight. AOT runs in the opposite direction: police are present not because clinicians
+        need protection from clients, but because some clients are assessed as too high-risk for clinician-only
+        engagement.
+      </p>
+      <p>
+        The result is four teams with partially overlapping mandates and fundamentally different approaches
+        operating simultaneously in the same geography. What determines which team is dispatched to any
+        given call is not clearly documented in public-facing materials — and that dispatch decision shapes
+        everything that follows.
+      </p>
+
+      <div class="police-grid">
+        <div class="police-card has">
+          <div class="police-tag-pill has">Police present</div>
+          <div class="pc-name">Car 87 / Car 88</div>
+          <div class="pc-tier">Tier 1 · DTES · est. 1978</div>
+          <div class="pc-body">Police officer + psychiatric nurse (Car 87) or clinician alone (Car 88). Primary citywide dispatch vehicle for mental health crisis calls.</div>
+        </div>
+        <div class="police-card no">
+          <div class="police-tag-pill no">No police</div>
+          <div class="pc-name">Mobile Crisis De-escalation (MoDe)</div>
+          <div class="pc-tier">Tier 1 · DTES · est. post-2016</div>
+          <div class="pc-body">Clinicians only. Created for calls where police presence is counterproductive: warrants, police trauma, situations requiring de-escalation without authority dynamics.</div>
+        </div>
+        <div class="police-card has">
+          <div class="police-tag-pill has">Police present</div>
+          <div class="pc-name">Assertive Outreach Team (AOT)</div>
+          <div class="pc-tier">Tier 2 · Vancouver</div>
+          <div class="pc-body">Police partnership for clients who "cannot be safely seen in a traditional model." Police as safety containment, not diversion — the inverse of Car 87's original logic.</div>
+        </div>
+        <div class="police-card no">
+          <div class="police-tag-pill no">No police</div>
+          <div class="pc-name">Indigenous Crisis Response Team (ICRT)</div>
+          <div class="pc-tier">Tier 1 · Indigenous</div>
+          <div class="pc-body">Indigenous-led, culturally specific. No police involvement. "Wholistic" response that centres cultural safety over clinical protocol.</div>
+        </div>
+      </div>
+
+      <div class="insight">
+        <p>
+          <strong>The unanswered question:</strong> When a 911 mental health call comes in, what criteria
+          determine which team is dispatched — Car 87/88, MoDe, or ICRT? The dispatch decision
+          has significant downstream consequences and is not transparent from public-facing documentation.
+          The teams exist; the triage logic between them does not appear to be public.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ANALYSIS 2: THE HANDOFF PROBLEM ── -->
+  <div class="analysis-section alt">
+    <div class="analysis-inner">
+      <div class="analysis-num">Analysis · 02</div>
+      <h2>The handoff problem — where people fall through</h2>
+      <p>
+        The org chart is designed as a funnel: Tier 1 refers to Tier 2, Tier 2 stabilizes and transfers
+        to Tier 3. In practice, the Tier 2 → Tier 3 handoff is the system's primary failure point.
+      </p>
+      <p>
+        ACT teams operate on indefinite enrollment by design. A client who stabilizes on ACT does not
+        graduate to something less intensive — the team stays with them permanently. This means ACT
+        capacity is essentially fixed: the only way a new client joins is if an existing client moves
+        away, enters residential care, or dies. Demand for ACT is not fixed.
+      </p>
+      <p>
+        ICMT has limited caseload capacity (typically 1:15–20 staff-to-client). A Tier 2 team like
+        AHBT or OOT may stabilize someone within weeks and flag them as needing Tier 3 — then wait
+        months for a spot to open. During that wait, the Tier 2 team extends its engagement, effectively
+        becoming a long-term service operating under a short-term mandate and budget.
+      </p>
+      <p>
+        The 2022 Road to Recovery initiative added R2R ICMT as a parallel long-term stream — partly to
+        absorb backlogged demand. But the structural problem remains: Tier 2 teams are resourced for
+        throughput, not for holding. When Tier 3 is at capacity, the pressure propagates backward
+        through the entire system. Tier 1 teams end up holding people who belong in Tier 2. Tier 2
+        teams hold people who belong in Tier 3. The funnel backs up.
+      </p>
+
+      <div class="insight">
+        <p>
+          <strong>The paradox of ACT's success:</strong> ACT's indefinite enrollment model is clinically
+          correct — abrupt discharge causes harm. But every long-term stable client permanently occupies
+          a caseload spot. ACT capacity is a one-way door. People go in, but rarely come out. The better
+          ACT works, the less available it becomes for new referrals.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ANALYSIS 3: PARALLEL STREAMS ── -->
+  <div class="analysis-section">
+    <div class="analysis-inner">
+      <div class="analysis-num">Analysis · 03</div>
+      <h2>Parallel streams — three populations with dedicated tracks</h2>
+      <p>
+        Three populations have their own vertical tracks running alongside the main tier structure:
+        youth (ages 13–24), Indigenous people, and corrections-involved people. These tracks exist
+        because the mainstream model was failing these populations — not reaching them, or actively
+        driving them away through design choices that didn't account for their specific contexts.
+      </p>
+      <p>
+        Each track has something notable: where it ends. Youth teams cut off at 24. The Indigenous track
+        ends at Tier 2 — there is no Indigenous-specific Tier 3 team in the VCH org chart. The
+        corrections track operates under a different accountability structure than the rest of the system.
+        Each of these cutoffs is a cliff.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Tier</th>
+            <th>Youth (13–24)</th>
+            <th>Indigenous</th>
+            <th>Corrections-involved</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Tier 1</td>
+            <td class="em-dash">—</td>
+            <td><strong>ICRT</strong> — non-police, culturally led crisis response</td>
+            <td class="em-dash">—</td>
+          </tr>
+          <tr>
+            <td>Tier 2</td>
+            <td><strong>YOT</strong> — not connected, high instability</td>
+            <td><strong>IHO</strong> — bridging and care coordination</td>
+            <td class="em-dash">—</td>
+          </tr>
+          <tr>
+            <td>Tier 3</td>
+            <td>
+              <strong>Youth Assertive MH</strong> (MH focus, 13–18)<br>
+              <strong>YICMT</strong> (substance use, 13–24)
+            </td>
+            <td class="gap-cell">No Indigenous-specific Tier 3 team in VCH org chart — referral is to mainstream ACT or ICMT</td>
+            <td>
+              <strong>VISU</strong> — ICM within supervision orders<br>
+              <strong>DCC</strong> — integrated problem-solving court
+            </td>
+          </tr>
+          <tr>
+            <td>Gap</td>
+            <td class="gap-cell">Age 24 cutoff — adult teams were not designed for young adults transitioning from youth systems</td>
+            <td class="gap-cell">The culturally safe entry point (ICRT → IHO) does not lead to a culturally safe long-term service</td>
+            <td>Accountability is different — supervision conditions create engagement leverage that voluntary care does not have, but also limits</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="insight">
+        <p>
+          <strong>The Indigenous track discontinuity:</strong> Someone who enters through ICRT and is
+          supported by IHO experiences culturally specific care at Tiers 1 and 2. When they're stable
+          enough to need a long-term service — ACT or ICMT — neither is Indigenous-specific. The
+          cultural safety built at entry is not sustained through to long-term care.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ANALYSIS 4: OVERLAPS AND GAPS ── -->
+  <div class="analysis-section alt">
+    <div class="analysis-inner">
+      <div class="analysis-num">Analysis · 04</div>
+      <h2>Overlaps — and the gaps they reveal</h2>
+      <p>
+        Several teams serve substantially overlapping populations. Different entry points reaching
+        different people is not inherently a problem — it can be effective redundancy. But it raises
+        coordination questions: when two teams are working with the same person, who holds the care plan?
+        And when a person sits in a gap between two teams' criteria, who notices?
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:28%">Overlap</th>
+            <th>The distinction — and what it obscures</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>ICMT</strong> vs. <strong>R2R ICMT</strong></td>
+            <td>Both are Tier 3 intensive case management in the DTES serving primary substance use disorder with co-occurring needs. The stated difference is philosophical: R2R ICMT is "recovery-focused." A person with opioid use disorder and depression could plausibly qualify for either. In practice, enrollment may be determined by which team has availability rather than clinical matching.</td>
+          </tr>
+          <tr>
+            <td><strong>YOT</strong> vs. <strong>YICMT</strong> vs. <strong>Youth Assertive MH</strong></td>
+            <td>Three teams for overlapping ages (13–18 / 13–24). Criteria differ (high instability / substance use impairment / mental health focus), but a 16-year-old with both mental health and substance use issues, not connected to services, could qualify for all three. Differentiation in practice may depend more on referral source than on clinical fit.</td>
+          </tr>
+          <tr>
+            <td><strong>Car 87/88</strong> vs. <strong>MoDe</strong></td>
+            <td>Same tier, same geography, parallel mandate. Not truly redundant — they exist for different sub-populations — but the dispatch decision (which team responds to a given call) is made outside public view. The criteria for that decision are the effective triage logic of the entire Tier 1 crisis system, and they aren't publicly documented.</td>
+          </tr>
+          <tr>
+            <td><strong>VISU</strong> vs. <strong>DCC</strong></td>
+            <td>Both address corrections-involved people. VISU is ongoing case management within supervision conditions; DCC is a court-based intervention addressing the underlying drivers of offending. They are complementary — a person may move through DCC and then be supported by VISU — but they represent two very different theories of how justice-system contact can be made into a health intervention.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="analysis-num" style="margin-top:36px;">Where the system has no answer</div>
+
+      <p>
+        <strong>The age-24 cliff.</strong> All three youth teams cut off at ages 18–24. Adult teams —
+        ACT, ICMT — were designed for adults with longer, more established histories of chronic illness.
+        A 25-year-old who has been cycling through youth services for a decade encounters an adult system
+        with no bridge service, no youth-informed intake, and long waitlists.
+      </p>
+      <p>
+        <strong>Between-criteria complexity.</strong> ACT requires severe and persistent mental illness.
+        ICMT requires primary substance use disorder with co-occurring needs. Some people sit between
+        these definitions — significant psychiatric history, significant substance use, but meeting neither
+        team's primary criteria cleanly. These individuals cycle between Tier 1 and Tier 2 indefinitely,
+        with no clear pathway into the long-term tier.
+      </p>
+      <p>
+        <strong>People who refuse all services.</strong> The entire network is voluntary. Someone who
+        refuses MoDe, ICRT, and all police-partnered options — who disengages from every available door
+        — has no remaining pathway in this system short of formal psychiatric committal under the Mental
+        Health Act. The network has no involuntary outreach mechanism of its own.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── TEAM REFERENCE ── -->
+  <div class="team-ref-section">
+    <div class="team-ref-inner">
+      <div class="section-label">Reference</div>
+      <h2>All 20 teams</h2>
+      <p class="intro">VCH Inner-city Outreach Teams org chart, Oct 7 2024 (draft).</p>
+      <div class="team-ref-grid">
+
+        <div class="trc">
+          <div class="trc-name">Car 87 / Car 88</div>
+          <div class="trc-tags"><span class="tt tier-t1">Urgent</span><span class="tt geo-dtes">DTES</span></div>
+          <div class="trc-desc">Police partnership crisis intervention</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Mobile Crisis De-escalation (MoDe)</div>
+          <div class="trc-tags"><span class="tt tier-t1">Urgent</span><span class="tt geo-dtes">DTES</span></div>
+          <div class="trc-desc">Non-police, same-day crisis response</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Priority Populations Outreach Team (PPOT)</div>
+          <div class="trc-tags"><span class="tt tier-t1">Urgent</span><span class="tt geo-reg">Regional</span></div>
+          <div class="trc-desc">Clinical supports for emergent / unexpected events</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Indigenous Crisis Response Team (ICRT)</div>
+          <div class="trc-tags"><span class="tt tier-t1">Urgent</span><span class="tt geo-ind">Indigenous</span></div>
+          <div class="trc-desc">Wholistic non-police crisis response, cultural safety</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Intensive Health Outreach Team (IHOT)</div>
+          <div class="trc-tags"><span class="tt tier-t2">Short-term</span><span class="tt geo-dtes">DTES</span></div>
+          <div class="trc-desc">Low-barrier healthcare for unhoused / precariously housed</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Acute Home-Based Treatment (AHBT)</div>
+          <div class="trc-tags"><span class="tt tier-t2">Short-term</span><span class="tt geo-dtes">DTES</span></div>
+          <div class="trc-desc">Acute psychiatric care as alternative to hospital admission</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Overdose Outreach Team (OOT)</div>
+          <div class="trc-tags"><span class="tt tier-t2">Short-term</span><span class="tt geo-reg">Regional</span></div>
+          <div class="trc-desc">Re-engage people after recent overdose — not connected to care</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Indigenous Health Outreach (IHO)</div>
+          <div class="trc-tags"><span class="tt tier-t2">Short-term</span><span class="tt geo-ind">Indigenous</span></div>
+          <div class="trc-desc">Indigenous-specific bridging and care coordination</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Assertive Outreach Team (AOT)</div>
+          <div class="trc-tags"><span class="tt tier-t2">Short-term</span><span class="tt geo-van">Vancouver</span></div>
+          <div class="trc-desc">Police partnership for higher-risk clients</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Vancouver Integrated Supervision Unit (VISU)</div>
+          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-dtes">DTES</span></div>
+          <div class="trc-desc">Intensive case management within community supervision orders</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Youth Assertive Outreach Mental Health Team</div>
+          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-multi">Multi-agency</span></div>
+          <div class="trc-desc">Mental health counselling, youth ages 13–18</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Youth Intensive Case Management Team (YICMT)</div>
+          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-multi">Multi-agency</span></div>
+          <div class="trc-desc">Wrap-around for youth 13–24 with substance use impairments</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">DTES Youth Outreach Team (YOT)</div>
+          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-reg">Regional</span></div>
+          <div class="trc-desc">Wrap-around for youth 13–24 not connected, high instability</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Sheway</div>
+          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-van">Vancouver</span></div>
+          <div class="trc-desc">Pregnant / parenting people with substance use issues and their children</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Assertive Community Treatment (ACT)</div>
+          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-dtes">DTES</span></div>
+          <div class="trc-desc">Indefinite intensive case management; severe persistent mental illness</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Downtown Community Court (DCC)</div>
+          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-multi">Multi-agency</span></div>
+          <div class="trc-desc">Problem-solving court integrating justice, health, social services</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Road to Recovery ICMT (R2R ICMT)</div>
+          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-multi">Multi-agency</span></div>
+          <div class="trc-desc">Recovery-focused intensive case management</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Inner-city Intensive Case Management Team (ICMT)</div>
+          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-dtes">DTES</span></div>
+          <div class="trc-desc">Primary substance use disorder with co-occurring MHSU or PC needs</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">Primary Care Outreach</div>
+          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-van">Vancouver</span></div>
+          <div class="trc-desc">Primary care delivered in community settings</div>
+        </div>
+
+        <div class="trc">
+          <div class="trc-name">STOP Outreach Team</div>
+          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-reg">Regional</span></div>
+          <div class="trc-desc">HIV prevention, care, and treatment</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="source-note">
+    Sources: VCH Inner-city Outreach Teams org chart (Oct 7, 2024 draft); BC Ministry of Health ACT Standards (2008);
+    BC Ministry of Health ICMT Standards and Guidelines (2014); Complex Care Housing Framework (2021).
+    This page is a community overview and does not constitute an official directory.
+  </div>
+
+</div><!-- /content-wrap -->
+</body>
+</html>
