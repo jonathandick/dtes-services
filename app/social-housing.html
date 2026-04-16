@@ -9,16 +9,78 @@
       href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+    />
     <link rel="stylesheet" href="shared.css" />
     <style>
       body {
         display: flex;
         flex-direction: column;
-        min-height: 100vh;
+        height: 100vh;
+        overflow: hidden;
       }
-      .content-wrap {
+
+      /* ── Tab bar ── */
+      .tab-bar {
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        padding: 0 24px;
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        flex-shrink: 0;
+        z-index: 90;
+      }
+      .tab-btn {
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--muted);
+        padding: 10px 18px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        transition:
+          color 0.15s,
+          border-color 0.15s;
+        white-space: nowrap;
+      }
+      .tab-btn:hover {
+        color: var(--ink);
+      }
+      .tab-btn.active {
+        color: var(--teal);
+        border-bottom-color: var(--teal);
+        font-weight: 600;
+      }
+
+      /* ── Tab panels ── */
+      .tab-panel {
+        display: none;
         flex: 1;
+        overflow: hidden;
+      }
+      .tab-panel.active {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ══════════════════════════════════════════
+         BACKGROUND TAB
+      ══════════════════════════════════════════ */
+      #tab-background {
         overflow-y: auto;
+      }
+      #tab-background::-webkit-scrollbar {
+        width: 4px;
+      }
+      #tab-background::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 4px;
       }
 
       /* ── Section label ── */
@@ -737,34 +799,161 @@
         font-weight: 600;
         color: var(--teal-dark);
       }
+
+      /* ══════════════════════════════════════════
+         REGISTRY TAB
+      ══════════════════════════════════════════ */
+      #tab-registry {
+        flex-direction: column;
+      }
+      #tab-registry .main-wrap {
+        flex: 1;
+        overflow: hidden;
+      }
+      #housing-map {
+        width: 100%;
+        height: 100%;
+      }
+      #map-container {
+        border-right: 1px solid var(--border);
+      }
+
+      /* Registry table columns */
+      .td-name {
+        font-weight: 500;
+        color: var(--ink);
+        min-width: 150px;
+      }
+      .td-name small {
+        display: block;
+        font-weight: 400;
+        color: var(--muted);
+        font-size: 11px;
+        margin-top: 2px;
+      }
+      .td-addr {
+        color: var(--muted);
+        min-width: 130px;
+        font-size: 12px;
+      }
+      .td-rent {
+        font-weight: 600;
+        color: var(--teal);
+        white-space: nowrap;
+      }
+      .td-rent.market {
+        color: var(--amber);
+      }
+      .td-rent.dev {
+        color: #9333ea;
+        font-size: 11px;
+        font-style: italic;
+      }
+      .td-units {
+        text-align: center;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .td-type {
+        min-width: 90px;
+      }
+      .td-pop {
+        min-width: 90px;
+      }
+      .td-manager {
+        color: var(--muted);
+        font-size: 12px;
+        min-width: 130px;
+      }
+      .td-contact {
+        font-size: 12px;
+      }
+      .td-contact a {
+        color: var(--teal);
+        text-decoration: none;
+      }
+      .td-contact a:hover {
+        text-decoration: underline;
+      }
+      .td-notes {
+        font-size: 12px;
+        color: var(--muted);
+        min-width: 160px;
+        max-width: 220px;
+      }
+      .td-apply {
+        font-size: 11px;
+        min-width: 100px;
+      }
+      .td-flags {
+        white-space: nowrap;
+      }
+      .flag {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        font-size: 11px;
+        margin: 1px;
+      }
+      .flag-pet {
+        background: #d1fae5;
+      }
+      .flag-elev {
+        background: #dbeafe;
+      }
+      .flag-supp {
+        background: var(--teal-pale);
+      }
+      .flag-meals {
+        background: var(--amber-pale);
+      }
+      .flag-acc {
+        background: #fce7f3;
+      }
+      tbody tr.dev-row {
+        background: #faf5ff;
+      }
+      tbody tr.dev-row:hover {
+        background: #f3e8ff;
+      }
     </style>
   </head>
   <body>
     <script src="nav.js"></script>
 
-    <div class="content-wrap">
-      <!-- ── Page header ── -->
-      <div class="page-header">
-        <div class="page-eyebrow">
-          <span>Services</span>
-        </div>
-        <div class="page-header-inner">
-          <div>
-            <h1>Social <span>Housing</span> in Vancouver</h1>
-            <p>
-              A systems analysis of housing models — what each model provides, the health capacity
-              embedded in it, and what the evidence says about outcomes for the people it serves.
-            </p>
-            <div class="header-meta">
-              <div class="meta-pill"><strong>7</strong>&nbsp;distinct models</div>
-              <div class="meta-pill"><strong>3</strong>&nbsp;healthcare integration tiers</div>
-              <div class="meta-pill"><strong>15</strong>&nbsp;key citations</div>
-            </div>
+    <!-- ── Shared page header ── -->
+    <div class="page-header">
+      <div class="page-eyebrow"><span>Services</span></div>
+      <div class="page-header-inner">
+        <div>
+          <h1>Social <span>Housing</span> in Vancouver</h1>
+          <p>
+            Systems analysis of housing models and the health capacity embedded in each, plus a
+            searchable registry of DTES-area buildings.
+          </p>
+          <div class="header-meta">
+            <div class="meta-pill"><strong>7</strong>&nbsp;distinct models</div>
+            <div class="meta-pill"><strong>3</strong>&nbsp;healthcare integration tiers</div>
+            <div class="meta-pill"><strong>15</strong>&nbsp;key citations</div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- ── Intro ── -->
+    <!-- ── Tab bar ── -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="background">Background</button>
+      <button class="tab-btn" data-tab="registry">Registry</button>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         BACKGROUND TAB
+    ══════════════════════════════════════════ -->
+    <div id="tab-background" class="tab-panel active">
+      <!-- Intro -->
       <div class="prose-section">
         <div class="section-label">Overview</div>
         <h2>Housing as a health intervention</h2>
@@ -783,7 +972,7 @@
         </p>
       </div>
 
-      <!-- ── Section 1: Housing Spectrum ── -->
+      <!-- Section 1: Housing Spectrum -->
       <div class="section-alt">
         <div class="analysis-section">
           <div class="section-label">Section 1</div>
@@ -793,7 +982,6 @@
             differ in operator type, rent structure, support intensity, and what health role — if
             any — is embedded. The model determines the floor of care available, not just shelter.
           </p>
-
           <div class="spectrum-wrap">
             <table>
               <thead>
@@ -831,9 +1019,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td>
-                    <strong>Transitional Housing</strong>
-                  </td>
+                  <td><strong>Transitional Housing</strong></td>
                   <td>Non-profits</td>
                   <td>
                     People exiting shelter; bridge to longer-term housing (typically 6–24 months)
@@ -909,9 +1095,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td>
-                    <strong>Co-operative Housing</strong>
-                  </td>
+                  <td><strong>Co-operative Housing</strong></td>
                   <td>Member-governed non-profit societies (CHF BC)</td>
                   <td>
                     Working and moderate-income households; not targeted at homeless populations
@@ -924,7 +1108,6 @@
               </tbody>
             </table>
           </div>
-
           <div class="insight" style="margin-top: 24px">
             <strong>The vacancy problem with rent supplements:</strong> BC Housing's portable
             subsidy programs (SAFER, RAP) work when the private market has vacancy. Metro
@@ -935,18 +1118,17 @@
         </div>
       </div>
 
-      <!-- ── Section 2: Healthcare Integration ── -->
+      <!-- Section 2: Healthcare Integration -->
       <div>
         <div class="analysis-section">
           <div class="section-label">Section 2</div>
           <h2>The Healthcare Integration Question</h2>
           <p class="lead">
-            BC Housing's core supportive housing model relies on
-            <em>linkage</em> to community health services, not <em>co-location</em>. In practice,
-            the distinction determines whether a person in crisis is connected to care or cycles
-            through emergency services. Three distinct models operate across the housing spectrum.
+            BC Housing's core supportive housing model relies on <em>linkage</em> to community
+            health services, not <em>co-location</em>. In practice, the distinction determines
+            whether a person in crisis is connected to care or cycles through emergency services.
+            Three distinct models operate across the housing spectrum.
           </p>
-
           <div class="integration-grid">
             <div class="integration-card model-1">
               <div class="card-icon">🏠</div>
@@ -993,7 +1175,6 @@
               </div>
             </div>
           </div>
-
           <div class="insight">
             <strong>The caseload bottleneck:</strong> Even in buildings designed for ACT or ICM
             integration, health service engagement depends entirely on whether a community team has
@@ -1008,7 +1189,6 @@
             Community Treatment (ACT) and Intensive Case Management Teams (ICMT) — serve overlapping
             but distinct populations. Both are defined by BC provincial standards documents.
           </p>
-
           <div class="acticmt-compare">
             <div class="compare-card">
               <div class="compare-card-head">
@@ -1100,7 +1280,7 @@
         </div>
       </div>
 
-      <!-- ── Section 3: Complex Care Housing ── -->
+      <!-- Section 3: Complex Care Housing -->
       <div class="section-alt">
         <div class="analysis-section">
           <div class="section-label">Section 3</div>
@@ -1239,10 +1419,10 @@
           </div>
 
           <div class="insight" style="margin-top: 24px">
-            <strong>CCH vs. standard supportive housing in one sentence:</strong>
-            Standard supportive housing provides referrals and coordination; Complex Care Housing
-            provides direct health services. The clinical staff are not visitors — they are part of
-            the building's operating model. This distinction matters most for the highest-acuity
+            <strong>CCH vs. standard supportive housing in one sentence:</strong> Standard
+            supportive housing provides referrals and coordination; Complex Care Housing provides
+            direct health services. The clinical staff are not visitors — they are part of the
+            building's operating model. This distinction matters most for the highest-acuity
             individuals who disengage from referral-based systems.
           </div>
 
@@ -1276,7 +1456,7 @@
         </div>
       </div>
 
-      <!-- ── Section 4: Evidence ── -->
+      <!-- Section 4: Evidence -->
       <div>
         <div class="analysis-section">
           <div class="section-label">Section 4</div>
@@ -1287,7 +1467,6 @@
             synthesis of what the research consistently shows, where findings are mixed, and where
             they are null.
           </p>
-
           <div class="stat-callout">
             <div class="stat-item">
               <div class="stat-num">73%</div>
@@ -1313,7 +1492,6 @@
               <div class="stat-source">Sadowski et al., JAMA 2009 — Chicago RCT, n=407</div>
             </div>
           </div>
-
           <div class="evidence-grid">
             <div class="evidence-card positive">
               <h4>✓ Reliably Improves</h4>
@@ -1343,10 +1521,9 @@
                 <strong>HIV treatment outcomes</strong>
                 VIDUS and ACCESS cohort data (BC Centre for Excellence in HIV/AIDS, Vancouver) show
                 housing stability associated with improved ART adherence, reduced viral load, and
-                lower transmission risk behaviours. Among the strongest Vancouver-specific findings
-                in this literature.
+                lower transmission risk behaviours.
                 <div class="cite">
-                  Wood, Kerr, Milloy, Palepu et al. — multiple VIDUS/ACCESS publications
+                  Wood, Kerr, Milloy, Palepu et al. — VIDUS/ACCESS publications
                 </div>
               </div>
               <div class="evidence-item">
@@ -1358,7 +1535,6 @@
                 </div>
               </div>
             </div>
-
             <div class="evidence-card mixed">
               <h4>~ Mixed or Null Findings</h4>
               <div class="evidence-item">
@@ -1372,8 +1548,7 @@
                 <strong>Substance use</strong>
                 Harm-reduction-oriented housing does not reduce substance use per se — it reduces
                 harms (overdose, disease transmission). Studies using reduced use as an outcome
-                frequently find null results. This is arguably a misspecification: harm reduction is
-                not designed for abstinence.
+                frequently find null results. This is arguably a misspecification.
                 <div class="cite">Multiple Housing First follow-up studies</div>
               </div>
               <div class="evidence-item">
@@ -1385,24 +1560,22 @@
               </div>
               <div class="evidence-item">
                 <strong>ICM-stream service utilization offsets</strong>
-                Cost reductions are concentrated in the ACT (high-needs) stream. Moderate-needs ICM
-                participants showed housing stability gains but not equivalent reductions in acute
-                service use — meaning no cost offset. Net additional cost of ~$14,000 per
-                participant over two years nationally.
+                Cost reductions concentrated in the ACT stream. Moderate-needs ICM participants
+                showed housing stability gains but not equivalent reductions in acute service use —
+                net additional cost of ~$14,000 per participant over two years nationally.
                 <div class="cite">Latimer et al., Psychiatric Services 2017</div>
               </div>
               <div class="evidence-item">
                 <strong>Selection effects and comparison challenges</strong>
                 Observational studies comparing housed vs. unhoused populations carry severe
                 selection bias. Even across RCTs, Treatment as Usual conditions vary enormously.
-                Cross-study comparison is difficult.
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ── Section 5: Cost ── -->
+      <!-- Section 5: Cost -->
       <div class="section-alt">
         <div class="analysis-section">
           <div class="section-label">Section 5</div>
@@ -1413,7 +1586,6 @@
             housing costs. The evidence base is real but more nuanced than advocacy materials
             typically suggest.
           </p>
-
           <div class="cost-study-grid">
             <div class="cost-card">
               <div class="study-ref">Culhane, Metraux &amp; Hadley (2002)</div>
@@ -1434,8 +1606,8 @@
               </div>
               <div class="cost-finding">
                 <span class="cf-bullet">→</span>
-                Supportive housing cost ~$17,277/year, producing a net additional cost of
-                ~$995/person/year after offsets
+                Supportive housing cost ~$17,277/year, producing a net cost of ~$995/person/year
+                after offsets
               </div>
               <div class="cost-finding">
                 <span class="cf-bullet">→</span>
@@ -1443,24 +1615,22 @@
               </div>
               <div class="cost-caveat">
                 <strong>Caveat:</strong> Pre-post design without control group. Regression to the
-                mean is a real confound — placement often occurs at a crisis peak. NYC-to-Vancouver
-                translation requires significant adjustment.
+                mean is a real confound. NYC-to-Vancouver translation requires significant
+                adjustment.
               </div>
             </div>
-
             <div class="cost-card">
               <div class="study-ref">Latimer et al. (2017)</div>
               <h4>At Home / Chez Soi Cost Analysis</h4>
               <div class="study-design">
                 National RCT cost study, Canada. All five At Home/Chez Soi sites including
-                Vancouver. ACT and ICM streams analyzed separately. <em>Psychiatric Services</em>,
-                68(9).
+                Vancouver. ACT and ICM streams analyzed separately.
+                <em>Psychiatric Services</em>, 68(9).
               </div>
               <div class="cost-finding">
                 <span class="cf-bullet">→</span>
                 ACT stream (high-needs): Housing First approached cost-neutrality — hospitalizations
-                and emergency service reductions largely offset housing costs including rent
-                supplements
+                and emergency service reductions largely offset housing costs
               </div>
               <div class="cost-finding">
                 <span class="cf-bullet">→</span>
@@ -1473,25 +1643,23 @@
               </div>
               <div class="cost-caveat">
                 <strong>Important context:</strong> Cost-neutrality for the ACT stream means that
-                for the highest-complexity individuals, acute service reductions are large enough to
-                substantially offset housing costs — making housing financially defensible on system
-                terms alone, independent of humanitarian arguments.
+                for the highest-complexity individuals, acute service reductions substantially
+                offset housing costs — making housing financially defensible on system terms alone,
+                independent of humanitarian arguments.
               </div>
             </div>
           </div>
-
           <div class="insight" style="margin-top: 20px">
-            <strong>BC government cost estimates:</strong> Government documents and advocacy reports
-            cite $50,000–$100,000+ per year as the annual public cost of leaving a high-complexity
-            person in chronic homelessness in Vancouver (ER, hospital, shelter, corrections),
-            compared to $25,000–$40,000 for supportive housing with services. The gap is consistent
-            with the Culhane framework, but the methodology behind BC-specific figures varies —
-            verify against primary sources before formal citation.
+            <strong>BC government cost estimates:</strong> Government documents cite
+            $50,000–$100,000+ per year as the annual public cost of leaving a high-complexity person
+            in chronic homelessness in Vancouver (ER, hospital, shelter, corrections), compared to
+            $25,000–$40,000 for supportive housing with services. Verify methodology against primary
+            sources before formal citation.
           </div>
         </div>
       </div>
 
-      <!-- ── Section 6: Research Gaps ── -->
+      <!-- Section 6: Research Gaps -->
       <div>
         <div class="analysis-section">
           <div class="section-label">Section 6</div>
@@ -1501,17 +1669,15 @@
             time horizons. Several critical gaps remain that matter for system planning in the
             Vancouver context.
           </p>
-
           <div class="gaps-grid">
             <div class="gap-card">
               <div class="gap-label">Research gap</div>
               <h4>Long-term outcomes beyond two years</h4>
               <p>
                 Almost no published literature follows supportive housing residents beyond 24
-                months. At Home/Chez Soi ended at two years. We do not know with confidence what
-                happens to housing stability, health outcomes, and service utilization over 5–10+
-                years. Concerns about "stagnation" — people housed but not progressing — are
-                anecdotal and under-studied.
+                months. We do not know with confidence what happens to housing stability, health
+                outcomes, and service utilization over 5–10+ years. Concerns about "stagnation" —
+                people housed but not progressing — are anecdotal and under-studied.
               </p>
             </div>
             <div class="gap-card">
@@ -1520,10 +1686,10 @@
               <p>
                 Indigenous people represent approximately 33–38% of Metro Vancouver's homeless
                 population versus ~3% of the regional population. At Home/Chez Soi's Indigenous
-                sub-study found standard Western Housing First models did not adequately address
-                cultural safety, land connection, intergenerational trauma, and community-based
-                conceptions of housing. What an adapted model looks like at scale, with outcome
-                evidence, remains largely unanswered.
+                sub-study found standard Western Housing First models inadequate — failing to
+                address cultural safety, land connection, intergenerational trauma, and
+                community-based conceptions of housing. What an adapted model looks like at scale,
+                with outcome evidence, remains largely unanswered.
               </p>
             </div>
             <div class="gap-card">
@@ -1573,7 +1739,7 @@
         </div>
       </div>
 
-      <!-- ── Bibliography ── -->
+      <!-- Bibliography -->
       <div class="section-alt">
         <div class="bib-section">
           <div class="section-label">Bibliography</div>
@@ -1582,15 +1748,13 @@
             Peer-reviewed papers and key government reports. Verify volume, issue, and page numbers
             against primary sources before formal citation.
           </p>
-
           <ol class="bib-list">
             <li class="bib-item">
               <div class="bib-num">01</div>
               <div class="bib-citation">
                 Culhane, D.P., Metraux, S., &amp; Hadley, T. (2002). Public service reductions
                 associated with placement of homeless persons with severe mental illness in
-                supportive housing.
-                <em>Housing Policy Debate</em>, 13(1), 107–163.
+                supportive housing. <em>Housing Policy Debate</em>, 13(1), 107–163.
               </div>
               <div class="bib-finding">
                 Foundational US cost-offset study. 4,679 NYC participants; supportive housing
@@ -1628,8 +1792,7 @@
               <div class="bib-citation">
                 Aubry, T., Goering, P., Veldhuizen, S., et al. (2016). A multiple-city RCT of
                 Housing First with assertive community treatment for homeless Canadians with serious
-                mental illness.
-                <em>Psychiatric Services</em>, 67(3), 275–281.
+                mental illness. <em>Psychiatric Services</em>, 67(3), 275–281.
               </div>
               <div class="bib-finding">
                 Key outcome paper from At Home/Chez Soi showing superior housing stability and
@@ -1780,5 +1943,455 @@
         </div>
       </div>
     </div>
+    <!-- /tab-background -->
+
+    <!-- ══════════════════════════════════════════
+         REGISTRY TAB
+    ══════════════════════════════════════════ -->
+    <div id="tab-registry" class="tab-panel">
+      <div class="controls-bar">
+        <div class="controls-inner">
+          <div class="search-wrap">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="M21 21l-4.35-4.35" />
+            </svg>
+            <input
+              type="text"
+              id="reg-search"
+              class="search-input"
+              placeholder="Search by name, address, manager…"
+            />
+          </div>
+          <div class="filter-group">
+            <button class="filter-btn" data-filter="shelter">Shelter Rate ($500)</button>
+            <button class="filter-btn" data-filter="income">Income-Based</button>
+            <button class="filter-btn" data-filter="women">Women</button>
+            <button class="filter-btn" data-filter="seniors">Seniors</button>
+            <button class="filter-btn" data-filter="indigenous">Indigenous</button>
+            <button class="filter-btn" data-filter="youth">Youth</button>
+            <button class="filter-btn" data-filter="supportive">Supportive</button>
+            <button class="filter-btn" data-filter="dev">In Development</button>
+          </div>
+          <select class="sort-select" id="reg-sort">
+            <option value="name">Sort: Name A–Z</option>
+            <option value="rent">Sort: Rent Low–High</option>
+            <option value="units">Sort: Units (most first)</option>
+            <option value="addr">Sort: Street Address</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="main-wrap">
+        <div class="split-layout">
+          <div id="map-container">
+            <div id="housing-map"></div>
+          </div>
+          <div class="table-side">
+            <div class="results-bar">
+              <strong id="reg-shown">—</strong> of <strong id="reg-total">—</strong> listings ·
+              Click row to highlight on map
+            </div>
+            <div class="table-scroll">
+              <table id="reg-table">
+                <thead>
+                  <tr>
+                    <th data-col="name">Name</th>
+                    <th data-col="addr">Address</th>
+                    <th data-col="rent">Rent</th>
+                    <th data-col="units">Units</th>
+                    <th data-col="type">Type</th>
+                    <th data-col="population">For</th>
+                    <th data-col="manager">Manager</th>
+                    <th data-col="contact">Contact</th>
+                    <th data-col="features">Features</th>
+                    <th data-col="apply">Apply via</th>
+                    <th data-col="notes">Notes</th>
+                  </tr>
+                </thead>
+                <tbody id="reg-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="source-note">
+        <strong>Source:</strong> Downtown/Downtown Eastside Low-Income Housing list, updated January
+        2025. Corrections: <a href="mailto:DTEShousing@gmail.com">DTEShousing@gmail.com</a> · For
+        applications, always contact the managing agency directly.
+      </div>
+    </div>
+    <!-- /tab-registry -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="data/housing.js"></script>
+    <script>
+      // ── Tab switching ────────────────────────────────────────────
+      let mapInitialized = false;
+
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const tab = btn.dataset.tab;
+          document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+          document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
+          btn.classList.add("active");
+          document.getElementById("tab-" + tab).classList.add("active");
+
+          if (tab === "registry" && !mapInitialized) {
+            initRegistry();
+            mapInitialized = true;
+          } else if (tab === "registry" && housingMap) {
+            setTimeout(() => housingMap.invalidateSize(), 50);
+          }
+        });
+      });
+
+      // ── Registry ─────────────────────────────────────────────────
+      let housingMap = null;
+      let sortCol = "name",
+        sortDir = 1;
+      let activeFilters = new Set();
+      const housingMarkers = {};
+
+      function approxCoords(addr) {
+        const a = addr.toLowerCase();
+        if (a.includes("w hastings") || a.includes("west hastings"))
+          return [
+            49.2808 + Math.random() * 0.001 - 0.0005,
+            -123.107 + Math.random() * 0.002 - 0.001,
+          ];
+        if (a.includes("e hastings") || a.includes("east hastings"))
+          return [
+            49.2808 + Math.random() * 0.001 - 0.0005,
+            -123.098 + Math.random() * 0.003 - 0.0015,
+          ];
+        if (a.includes("hastings"))
+          return [49.2808 + Math.random() * 0.001 - 0.0005, -123.1 + Math.random() * 0.004 - 0.002];
+        if (a.includes("powell"))
+          return [49.283 + Math.random() * 0.002 - 0.001, -123.097 + Math.random() * 0.004 - 0.002];
+        if (a.includes("cordova"))
+          return [49.283 + Math.random() * 0.002 - 0.001, -123.101 + Math.random() * 0.004 - 0.002];
+        if (a.includes("alexander"))
+          return [
+            49.285 + Math.random() * 0.001 - 0.0005,
+            -123.097 + Math.random() * 0.003 - 0.0015,
+          ];
+        if (a.includes("pender"))
+          return [
+            49.28 + Math.random() * 0.001 - 0.0005,
+            -123.105 + Math.random() * 0.003 - 0.0015,
+          ];
+        if (a.includes("main"))
+          return [49.281 + Math.random() * 0.002 - 0.001, -123.1 + Math.random() * 0.001 - 0.0005];
+        if (a.includes("columbia"))
+          return [
+            49.281 + Math.random() * 0.001 - 0.0005,
+            -123.102 + Math.random() * 0.001 - 0.0005,
+          ];
+        if (a.includes("carrall"))
+          return [
+            49.282 + Math.random() * 0.001 - 0.0005,
+            -123.104 + Math.random() * 0.001 - 0.0005,
+          ];
+        if (a.includes("dunlevy"))
+          return [
+            49.282 + Math.random() * 0.001 - 0.0005,
+            -123.093 + Math.random() * 0.001 - 0.0005,
+          ];
+        if (a.includes("princess"))
+          return [
+            49.283 + Math.random() * 0.001 - 0.0005,
+            -123.091 + Math.random() * 0.001 - 0.0005,
+          ];
+        if (a.includes("jackson"))
+          return [
+            49.284 + Math.random() * 0.001 - 0.0005,
+            -123.088 + Math.random() * 0.001 - 0.0005,
+          ];
+        if (a.includes("homer"))
+          return [
+            49.28 + Math.random() * 0.001 - 0.0005,
+            -123.116 + Math.random() * 0.001 - 0.0005,
+          ];
+        if (a.includes("granville"))
+          return [49.279 + Math.random() * 0.002 - 0.001, -123.119 + Math.random() * 0.002 - 0.001];
+        if (a.includes("burrard"))
+          return [
+            49.28 + Math.random() * 0.001 - 0.0005,
+            -123.127 + Math.random() * 0.001 - 0.0005,
+          ];
+        if (a.includes("terminal"))
+          return [
+            49.274 + Math.random() * 0.001 - 0.0005,
+            -123.102 + Math.random() * 0.001 - 0.0005,
+          ];
+        if (a.includes("kingsway"))
+          return [
+            49.266 + Math.random() * 0.001 - 0.0005,
+            -123.08 + Math.random() * 0.001 - 0.0005,
+          ];
+        if (a.includes("vernon"))
+          return [
+            49.278 + Math.random() * 0.001 - 0.0005,
+            -123.068 + Math.random() * 0.001 - 0.0005,
+          ];
+        if (a.includes("howe"))
+          return [
+            49.28 + Math.random() * 0.001 - 0.0005,
+            -123.118 + Math.random() * 0.001 - 0.0005,
+          ];
+        if (a.includes("keefer"))
+          return [49.279 + Math.random() * 0.001 - 0.0005, -123.1 + Math.random() * 0.001 - 0.0005];
+        return [49.281 + Math.random() * 0.006 - 0.003, -123.1 + Math.random() * 0.008 - 0.004];
+      }
+
+      function initRegistry() {
+        housingMap = L.map("housing-map", { zoomControl: true }).setView([49.281, -123.1], 14);
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com">CARTO</a>',
+          maxZoom: 19,
+        }).addTo(housingMap);
+        setTimeout(() => housingMap.invalidateSize(), 100);
+
+        const rentColor = {
+          shelter: "#1A7A6E",
+          income: "#3A56A0",
+          market: "#E8930A",
+          dev: "#9333EA",
+        };
+
+        HOUSING.forEach((h) => {
+          const [lat, lng] = approxCoords(h.addr);
+          h._lat = lat;
+          h._lng = lng;
+          const color = rentColor[h.rentType] || "#666";
+          const icon = L.divIcon({
+            html: `<div style="background:${color};width:10px;height:10px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>`,
+            className: "",
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+            popupAnchor: [0, -8],
+          });
+          const m = L.marker([lat, lng], { icon }).addTo(housingMap);
+          m.bindPopup(
+            `<div class="popup-name">${h.name}</div><div class="popup-addr">${h.addr}</div>${
+              h.units
+                ? `<div style="font-size:12px;color:#1A7A6E;font-weight:600;margin-top:4px">${h.units} units · ${h.rentLabel}</div>`
+                : `<div style="font-size:12px;color:#9333EA;margin-top:4px">${h.rentLabel}</div>`
+            }`
+          );
+          housingMarkers[h.name] = m;
+        });
+
+        renderRegistry();
+
+        // Event listeners for registry
+        document.getElementById("reg-search").addEventListener("input", renderRegistry);
+        document.querySelectorAll(".filter-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const f = btn.dataset.filter;
+            if (activeFilters.has(f)) {
+              activeFilters.delete(f);
+              btn.classList.remove("active");
+            } else {
+              activeFilters.add(f);
+              btn.classList.add("active");
+            }
+            renderRegistry();
+          });
+        });
+        document.getElementById("reg-sort").addEventListener("change", (e) => {
+          sortCol = e.target.value;
+          renderRegistry();
+        });
+        document.querySelectorAll("#reg-table thead th[data-col]").forEach((th) => {
+          th.addEventListener("click", () => {
+            const col = th.dataset.col;
+            if (sortCol === col) sortDir *= -1;
+            else {
+              sortCol = col;
+              sortDir = 1;
+            }
+            document
+              .querySelectorAll("#reg-table thead th")
+              .forEach((t) => t.classList.remove("sort-asc", "sort-desc"));
+            th.classList.add(sortDir === 1 ? "sort-asc" : "sort-desc");
+            renderRegistry();
+          });
+        });
+      }
+
+      function rentOrder(r) {
+        if (r.rentType === "dev") return 9999;
+        if (r.rentType === "income") return 9998;
+        return parseInt(r.rentLabel.replace(/[^0-9]/g, "")) || 9997;
+      }
+
+      function sortData(arr) {
+        return [...arr].sort((a, b) => {
+          let av, bv;
+          if (sortCol === "name") {
+            av = a.name.toLowerCase();
+            bv = b.name.toLowerCase();
+          } else if (sortCol === "addr") {
+            av = a.addr.toLowerCase();
+            bv = b.addr.toLowerCase();
+          } else if (sortCol === "rent") {
+            av = rentOrder(a);
+            bv = rentOrder(b);
+          } else if (sortCol === "units") {
+            av = -(a.units || 0);
+            bv = -(b.units || 0);
+          } else {
+            av = a.name.toLowerCase();
+            bv = b.name.toLowerCase();
+          }
+          return av < bv ? -sortDir : av > bv ? sortDir : 0;
+        });
+      }
+
+      function matchFilters(h) {
+        if (activeFilters.size === 0) return true;
+        for (const f of activeFilters) {
+          let match = false;
+          if (f === "shelter") match = h.rentType === "shelter";
+          else if (f === "income") match = h.rentType === "income";
+          else if (f === "women") match = h.pop.includes("women");
+          else if (f === "seniors") match = h.pop.includes("seniors");
+          else if (f === "indigenous") match = h.pop.includes("indigenous");
+          else if (f === "youth") match = h.pop.includes("youth");
+          else if (f === "supportive") match = !!(h.features.supportive || h.features.transitional);
+          else if (f === "dev") match = !!h.dev;
+          if (!match) return false;
+        }
+        return true;
+      }
+
+      function matchSearch(h, q) {
+        if (!q) return true;
+        const s = (
+          h.name +
+          " " +
+          h.addr +
+          " " +
+          h.manager +
+          " " +
+          h.notes +
+          " " +
+          h.type +
+          " " +
+          (h.apply || "")
+        ).toLowerCase();
+        return q
+          .toLowerCase()
+          .split(" ")
+          .every((w) => s.includes(w));
+      }
+
+      function rentBadge(h) {
+        if (h.rentType === "dev") return `<span class="badge badge-dev">In dev</span>`;
+        if (h.rentType === "income") return `<span class="badge badge-income">Income-based</span>`;
+        if (h.rentType === "shelter")
+          return `<span class="badge badge-shelter">${h.rentLabel}</span>`;
+        return `<span class="badge badge-market">${h.rentLabel}</span>`;
+      }
+
+      function popBadges(h) {
+        const map = {
+          women: ["badge-women", "Women"],
+          seniors: ["badge-senior", "Seniors"],
+          indigenous: ["badge-indig", "Indig."],
+          youth: ["badge-youth", "Youth"],
+          families: ["badge-senior", "Families"],
+        };
+        return h.pop
+          .map((p) => {
+            const [cls, label] = map[p] || [];
+            return cls ? `<span class="badge ${cls}">${label}</span>` : "";
+          })
+          .join(" ");
+      }
+
+      function featureIcons(f) {
+        let out = "";
+        if (f.pets) out += `<span title="Pets OK" class="flag flag-pet">🐾</span>`;
+        if (f.elev) out += `<span title="Elevator" class="flag flag-elev">🛗</span>`;
+        if (f.meals) out += `<span title="Meals" class="flag flag-meals">🍽</span>`;
+        if (f.accessible) out += `<span title="Accessible" class="flag flag-acc">♿</span>`;
+        if (f.supportive) out += `<span title="Supportive" class="flag flag-supp">🤝</span>`;
+        if (f.lowbarrier) out += `<span title="Low-barrier" class="flag">🟢</span>`;
+        if (f.transitional) out += `<span title="Transitional" class="flag">🔄</span>`;
+        return out;
+      }
+
+      let selectedHousing = null;
+      function selectHousing(name) {
+        selectedHousing = name;
+        document
+          .querySelectorAll("#reg-tbody tr")
+          .forEach((r) => r.classList.remove("row-selected"));
+        const row = document.getElementById("hrow-" + CSS.escape(name));
+        if (row) row.classList.add("row-selected");
+        const m = housingMarkers[name];
+        if (m) {
+          housingMap.setView(m.getLatLng(), 16, { animate: true });
+          m.openPopup();
+        }
+      }
+
+      function renderRegistry() {
+        const q = document.getElementById("reg-search").value;
+        const filtered = sortData(HOUSING.filter((h) => matchFilters(h) && matchSearch(h, q)));
+        const tbody = document.getElementById("reg-tbody");
+
+        document.getElementById("reg-shown").textContent = filtered.length;
+        document.getElementById("reg-total").textContent = HOUSING.length;
+
+        HOUSING.forEach((h) => {
+          const m = housingMarkers[h.name];
+          if (!m) return;
+          const show = filtered.some((f) => f.name === h.name);
+          if (show) {
+            if (!housingMap.hasLayer(m)) m.addTo(housingMap);
+          } else {
+            if (housingMap.hasLayer(m)) housingMap.removeLayer(m);
+          }
+        });
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = `<tr class="no-results-row"><td colspan="11">🏘️ No listings match — try removing some filters.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = filtered
+          .map(
+            (h) => `
+          <tr id="hrow-${h.name.replace(/[^a-zA-Z0-9]/g, "_")}" class="${h.dev ? "dev-row" : ""}" onclick="selectHousing('${h.name.replace(/'/g, "\\'")}')">
+            <td class="td-name">${h.name}${h.dev ? '<br><small style="color:#9333EA">🔨 In development</small>' : ""}</td>
+            <td class="td-addr">${h.addr}</td>
+            <td class="td-rent">${rentBadge(h)}</td>
+            <td class="td-units">${h.units || "—"}</td>
+            <td class="td-type"><span style="font-size:12px;color:var(--muted)">${h.type}</span></td>
+            <td class="td-pop"><div class="tag-row">${popBadges(h)}</div></td>
+            <td class="td-manager">${h.manager}</td>
+            <td class="td-contact">${h.contact ? `<a href="tel:${h.contact.replace(/[^0-9]/g, "")}">${h.contact}</a>` : "—"}</td>
+            <td class="td-flags">${featureIcons(h.features)}</td>
+            <td class="td-apply" style="font-size:11px;color:var(--muted)">${h.apply || "—"}</td>
+            <td class="td-notes">${h.notes || ""}</td>
+          </tr>
+        `
+          )
+          .join("");
+      }
+    </script>
   </body>
 </html>

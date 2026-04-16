@@ -25,7 +25,6 @@
         { href: "legal-services.html", label: "Legal Services" },
         { href: "income-assistance.html", label: "Income Assistance" },
         { href: "outreach-teams.html", label: "Outreach Teams" },
-        { href: "social-housing.html", label: "Social Housing" },
         { href: "dtes-demographics.html", label: "Demographics" },
       ],
     },
