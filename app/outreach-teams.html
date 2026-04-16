@@ -163,17 +163,27 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
   font-family: var(--font-head); font-size: clamp(18px, 2vw, 24px);
   color: var(--ink); margin-bottom: 6px;
 }
-.team-ref-inner .intro { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
-.team-ref-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px;
+.team-ref-inner .intro { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.team-ref-controls {
+  border: 1px solid var(--border); border-bottom: none;
+  border-radius: 10px 10px 0 0; padding: 10px 14px;
+  background: var(--white);
 }
-.trc {
-  background: var(--white); border: 1px solid var(--border);
-  border-radius: 8px; padding: 12px 14px;
+.team-ref-scroll { border: 1px solid var(--border); border-radius: 0 0 10px 10px; overflow: hidden; }
+.team-ref-scroll table { font-size: 13px; }
+.team-ref-scroll thead { background: var(--teal-deep); }
+.team-ref-scroll thead th {
+  padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 500;
+  letter-spacing: 0.7px; text-transform: uppercase; color: var(--sky);
+  border-bottom: 1px solid rgba(255,255,255,0.08); white-space: nowrap;
 }
-.trc-name { font-size: 12px; font-weight: 700; color: var(--ink); margin-bottom: 5px; line-height: 1.3; }
-.trc-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
-.trc-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+.team-ref-scroll tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+.team-ref-scroll tbody tr:last-child { border-bottom: none; }
+.team-ref-scroll tbody tr:hover { background: var(--teal-pale); }
+.team-ref-scroll td { padding: 9px 14px; vertical-align: middle; line-height: 1.4; }
+.td-team-name { font-weight: 500; color: var(--ink); min-width: 200px; }
+.td-team-name small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; margin-top: 2px; }
+.td-mandate { color: var(--muted); font-size: 12px; }
 
 /* ── Tag colours ── */
 .tt { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 6px; }
@@ -190,9 +200,10 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 @media (max-width: 700px) {
   .prose-section, .analysis-section, .team-ref-section, .pathway-section { padding: 32px 16px; }
   .police-grid { grid-template-columns: 1fr; }
-  .team-ref-grid { grid-template-columns: 1fr; }
   .data-table { font-size: 12px; }
   .data-table td:first-child { white-space: normal; }
+  .team-ref-scroll { border-radius: 6px; }
+  .team-ref-scroll td, .team-ref-scroll th { padding: 8px 10px; }
 }
 </style>
 </head>
@@ -550,128 +561,163 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
       <div class="section-label">Reference</div>
       <h2>All 20 teams</h2>
       <p class="intro">VCH Inner-city Outreach Teams org chart, Oct 7 2024 (draft).</p>
-      <div class="team-ref-grid">
 
-        <div class="trc">
-          <div class="trc-name">Car 87 / Car 88</div>
-          <div class="trc-tags"><span class="tt tier-t1">Urgent</span><span class="tt geo-dtes">DTES</span></div>
-          <div class="trc-desc">Police partnership crisis intervention</div>
+      <div class="controls-bar team-ref-controls">
+        <div class="controls-inner">
+          <div class="search-wrap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input id="team-search" class="search-input" type="search" placeholder="Search teams…">
+          </div>
+          <div class="filter-group" id="tier-filters">
+            <button class="filter-btn active" data-tier="">All tiers</button>
+            <button class="filter-btn" data-tier="Urgent">Urgent</button>
+            <button class="filter-btn" data-tier="Short-term">Short-term</button>
+            <button class="filter-btn" data-tier="Long-term">Long-term</button>
+          </div>
+          <div class="filter-group" id="geo-filters">
+            <button class="filter-btn active" data-geo="">All areas</button>
+            <button class="filter-btn" data-geo="DTES">DTES</button>
+            <button class="filter-btn" data-geo="Vancouver">Vancouver</button>
+            <button class="filter-btn" data-geo="Regional">Regional</button>
+            <button class="filter-btn" data-geo="Indigenous">Indigenous</button>
+            <button class="filter-btn" data-geo="Multi-agency">Multi-agency</button>
+          </div>
+          <span id="team-count" style="font-size:12px;color:var(--muted);margin-left:auto;white-space:nowrap;"></span>
         </div>
-
-        <div class="trc">
-          <div class="trc-name">Mobile Crisis De-escalation (MoDe)</div>
-          <div class="trc-tags"><span class="tt tier-t1">Urgent</span><span class="tt geo-dtes">DTES</span></div>
-          <div class="trc-desc">Non-police, same-day crisis response</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">Priority Populations Outreach Team (PPOT)</div>
-          <div class="trc-tags"><span class="tt tier-t1">Urgent</span><span class="tt geo-reg">Regional</span></div>
-          <div class="trc-desc">Clinical supports for emergent / unexpected events</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">Indigenous Crisis Response Team (ICRT)</div>
-          <div class="trc-tags"><span class="tt tier-t1">Urgent</span><span class="tt geo-ind">Indigenous</span></div>
-          <div class="trc-desc">Wholistic non-police crisis response, cultural safety</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">Intensive Health Outreach Team (IHOT)</div>
-          <div class="trc-tags"><span class="tt tier-t2">Short-term</span><span class="tt geo-dtes">DTES</span></div>
-          <div class="trc-desc">Low-barrier healthcare for unhoused / precariously housed</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">Acute Home-Based Treatment (AHBT)</div>
-          <div class="trc-tags"><span class="tt tier-t2">Short-term</span><span class="tt geo-dtes">DTES</span></div>
-          <div class="trc-desc">Acute psychiatric care as alternative to hospital admission</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">Overdose Outreach Team (OOT)</div>
-          <div class="trc-tags"><span class="tt tier-t2">Short-term</span><span class="tt geo-reg">Regional</span></div>
-          <div class="trc-desc">Re-engage people after recent overdose — not connected to care</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">Indigenous Health Outreach (IHO)</div>
-          <div class="trc-tags"><span class="tt tier-t2">Short-term</span><span class="tt geo-ind">Indigenous</span></div>
-          <div class="trc-desc">Indigenous-specific bridging and care coordination</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">Assertive Outreach Team (AOT)</div>
-          <div class="trc-tags"><span class="tt tier-t2">Short-term</span><span class="tt geo-van">Vancouver</span></div>
-          <div class="trc-desc">Police partnership for higher-risk clients</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">Vancouver Integrated Supervision Unit (VISU)</div>
-          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-dtes">DTES</span></div>
-          <div class="trc-desc">Intensive case management within community supervision orders</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">Youth Assertive Outreach Mental Health Team</div>
-          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-multi">Multi-agency</span></div>
-          <div class="trc-desc">Mental health counselling, youth ages 13–18</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">Youth Intensive Case Management Team (YICMT)</div>
-          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-multi">Multi-agency</span></div>
-          <div class="trc-desc">Wrap-around for youth 13–24 with substance use impairments</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">DTES Youth Outreach Team (YOT)</div>
-          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-reg">Regional</span></div>
-          <div class="trc-desc">Wrap-around for youth 13–24 not connected, high instability</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">Sheway</div>
-          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-van">Vancouver</span></div>
-          <div class="trc-desc">Pregnant / parenting people with substance use issues and their children</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">Assertive Community Treatment (ACT)</div>
-          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-dtes">DTES</span></div>
-          <div class="trc-desc">Indefinite intensive case management; severe persistent mental illness</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">Downtown Community Court (DCC)</div>
-          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-multi">Multi-agency</span></div>
-          <div class="trc-desc">Problem-solving court integrating justice, health, social services</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">Road to Recovery ICMT (R2R ICMT)</div>
-          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-multi">Multi-agency</span></div>
-          <div class="trc-desc">Recovery-focused intensive case management</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">Inner-city Intensive Case Management Team (ICMT)</div>
-          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-dtes">DTES</span></div>
-          <div class="trc-desc">Primary substance use disorder with co-occurring MHSU or PC needs</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">Primary Care Outreach</div>
-          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-van">Vancouver</span></div>
-          <div class="trc-desc">Primary care delivered in community settings</div>
-        </div>
-
-        <div class="trc">
-          <div class="trc-name">STOP Outreach Team</div>
-          <div class="trc-tags"><span class="tt tier-t3">Long-term</span><span class="tt geo-reg">Regional</span></div>
-          <div class="trc-desc">HIV prevention, care, and treatment</div>
-        </div>
-
+      </div>
+      <div class="team-ref-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Team</th>
+              <th>Tier</th>
+              <th>Geography</th>
+              <th>Mandate</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-team-name">Car 87 / Car 88</td>
+              <td><span class="tt tier-t1">Urgent</span></td>
+              <td><span class="tt geo-dtes">DTES</span></td>
+              <td class="td-mandate">Police partnership crisis intervention</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Mobile Crisis De-escalation <small>MoDe</small></td>
+              <td><span class="tt tier-t1">Urgent</span></td>
+              <td><span class="tt geo-dtes">DTES</span></td>
+              <td class="td-mandate">Non-police, same-day crisis response</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Priority Populations Outreach Team <small>PPOT</small></td>
+              <td><span class="tt tier-t1">Urgent</span></td>
+              <td><span class="tt geo-reg">Regional</span></td>
+              <td class="td-mandate">Clinical supports for emergent / unexpected events</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Indigenous Crisis Response Team <small>ICRT</small></td>
+              <td><span class="tt tier-t1">Urgent</span></td>
+              <td><span class="tt geo-ind">Indigenous</span></td>
+              <td class="td-mandate">Wholistic non-police crisis response, cultural safety</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Intensive Health Outreach Team <small>IHOT</small></td>
+              <td><span class="tt tier-t2">Short-term</span></td>
+              <td><span class="tt geo-dtes">DTES</span></td>
+              <td class="td-mandate">Low-barrier healthcare for unhoused / precariously housed</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Acute Home-Based Treatment <small>AHBT</small></td>
+              <td><span class="tt tier-t2">Short-term</span></td>
+              <td><span class="tt geo-dtes">DTES</span></td>
+              <td class="td-mandate">Acute psychiatric care as alternative to hospital admission</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Overdose Outreach Team <small>OOT</small></td>
+              <td><span class="tt tier-t2">Short-term</span></td>
+              <td><span class="tt geo-reg">Regional</span></td>
+              <td class="td-mandate">Re-engage people after recent overdose — not connected to care</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Indigenous Health Outreach <small>IHO</small></td>
+              <td><span class="tt tier-t2">Short-term</span></td>
+              <td><span class="tt geo-ind">Indigenous</span></td>
+              <td class="td-mandate">Indigenous-specific bridging and care coordination</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Assertive Outreach Team <small>AOT</small></td>
+              <td><span class="tt tier-t2">Short-term</span></td>
+              <td><span class="tt geo-van">Vancouver</span></td>
+              <td class="td-mandate">Police partnership for higher-risk clients</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Vancouver Integrated Supervision Unit <small>VISU</small></td>
+              <td><span class="tt tier-t3">Long-term</span></td>
+              <td><span class="tt geo-dtes">DTES</span></td>
+              <td class="td-mandate">Intensive case management within community supervision orders</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Youth Assertive Outreach Mental Health Team</td>
+              <td><span class="tt tier-t3">Long-term</span></td>
+              <td><span class="tt geo-multi">Multi-agency</span></td>
+              <td class="td-mandate">Mental health counselling, youth ages 13–18</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Youth Intensive Case Management Team <small>YICMT</small></td>
+              <td><span class="tt tier-t3">Long-term</span></td>
+              <td><span class="tt geo-multi">Multi-agency</span></td>
+              <td class="td-mandate">Wrap-around for youth 13–24 with substance use impairments</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">DTES Youth Outreach Team <small>YOT</small></td>
+              <td><span class="tt tier-t3">Long-term</span></td>
+              <td><span class="tt geo-reg">Regional</span></td>
+              <td class="td-mandate">Wrap-around for youth 13–24 not connected, high instability</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Sheway</td>
+              <td><span class="tt tier-t3">Long-term</span></td>
+              <td><span class="tt geo-van">Vancouver</span></td>
+              <td class="td-mandate">Pregnant / parenting people with substance use issues and their children</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Assertive Community Treatment <small>ACT</small></td>
+              <td><span class="tt tier-t3">Long-term</span></td>
+              <td><span class="tt geo-dtes">DTES</span></td>
+              <td class="td-mandate">Indefinite intensive case management; severe persistent mental illness</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Downtown Community Court <small>DCC</small></td>
+              <td><span class="tt tier-t3">Long-term</span></td>
+              <td><span class="tt geo-multi">Multi-agency</span></td>
+              <td class="td-mandate">Problem-solving court integrating justice, health, social services</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Road to Recovery ICMT <small>R2R ICMT</small></td>
+              <td><span class="tt tier-t3">Long-term</span></td>
+              <td><span class="tt geo-multi">Multi-agency</span></td>
+              <td class="td-mandate">Recovery-focused intensive case management</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Inner-city Intensive Case Management Team <small>ICMT</small></td>
+              <td><span class="tt tier-t3">Long-term</span></td>
+              <td><span class="tt geo-dtes">DTES</span></td>
+              <td class="td-mandate">Primary substance use disorder with co-occurring MHSU or PC needs</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">Primary Care Outreach</td>
+              <td><span class="tt tier-t3">Long-term</span></td>
+              <td><span class="tt geo-van">Vancouver</span></td>
+              <td class="td-mandate">Primary care delivered in community settings</td>
+            </tr>
+            <tr>
+              <td class="td-team-name">STOP Outreach Team</td>
+              <td><span class="tt tier-t3">Long-term</span></td>
+              <td><span class="tt geo-reg">Regional</span></td>
+              <td class="td-mandate">HIV prevention, care, and treatment</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -683,5 +729,55 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
   </div>
 
 </div><!-- /content-wrap -->
+
+<script>
+(function () {
+  var searchInput = document.getElementById("team-search");
+  var countEl = document.getElementById("team-count");
+  var rows = Array.from(document.querySelectorAll(".team-ref-scroll tbody tr"));
+  var activeTier = "";
+  var activeGeo = "";
+
+  function update() {
+    var q = searchInput.value.toLowerCase().trim();
+    var visible = 0;
+    rows.forEach(function (row) {
+      var name = row.cells[0].textContent.toLowerCase();
+      var mandate = row.cells[3].textContent.toLowerCase();
+      var tier = row.cells[1].textContent.trim();
+      var geo = row.cells[2].textContent.trim();
+      var matchQ = !q || name.includes(q) || mandate.includes(q);
+      var matchTier = !activeTier || tier === activeTier;
+      var matchGeo = !activeGeo || geo === activeGeo;
+      var show = matchQ && matchTier && matchGeo;
+      row.style.display = show ? "" : "none";
+      if (show) visible++;
+    });
+    countEl.textContent = visible + " of " + rows.length + " teams";
+  }
+
+  searchInput.addEventListener("input", update);
+
+  document.getElementById("tier-filters").addEventListener("click", function (e) {
+    var btn = e.target.closest(".filter-btn");
+    if (!btn) return;
+    document.querySelectorAll("#tier-filters .filter-btn").forEach(function (b) { b.classList.remove("active"); });
+    btn.classList.add("active");
+    activeTier = btn.dataset.tier;
+    update();
+  });
+
+  document.getElementById("geo-filters").addEventListener("click", function (e) {
+    var btn = e.target.closest(".filter-btn");
+    if (!btn) return;
+    document.querySelectorAll("#geo-filters .filter-btn").forEach(function (b) { b.classList.remove("active"); });
+    btn.classList.add("active");
+    activeGeo = btn.dataset.geo;
+    update();
+  });
+
+  update();
+})();
+</script>
 </body>
 </html>
