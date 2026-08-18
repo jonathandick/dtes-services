@@ -4,7 +4,7 @@
     {
       "name": "dtes-services",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "3456", "--directory", "/Users/jonathandick/Programming/work/dtes-services/app"],
+      "runtimeArgs": ["-m", "http.server", "3456", "--directory", "/Users/jonathandick/Programming/work/hah/dtes-services/app"],
       "port": 3456
     }
   ]
