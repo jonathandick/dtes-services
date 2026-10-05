@@ -7,7 +7,7 @@ const SHELTERS = [
   {
     id:"s01", name:"The Osborn (PHS)",
     addr:"15–27 W Hastings St, Vancouver",
-    lat:49.2806, lng:-123.1075,
+    lat:49.28192, lng:-123.10522,
     type:"permanent", gender:"all",
     operator:"PHS Community Services Society",
     phone:"604-683-0073", web:"phs.ca",
@@ -19,7 +19,7 @@ const SHELTERS = [
   {
     id:"s02", name:"The Haven (Salvation Army Harbour Light)",
     addr:"108 E Hastings St, Vancouver",
-    lat:49.2808, lng:-123.1000,
+    lat:49.28107, lng:-123.10178,
     type:"permanent", gender:"men",
     operator:"Salvation Army Harbour Light",
     phone:"604-646-6868", web:"vancouverharbourlightsa.ca",
@@ -31,7 +31,7 @@ const SHELTERS = [
   {
     id:"s03", name:"The Beacon (Salvation Army Harbour Light)",
     addr:"108 E Hastings St, Vancouver",
-    lat:49.28085, lng:-123.1001,
+    lat:49.28107, lng:-123.10178,
     type:"permanent", gender:"men",
     operator:"Salvation Army Harbour Light",
     phone:"604-646-6868", web:"vancouverharbourlightsa.ca",
@@ -43,7 +43,7 @@ const SHELTERS = [
   {
     id:"s04", name:"Crosswalk (Salvation Army Harbour Light)",
     addr:"108 E Hastings St, Vancouver",
-    lat:49.2809, lng:-123.1002,
+    lat:49.28107, lng:-123.10178,
     type:"permanent", gender:"men",
     operator:"Salvation Army Harbour Light",
     phone:"604-646-6868", web:"vancouverharbourlightsa.ca",
@@ -55,7 +55,7 @@ const SHELTERS = [
   {
     id:"s05", name:"Harbour Light (Salvation Army) – Drop-In",
     addr:"119 E Cordova St, Vancouver",
-    lat:49.2832, lng:-123.1033,
+    lat:49.28257, lng:-123.10142,
     type:"permanent", gender:"men",
     operator:"Salvation Army Harbour Light",
     phone:"604-646-6868", web:"vancouverharbourlightsa.ca",
@@ -67,7 +67,7 @@ const SHELTERS = [
   {
     id:"s06", name:"New Fountain Shelter",
     addr:"356 E Hastings St, Vancouver",
-    lat:49.2808, lng:-123.0946,
+    lat:49.28097, lng:-123.09621,
     type:"permanent", gender:"all",
     operator:"Lookout Housing & Health Society",
     phone:"604-331-1246", web:"lookoutsociety.ca",
@@ -79,7 +79,7 @@ const SHELTERS = [
   {
     id:"s07", name:"Lookout Al Mitchell Shelter",
     addr:"346 Alexander St, Vancouver",
-    lat:49.2844, lng:-123.0944,
+    lat:49.28367, lng:-123.09616,
     type:"permanent", gender:"all",
     operator:"Lookout Housing & Health Society",
     phone:"604-696-0011", web:"lookoutsociety.ca",
@@ -91,7 +91,7 @@ const SHELTERS = [
   {
     id:"s08", name:"Lookout Walton Hotel Shelter",
     addr:"261 E Hastings St, Vancouver",
-    lat:49.2808, lng:-123.0959,
+    lat:49.28160, lng:-123.09797,
     type:"temporary", gender:"all",
     operator:"Lookout Housing & Health Society",
     phone:"604-688-9129", web:"lookoutsociety.ca",
@@ -103,7 +103,7 @@ const SHELTERS = [
   {
     id:"s09", name:"Triage Emergency Shelter (RainCity)",
     addr:"707 Powell St, Vancouver",
-    lat:49.2828, lng:-123.0892,
+    lat:49.28326, lng:-123.08914,
     type:"permanent", gender:"all",
     operator:"RainCity Housing and Support Society",
     phone:"604-254-3700", web:"raincityhousing.org",
@@ -115,7 +115,7 @@ const SHELTERS = [
   {
     id:"s10", name:"Powell Place Emergency Shelter (St James CSS)",
     addr:"329 Powell St, Vancouver",
-    lat:49.2828, lng:-123.0922,
+    lat:49.28339, lng:-123.09697,
     type:"permanent", gender:"women",
     operator:"St. James Community Service Society",
     phone:"604-606-0403", web:"stjamescss.ca",
@@ -127,7 +127,7 @@ const SHELTERS = [
   {
     id:"s11", name:"Downtown Eastside Women's Shelter (BC Housing/Atira)",
     addr:"412 E Cordova St, Vancouver",
-    lat:49.2833, lng:-123.0921,
+    lat:49.28194, lng:-123.09482,
     type:"permanent", gender:"women",
     operator:"Atira Women's Resource Society",
     phone:"604-423-4807", web:"atira.bc.ca",
@@ -139,7 +139,7 @@ const SHELTERS = [
   {
     id:"s12", name:"UGM Men's Emergency Shelter (Cornerstone)",
     addr:"601 E Hastings St, Vancouver",
-    lat:49.2808, lng:-123.0868,
+    lat:49.28147, lng:-123.09108,
     type:"permanent", gender:"men",
     operator:"Union Gospel Mission",
     phone:"604-253-3323", web:"ugm.ca",
@@ -151,7 +151,7 @@ const SHELTERS = [
   {
     id:"s13", name:"UGM Women's Emergency Shelter",
     addr:"616 E Cordova St, Vancouver",
-    lat:49.2835, lng:-123.0865,
+    lat:49.28187, lng:-123.09099,
     type:"permanent", gender:"women",
     operator:"Union Gospel Mission",
     phone:"604-253-4044", web:"ugm.ca",
@@ -163,7 +163,7 @@ const SHELTERS = [
   {
     id:"s14", name:"UGM Hastings Housing Society Shelter",
     addr:"601 E Hastings St, Vancouver",
-    lat:49.28085, lng:-123.0867,
+    lat:49.28147, lng:-123.09108,
     type:"permanent", gender:"men",
     operator:"Union Gospel Mission / Hastings Housing Society",
     phone:"604-253-3323", web:"ugm.ca",
@@ -175,7 +175,7 @@ const SHELTERS = [
   {
     id:"s15", name:"The Lark Shelter (PHS)",
     addr:"103 E Hastings St, Vancouver",
-    lat:49.2808, lng:-123.0986,
+    lat:49.28167, lng:-123.10187,
     type:"permanent", gender:"all",
     operator:"PHS Community Services Society",
     phone:"604-558-2070", web:"phs.ca",
@@ -211,7 +211,7 @@ const SHELTERS = [
   {
     id:"s18", name:"Lookout Yukon St Shelter",
     addr:"2088 Yukon St, Vancouver",
-    lat:49.2652, lng:-123.1116,
+    lat:49.26689, lng:-123.11237,
     type:"permanent", gender:"all",
     operator:"Lookout Housing & Health Society",
     phone:"604-264-1680", web:"lookoutsociety.ca",
@@ -259,7 +259,7 @@ const SHELTERS = [
   {
     id:"s22", name:"Covenant House Vancouver (Crisis Shelter)",
     addr:"1302 Seymour St, Vancouver",
-    lat:49.2772, lng:-123.1254,
+    lat:49.27515, lng:-123.12671,
     type:"permanent", gender:"youth",
     operator:"Covenant House Vancouver",
     phone:"604-685-7474", web:"covenanthousebc.org",
@@ -271,7 +271,7 @@ const SHELTERS = [
   {
     id:"s23", name:"Covenant House – Rights of Passage (Young Men)",
     addr:"326 W Pender St, Vancouver",
-    lat:49.2813, lng:-123.1134,
+    lat:49.28218, lng:-123.11157,
     type:"permanent", gender:"youth",
     operator:"Covenant House Vancouver",
     phone:"604-685-7474", web:"covenanthousebc.org",
@@ -283,7 +283,7 @@ const SHELTERS = [
   {
     id:"s24", name:"RainCity HPP Shelter (Powell St)",
     addr:"707 Powell St, Vancouver",
-    lat:49.28285, lng:-123.0891,
+    lat:49.28326, lng:-123.08914,
     type:"permanent", gender:"all",
     operator:"RainCity Housing and Support Society",
     phone:"604-254-3700", web:"raincityhousing.org",
@@ -295,7 +295,7 @@ const SHELTERS = [
   {
     id:"s25", name:"Salvation Army Haven (128 E Cordova)",
     addr:"128 E Cordova St, Vancouver",
-    lat:49.2833, lng:-123.1030,
+    lat:49.28206, lng:-123.10109,
     type:"permanent", gender:"all",
     operator:"Salvation Army",
     phone:"604-646-6868", web:"salvationarmy.ca",
@@ -307,7 +307,7 @@ const SHELTERS = [
   {
     id:"s26", name:"Lookout Commercial Hastings Shelter (EWR)",
     addr:"1726 E Hastings St, Vancouver",
-    lat:49.2806, lng:-123.0683,
+    lat:49.28093, lng:-123.06980,
     type:"ewr", gender:"all",
     operator:"Lookout Housing & Health Society",
     phone:"236-877-6311", web:"lookoutsociety.ca",
@@ -367,7 +367,7 @@ const SHELTERS = [
   {
     id:"s31", name:"Grace Mansion Shelter (Salvation Army)",
     addr:"596 E Hastings St, Vancouver",
-    lat:49.2810, lng:-123.0868,
+    lat:49.28089, lng:-123.09190,
     type:"permanent", gender:"all",
     operator:"Salvation Army",
     phone:"778-329-0674", web:"salvationarmy.ca",
@@ -379,7 +379,7 @@ const SHELTERS = [
   {
     id:"s32", name:"YWCA Crabtree Corner Shelter",
     addr:"533 E Hastings St, Vancouver",
-    lat:49.2809, lng:-123.0877,
+    lat:49.28151, lng:-123.09238,
     type:"permanent", gender:"women",
     operator:"YWCA Metro Vancouver",
     phone:"604-216-1650", web:"ywcavan.org",

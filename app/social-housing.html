@@ -2170,7 +2170,7 @@
         };
 
         HOUSING.forEach((h) => {
-          const [lat, lng] = approxCoords(h.addr);
+          const [lat, lng] = h.lat != null ? [h.lat, h.lng] : approxCoords(h.addr);
           h._lat = lat;
           h._lng = lng;
           const color = rentColor[h.rentType] || "#666";

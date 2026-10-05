@@ -9,7 +9,7 @@ const BASE_ORGS = [
    web:"phs.ca/program/insite/", hours:"Daily 9am–2am",
    oat:"Yes", scs:"Yes – 17-booth injection SCS", walkin:"Yes – drop-in",
    flags:{oat:true,scs:true,walkin:true},
-   lat:49.2808, lng:-123.0985,
+   lat:49.28167, lng:-123.10132,
    desc:"North America's first legal SCS (2003). Zero on-site OD deaths since opening. Supervised injection, drug checking (spectrometer + strips), wound/STI care, OAT access, Chillout Lounge (peer post-use), referrals to treatment. Connected to Onsite detox above."},
 
   {id:"molson", name:"Molson OPS + iOAT/TiOAT Site (MOPS)", cat:"SCS / OPS",
@@ -17,7 +17,7 @@ const BASE_ORGS = [
    web:"phs.ca/program/molson-overdose-prevention-site-mops/", hours:"Daily 7am–10:30pm (24hrs Tue/Wed/Thu cheque week)",
    oat:"Yes – iOAT/TiOAT (prescribed hydromorphone)", scs:"Yes – 6-booth OPS", walkin:"Drop-in OPS; IHOT: call",
    flags:{oat:true,scs:true,walkin:true},
-   lat:49.2810, lng:-123.0989,
+   lat:49.28104, lng:-123.10053,
    desc:"6-booth OPS + iOAT/TiOAT (injectable/tablet opioid agonist therapy – prescribed hydromorphone or heroin). Drug checking FTIR Tuesdays; fentanyl strips daily. IHOT episodic care clinic Mon/Thu 10am–4pm. Maple OPS consolidated here."},
 
   {id:"h2h", name:"Hope to Health (H2H) – Primary Care + SCS", cat:"SCS / OPS",
@@ -25,7 +25,7 @@ const BASE_ORGS = [
    web:"bccfe.ca/hope-health-research-innovation-centre", hours:"Mon–Fri 9:30am–3:30pm",
    oat:"Yes", scs:"Yes – SCS on-site", walkin:"Yes – drop-in",
    flags:{oat:true,scs:true,walkin:true},
-   lat:49.2847, lng:-123.0897,
+   lat:49.28329, lng:-123.09102,
    desc:"Integrated primary care + SCS. Serves ~2,800 patients (post $25M expansion 2024). HIV care, SUD, SAFER safe supply, OAT, social work, housing support. TasP model. Led by BC-CfE."},
 
   {id:"vandu-ops", name:"VANDU OPS (peer-run)", cat:"SCS / OPS",
@@ -33,7 +33,7 @@ const BASE_ORGS = [
    web:"vandu.org", hours:"Daily 10am–9:30pm (closed Thu)",
    oat:"No", scs:"Yes – peer-monitored OPS", walkin:"Yes – drop-in",
    flags:{scs:true,walkin:true},
-   lat:49.2806, lng:-123.0935,
+   lat:49.28096, lng:-123.09580,
    desc:"Peer-monitored OPS at VANDU headquarters. Harm reduction supplies, naloxone, peer support. Board and staff are current/former drug users."},
 
   {id:"sisterspace", name:"SisterSpace OPS – Atira (Women-Only)", cat:"SCS / OPS",
@@ -57,7 +57,7 @@ const BASE_ORGS = [
    web:"vch.ca/en/location/overdose-prevention-society-ops", hours:"Check VCH",
    oat:"No", scs:"Yes – OPS", walkin:"Yes – drop-in",
    flags:{scs:true,walkin:true},
-   lat:49.2821, lng:-123.0922,
+   lat:49.28286, lng:-123.09562,
    desc:"Community-driven grassroots OPS. Brings people in from alley. Safe and welcoming environment. Harm reduction supplies, naloxone, peer support, connections to housing and services."},
 
   {id:"ops-columbia", name:"390 Columbia OPS", cat:"SCS / OPS",
@@ -73,7 +73,7 @@ const BASE_ORGS = [
    web:"vch.ca", hours:"Mon noon–9pm; Tue–Fri 8am–9pm",
    oat:"No", scs:"Yes – inhalation OPS", walkin:"Yes – drop-in",
    flags:{scs:true,walkin:true},
-   lat:49.2793, lng:-123.1040,
+   lat:49.28128, lng:-123.10714,
    desc:"Safer inhalation/smoking OPS. For people who smoke drugs. Harm reduction supplies, naloxone. Verify hours and operator with VCH."},
 
   {id:"psg-ops", name:"Powell St Getaway OPS (Lookout)", cat:"SCS / OPS",
@@ -106,7 +106,7 @@ const BASE_ORGS = [
    web:"vch.ca", hours:"Mon–Wed/Fri 9am–6pm; Thu 9am–8pm",
    oat:"Yes", scs:"No", walkin:"Drop-in (some) / referral",
    flags:{oat:true,walkin:true,women:true},
-   lat:49.2793, lng:-123.1067,
+   lat:49.28122, lng:-123.10668,
    desc:"Primary care, MHSU, harm reduction, palliative care, rehab, physiotherapy. Thu evenings 4:30–8pm: women/gender-diverse only. Being consolidated into Lily's CHC (38 W Hastings) early 2026 – verify status."},
 
   {id:"heatley-chc", name:"Heatley Community Health Centre (VCH)", cat:"Primary Care / OAT",
@@ -114,7 +114,7 @@ const BASE_ORGS = [
    web:"vch.ca", hours:"Mon–Fri approx 9am–9pm",
    oat:"Yes", scs:"No", walkin:"Drop-in + referral",
    flags:{oat:true,walkin:true,indigenous:true},
-   lat:49.2836, lng:-123.0914,
+   lat:49.28183, lng:-123.08920,
    desc:"Primary care, MHSU, Indigenous health (Elder-in-residence, sacred space with smudging, traditional medicine). OAT, wound care, nutrition, palliative care. Being consolidated into Lily's CHC early 2026 – verify status before referring."},
 
   {id:"dchc", name:"Downtown Community Health Centre (DCHC)", cat:"Primary Care / OAT",
@@ -122,7 +122,7 @@ const BASE_ORGS = [
    web:"vch.ca", hours:"Mon–Sun 8:30am–6pm",
    oat:"Yes – methadone/Suboxone starts", scs:"No", walkin:"Drop-in (OAT) / referral",
    flags:{oat:true,walkin:true},
-   lat:49.2843, lng:-123.0903,
+   lat:49.28330, lng:-123.09180,
    desc:"Major VCH CHC. Primary care, OAT, MHSU, needle exchange, PRISM (LGBTQ+), acupuncture, public health. Weekend hours. Must reside in DTES and have no other GP."},
 
   {id:"columbia-clinic", name:"Columbia Street Community Clinic (PHS)", cat:"Primary Care / OAT",
@@ -138,7 +138,7 @@ const BASE_ORGS = [
    web:"vahs.life", hours:"Mon/Tue/Thu/Fri 9am–4:30pm; Wed 9am–8pm; Sat 9am–3pm",
    oat:"Yes", scs:"No", walkin:"Walk-in + appointment",
    flags:{oat:true,walkin:true,indigenous:true},
-   lat:49.2807, lng:-123.0923,
+   lat:49.28153, lng:-123.09426,
    desc:"Urban Indigenous primary care hub (all DTES welcome). OAT, HIV care, mental health, dietitian, Elder-led traditional healing, dental. Youth clinic Wed evenings. Formerly VNHS (Vancouver Native Health Society)."},
 
   // ── HARM REDUCTION / SUPPLY ───────────────────────────────
@@ -155,7 +155,7 @@ const BASE_ORGS = [
    web:"towardtheheart.com", hours:"Daily noon–8pm",
    oat:"No", scs:"No", walkin:"Yes – drop-in",
    flags:{walkin:true},
-   lat:49.2807, lng:-123.0819,
+   lat:49.28077, lng:-123.08541,
    desc:"Dedicated drug checking site. FTIR spectrometer, immunoassay strips, substance ID. Drug alert info. Also available: Insite (FTIR daily), Molson OPS (FTIR Tuesdays). VCH drug alerts: text JOIN to 253787."},
 
   // ── PERINATAL / YOUTH ─────────────────────────────────────
@@ -164,7 +164,7 @@ const BASE_ORGS = [
    web:"vch.ca/en/sheway", hours:"Drop-in Mon–Fri 9:15am–4pm",
    oat:"Yes", scs:"No", walkin:"Yes – drop-in",
    flags:{oat:true,walkin:true,women:true},
-   lat:49.2807, lng:-123.0928,
+   lat:49.28151, lng:-123.09238,
    desc:"Pregnant/parenting women with substance use. Primary care, prenatal/postnatal care, OAT, SUD counselling, psychiatry, parenting support, nutrition, food bags, housing navigation, legal advocacy. 24/7 OB on-call via BC Women's. Woman-centred harm reduction model."},
 
   {id:"dtes-youth", name:"DTES Youth Outreach Centre + Team (VCH)", cat:"Community / Drop-in",
@@ -172,7 +172,7 @@ const BASE_ORGS = [
    web:"vch.ca", hours:"Mon–Fri 9am–7pm",
    oat:"Via referral", scs:"No", walkin:"Walk-in to centre / street outreach",
    flags:{walkin:true},
-   lat:49.2843, lng:-123.0890,
+   lat:49.28270, lng:-123.08783,
    desc:"Youth ages 15–24. Multi-disciplinary outreach team. Street outreach in DTES, case management, primary care access, cultural/spiritual support, harm reduction supplies, MH/SUD bridging. First DTES youth-specific centre (opened 2023)."},
 
   // ── PEER / INDIGENOUS ─────────────────────────────────────
@@ -181,7 +181,7 @@ const BASE_ORGS = [
    web:"vandu.org", hours:"Daily (OPS 10am–9:30pm, closed Thu)",
    oat:"No", scs:"Community OPS on-site", walkin:"Drop-in",
    flags:{scs:true,walkin:true},
-   lat:49.2806, lng:-123.0936,
+   lat:49.28096, lng:-123.09580,
    desc:"Peer-run drug-user organization. 3,000+ members. Drug policy advocacy, OPS, harm reduction, naloxone, community meals, safe supply advocacy. Board must be current/former drug users."},
 
   {id:"wahrs", name:"WAHRS – Western Aboriginal Harm Reduction Society", cat:"Peer / Indigenous",
@@ -197,7 +197,7 @@ const BASE_ORGS = [
    web:"abfrontdoor.org", hours:"Check website",
    oat:"No", scs:"No", walkin:"Drop-in",
    flags:{walkin:true,indigenous:true},
-   lat:49.2805, lng:-123.1000,
+   lat:49.28168, lng:-123.09918,
    desc:"Culturally safe drop-in for Indigenous peoples. Crisis support, trauma counselling brokering, court accompaniments, cultural programming, peer support, Elder connections."},
 
   {id:"ino", name:"VCH Indigenous Outreach (INO)", cat:"Peer / Indigenous",
@@ -222,7 +222,7 @@ const BASE_ORGS = [
    web:"wish-vancouver.net", hours:"Drop-in Tue–Sat 6pm–6am; MAP Van daily/nightly",
    oat:"Referrals only", scs:"No", walkin:"Drop-in / MAP Van: wave or call",
    flags:{walkin:true,women:true},
-   lat:49.2810, lng:-123.1082,
+   lat:49.28201, lng:-123.10571,
    desc:"Canada's largest sex worker org. 300–350 individuals/night. Overnight drop-in, hot meals, showers, nursing, MAP Van (citywide mobile outreach daily/nightly), InReach (shelter visits), naloxone, SUD/health referrals."},
 
   // ── COMMUNITY / DROP-IN ───────────────────────────────────
@@ -231,7 +231,7 @@ const BASE_ORGS = [
    web:"vancouver.ca/carnegie", hours:"Daily 9am–11pm",
    oat:"No", scs:"No", walkin:"Drop-in ($1 annual membership)",
    flags:{walkin:true},
-   lat:49.2807, lng:-123.0997,
+   lat:49.28105, lng:-123.10012,
    desc:"'Living room of the DTES.' Low-cost cafeteria (meals 365d/yr), drop-in, needle exchange, naloxone, harm reduction, social/educational programs, mail pickup, internet, outreach team (homeless/at-risk)."},
 
   {id:"saller", name:"Evelyne Saller Centre (City of Vancouver)", cat:"Community / Drop-in",
@@ -289,7 +289,7 @@ const BASE_ORGS = [
    web:"vpd.ca", hours:"24/7",
    oat:"N/A", scs:"N/A", walkin:"N/A",
    flags:{"24hr":true},
-   lat:49.2793, lng:-123.1000,
+   lat:49.28185, lng:-123.09919,
    desc:"VPD DTES operations and Beat Enforcement Team (BET) base. BET focuses specifically on DTES, Chinatown, and Gastown. Also location of Vancouver Police Foundation Transitional Care Centre (VPF TCC) at St. Paul's – for patients discharged from hospital needing transitional care space."},
 
   {id:"vpd-hq", name:"VPD Headquarters", cat:"Emergency Services",
@@ -297,7 +297,7 @@ const BASE_ORGS = [
    web:"vpd.ca", hours:"24/7 (public counter Mon–Sat 8am–6pm)",
    oat:"N/A", scs:"N/A", walkin:"N/A",
    flags:{"24hr":true},
-   lat:49.2663, lng:-123.1143,
+   lat:49.26637, lng:-123.11367,
    desc:"VPD main headquarters. Administrative offices, specialized units. Non-emergency line: 604-717-3321. Police record checks by appointment here. For DTES-specific matters, the 312 Main beat station is the primary operational base."},
 
   {id:"bcehs-dispatch", name:"BCEHS Ambulance / Paramedics (Dispatch)", cat:"Emergency Services",
@@ -313,7 +313,7 @@ const BASE_ORGS = [
    web:"providencehealthcare.org", hours:"24/7",
    oat:"N/A", scs:"N/A", walkin:"Emergency walk-in",
    flags:{"24hr":true,walkin:true},
-   lat:49.2811, lng:-123.1290,
+   lat:49.28060, lng:-123.12900,
    desc:"Nearest major ED to DTES core. Providence Health Care. St. Paul's Hospital at Home (HAH) program based here – partnership with CTCT. RAAC (Rapid Access Addiction Clinic) located here. Key receiving hospital for DTES patients."},
 
   {id:"vgh", name:"Vancouver General Hospital – Emergency", cat:"Emergency Services",
@@ -321,7 +321,7 @@ const BASE_ORGS = [
    web:"vch.ca/vgh", hours:"24/7",
    oat:"N/A", scs:"N/A", walkin:"Emergency walk-in",
    flags:{"24hr":true,walkin:true},
-   lat:49.2627, lng:-123.1252,
+   lat:49.26147, lng:-123.12360,
    desc:"Level 1 trauma centre. Major receiving hospital for critically ill DTES patients. Further from DTES core than St. Paul's but full trauma capabilities. VCH operated."},
 
   {id:"lions-gate", name:"Lions Gate Hospital – Emergency (North Shore)", cat:"Emergency Services",
@@ -329,6 +329,6 @@ const BASE_ORGS = [
    web:"vch.ca/lgh", hours:"24/7",
    oat:"N/A", scs:"N/A", walkin:"Emergency walk-in",
    flags:{"24hr":true,walkin:true},
-   lat:49.3218, lng:-123.0716,
+   lat:49.32109, lng:-123.06778,
    desc:"North Vancouver ED. Occasionally relevant for DTES patients transferred or presenting via North Shore. VCH operated."},
 ];

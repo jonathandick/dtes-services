@@ -18,7 +18,7 @@ const LEGAL_SERVICES = [
    access:"drop-in",
    cost:"free",
    flags:{free:true,dropin:true},
-   lat:49.2822, lng:-123.0996,
+   lat:49.28272, lng:-123.09857,
    desc:"Free legal advice and in-court representation for people appearing at BC Provincial Court who cannot afford a lawyer. Duty counsel are available at the courthouse on scheduled court days. Legal Aid BC also manages applications for extended legal aid in criminal, family, refugee, and immigration matters."},
 
   {id:"dcc",
@@ -33,7 +33,7 @@ const LEGAL_SERVICES = [
    access:"referral",
    cost:"free",
    flags:{free:true},
-   lat:49.2843, lng:-123.1000,
+   lat:49.28202, lng:-123.10008,
    desc:"Specialized court combining justice with on-site health and social services for adults with charges arising largely from addiction, mental illness, and housing instability in or near the DTES. Focuses on addressing root causes rather than incarceration. Access through duty counsel or defence counsel."},
 
   // ── Indigenous Legal Support ──────────────────────────────────
@@ -143,7 +143,7 @@ const LEGAL_SERVICES = [
    access:"appointment",
    cost:"free",
    flags:{free:true,women:true},
-   lat:49.2851, lng:-123.1213,
+   lat:49.28824, lng:-123.12179,
    desc:"Legal action in the public interest to advance equality for women, girls, and gender-diverse people in BC. Focus areas: economic security, safety and access to justice, Indigenous women's rights. Provides a legal clinic for women facing gender-based human rights violations and engages in strategic litigation and law reform."},
 
   // ── General Legal Aid ─────────────────────────────────────────
